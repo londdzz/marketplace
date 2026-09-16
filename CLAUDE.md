@@ -134,6 +134,12 @@ instruction in this document. Do not start the next phase until the user says so
 - Phase 2: complete.
 - Next: Phase 3 (Listings CRUD and photos), only when the user says so.
 
+## Placeholders
+
+`PLACEHOLDERS.md` in the repository root lists every stand-in value that still needs a
+real one, what it breaks until then, and which phase introduced it. Read it before any
+release, and update it whenever a placeholder is added or replaced.
+
 ## Decisions taken along the way
 
 - **OTP delivery is WhatsApp, behind a driver.** `App\Contracts\OtpSender` has a
