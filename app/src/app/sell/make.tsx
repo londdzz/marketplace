@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, useWindowDimensions, View } from 'react-native';
 
 import { referenceApi } from '../../api/reference';
-import { Button, Input, MakeTile, OptionRow, Text } from '../../components';
+import { Button, Input, ListGroup, MakeTile, OptionRow, Text } from '../../components';
 import { SellStep } from '../../sell/SellStep';
 import { useSell } from '../../sell/SellProvider';
 import { pathTo } from '../../sell/steps';
@@ -114,17 +114,19 @@ export default function SellMakeScreen() {
           <Text variant="label" tone="muted">
             {t('sell:all_makes')}
           </Text>
-          <View style={{ gap: theme.spacing.sm, marginTop: theme.spacing.sm }}>
+          <ListGroup style={{ marginTop: theme.spacing.sm }} inset={theme.spacing.lg}>
             {rest.map((make) => (
               <OptionRow
                 key={make.id}
+                flat
+                logoUrl={make.logo_url}
                 label={make.name}
                 selected={selected === make.id}
                 onPress={() => setSelected(make.id)}
                 testID={`make-row-${make.id}`}
               />
             ))}
-          </View>
+          </ListGroup>
         </>
       ) : null}
 

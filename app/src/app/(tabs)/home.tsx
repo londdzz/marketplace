@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
 
 import { referenceApi } from '../../api/reference';
-import { AppHeader, Fab, ListingCard, PromoBanner, Screen, SearchBar, Text } from '../../components';
+import { AppHeader, ListingCard, PromoBanner, Screen, SearchBar, Text } from '../../components';
 import { useExchangeRates } from '../../hooks/useExchangeRates';
 import { useListingCardMapper } from '../../hooks/useListingCard';
 import { useListingSearch } from '../../hooks/useListingSearch';
@@ -35,9 +35,9 @@ export default function HomeTab() {
 
   return (
     <Screen flush edges={['top']}>
+      {/* No badges until something real drives them: the unread count arrives
+          with messaging, and a dot that is always on says nothing. */}
       <AppHeader
-        accountBadge
-        unreadMessages
         onAccount={() => router.push('/(tabs)/profile')}
         onMessages={() => router.push('/(tabs)/messages')}
       />
@@ -64,18 +64,21 @@ export default function HomeTab() {
         />
 
         <View style={styles.sectionHeader}>
-          <Text variant="display" style={{ fontSize: 24, lineHeight: 30 }}>
-            {t('home:newest')}
-          </Text>
-          <Pressable accessibilityRole="button" style={styles.showAll}>
-            <Text variant="bodyStrong" tone="accent">
+          <Text variant="title">{t('home:newest')}</Text>
+          <Pressable
+            accessibilityRole="button"
+            style={styles.showAll}
+            onPress={() => router.push('/results')}
+            testID="home-show-all"
+          >
+            <Text variant="label" tone="accent">
               {t('home:show_all')}
             </Text>
             <Ionicons
-              name="arrow-forward"
-              size={17}
+              name="chevron-forward"
+              size={15}
               color={theme.colors.accent}
-              style={{ marginLeft: theme.spacing.xs }}
+              style={{ marginLeft: 2 }}
             />
           </Pressable>
         </View>
@@ -96,8 +99,6 @@ export default function HomeTab() {
           </View>
         )}
       </ScrollView>
-
-      <Fab accessibilityLabel={t('common:continue')} onPress={() => router.push('/(tabs)/sell')} />
     </Screen>
   );
 }

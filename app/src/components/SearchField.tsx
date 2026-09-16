@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, TextInput, View } from 'react-native';
 
 import { useTheme } from '../theme';
 
@@ -44,7 +44,7 @@ export function SearchField({
           },
         ]}
       >
-        <Ionicons name="search" size={22} color={theme.colors.textMuted} />
+        <Ionicons name="search" size={20} color={theme.colors.textMuted} />
 
         <TextInput
           value={value}
@@ -53,7 +53,13 @@ export function SearchField({
           placeholderTextColor={theme.colors.textMuted}
           returnKeyType="search"
           testID={testID}
-          style={[styles.input, theme.typography.title, { color: theme.colors.text }]}
+          style={[
+            styles.input,
+            theme.typography.body,
+            { color: theme.colors.text },
+            // The browser's own focus ring belongs to no design system.
+            Platform.OS === 'web' ? ({ outlineStyle: 'none' } as object) : null,
+          ]}
         />
 
         {onVoice ? (
@@ -65,7 +71,7 @@ export function SearchField({
 
       {onReset ? (
         <Pressable accessibilityRole="button" onPress={onReset} testID="search-reset">
-          <Ionicons name="refresh-outline" size={26} color={theme.colors.text} />
+          <Ionicons name="refresh-outline" size={22} color={theme.colors.textMuted} />
         </Pressable>
       ) : null}
     </View>

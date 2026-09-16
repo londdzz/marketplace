@@ -64,6 +64,7 @@ export default function SellYearScreen() {
                   borderRadius: theme.radius.md,
                   backgroundColor: active ? theme.colors.accent : theme.colors.surface,
                   borderColor: active ? theme.colors.accent : theme.colors.border,
+                  borderWidth: active ? 1.5 : 1,
                   opacity: pressed ? 0.75 : 1,
                 },
               ]}
@@ -85,6 +86,5 @@ export default function SellYearScreen() {
 const styles = StyleSheet.create({
   tile: {
     alignItems: 'center',
-    borderWidth: StyleSheet.hairlineWidth * 2,
   },
 });

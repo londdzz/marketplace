@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, View } from 'react-native';
 
 import { referenceApi } from '../../api/reference';
-import { Button, Chip, Input, OptionRow, Text } from '../../components';
+import { Button, Chip, Input, ListGroup, OptionRow, Text } from '../../components';
 import { useAuth } from '../../auth/AuthProvider';
 import { SellStep } from '../../sell/SellStep';
 import { useSell } from '../../sell/SellProvider';
@@ -94,17 +94,18 @@ export default function SellLocationScreen() {
         </View>
       ) : null}
 
-      <View style={{ gap: theme.spacing.sm }}>
+      <ListGroup inset={theme.spacing.lg}>
         {matching.map((city) => (
           <OptionRow
             key={city.id}
+            flat
             label={city.name}
             selected={cityId === city.id}
             onPress={() => setCityId(city.id)}
             testID={`city-${city.id}`}
           />
         ))}
-      </View>
+      </ListGroup>
 
       {!cities.isLoading && matching.length === 0 ? (
         <Text variant="meta" tone="muted">

@@ -108,7 +108,7 @@ export default function SellPhotosScreen() {
         {photos.map((photo, index) => (
           <View
             key={photo.id}
-            style={{ width: tile, height: tile, borderRadius: theme.radius.md, overflow: 'hidden' }}
+            style={{ width: tile, height: tile, borderRadius: theme.radius.lg, overflow: 'hidden' }}
             testID={`photo-${index}`}
           >
             <Image
@@ -164,7 +164,7 @@ export default function SellPhotosScreen() {
               {
                 width: tile,
                 height: tile,
-                borderRadius: theme.radius.md,
+                borderRadius: theme.radius.lg,
                 borderColor: theme.colors.accentBorder,
                 backgroundColor: theme.colors.accentMuted,
                 opacity: pressed || busy ? 0.6 : 1,
@@ -181,22 +181,22 @@ export default function SellPhotosScreen() {
         ) : null}
       </View>
 
-      <View style={{ gap: theme.spacing.md, marginTop: theme.spacing.xl }}>
+      <View style={{ flexDirection: 'row', gap: theme.spacing.md, marginTop: theme.spacing.xl }}>
         <Button
           label={t('sell:add_photos')}
           icon="images-outline"
-          variant="outline"
-          block
+          variant="secondary"
           disabled={busy || remaining === 0}
           onPress={() => void addFromLibrary()}
+          style={{ flex: 1 }}
         />
         <Button
           label={t('sell:take_photo')}
           icon="camera-outline"
-          variant="outline"
-          block
+          variant="secondary"
           disabled={busy || remaining === 0}
           onPress={() => void addFromCamera()}
+          style={{ flex: 1 }}
         />
       </View>
 
@@ -235,7 +235,6 @@ const styles = StyleSheet.create({
   add: {
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: StyleSheet.hairlineWidth * 4,
-    borderStyle: 'dashed',
+    borderWidth: 1.5,
   },
 });

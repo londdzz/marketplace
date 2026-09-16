@@ -8,6 +8,8 @@ export type CardProps = {
   onPress?: () => void;
   /** Removes the inner padding, for a card whose first child is a photo. */
   flush?: boolean;
+  /** Lifts the card off the page. Used for one card, never for a list of them. */
+  raised?: boolean;
   style?: StyleProp<ViewStyle>;
   testID?: string;
 };
@@ -17,20 +19,20 @@ export type CardProps = {
  * shadow: a list of shadowed cards turns into visual noise once a few dozen are
  * on screen.
  */
-export function Card({ children, onPress, flush = false, style, testID }: CardProps) {
+export function Card({ children, onPress, flush = false, raised = false, style, testID }: CardProps) {
   const theme = useTheme();
 
   const base: ViewStyle = {
     backgroundColor: theme.colors.surface,
     borderColor: theme.colors.border,
-    borderRadius: theme.radius.md,
+    borderRadius: theme.radius.lg,
     padding: flush ? 0 : theme.spacing.lg,
     overflow: 'hidden',
   };
 
   if (!onPress) {
     return (
-      <View testID={testID} style={[styles.base, base, style]}>
+      <View testID={testID} style={[styles.base, base, raised ? theme.elevation.sm : null, style]}>
         {children}
       </View>
     );
@@ -44,6 +46,7 @@ export function Card({ children, onPress, flush = false, style, testID }: CardPr
       style={({ pressed }) => [
         styles.base,
         base,
+        raised ? theme.elevation.sm : null,
         pressed && { backgroundColor: theme.colors.surfaceMuted },
         style,
       ]}
@@ -55,6 +58,6 @@ export function Card({ children, onPress, flush = false, style, testID }: CardPr
 
 const styles = StyleSheet.create({
   base: {
-    borderWidth: StyleSheet.hairlineWidth * 2,
+    borderWidth: 1,
   },
 });

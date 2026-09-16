@@ -66,7 +66,7 @@ export default function SellDescriptionScreen() {
         testID="description-input"
       />
 
-      <Text variant="label" tone="muted" style={{ marginTop: theme.spacing.xl }}>
+      <Text variant="title" style={{ marginTop: theme.spacing.xxl }}>
         {t('sell:features')}
       </Text>
       <Text variant="meta" tone="muted" style={{ marginTop: theme.spacing.xxs }}>
@@ -85,6 +85,7 @@ export default function SellDescriptionScreen() {
           <Chip
             key={feature}
             label={t(`listing:feature.${feature}`, feature)}
+            checkable
             selected={features.includes(feature)}
             onPress={() => toggle(feature)}
             testID={`feature-${feature}`}

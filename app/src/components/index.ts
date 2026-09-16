@@ -7,6 +7,7 @@ export { Chip, type ChipProps } from './Chip';
 export { EmptyState, type EmptyStateProps } from './EmptyState';
 export { Fab, type FabProps } from './Fab';
 export { Input, type InputProps } from './Input';
+export { ListGroup, type ListGroupProps } from './ListGroup';
 export { ListingCard, type ListingCardData, type ListingCardProps } from './ListingCard';
 export { ListingRow, type ListingRowData, type ListingRowProps } from './ListingRow';
 export { MakeTile, type MakeTileProps } from './MakeTile';

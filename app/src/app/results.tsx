@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderBottomWidth: StyleSheet.hairlineWidth * 2,
+    borderBottomWidth: 1,
   },
   floating: {
     position: 'absolute',

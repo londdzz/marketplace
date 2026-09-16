@@ -27,6 +27,7 @@ export function ToggleRow({ label, hint, value, onValueChange, testID }: ToggleR
           paddingHorizontal: theme.spacing.lg,
           paddingVertical: theme.spacing.md,
           borderRadius: theme.radius.md,
+          minHeight: 60,
           gap: theme.spacing.md,
           backgroundColor: theme.colors.surface,
           borderColor: theme.colors.border,
@@ -57,6 +58,6 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: StyleSheet.hairlineWidth * 2,
+    borderWidth: 1,
   },
 });

@@ -78,9 +78,18 @@ export function SellStep({
           <Ionicons name="chevron-back" size={26} color={theme.colors.text} />
         </Pressable>
 
-        <Text variant="label" tone="muted">
-          {t('sell:step', { current: stepOf(screen), total: TOTAL_STEPS })}
-        </Text>
+        <View
+          style={{
+            paddingHorizontal: theme.spacing.md,
+            paddingVertical: 5,
+            borderRadius: theme.radius.full,
+            backgroundColor: theme.colors.surfaceMuted,
+          }}
+        >
+          <Text variant="caption" tone="muted">
+            {t('sell:step', { current: stepOf(screen), total: TOTAL_STEPS })}
+          </Text>
+        </View>
 
         <Pressable
           accessibilityRole="button"
@@ -95,20 +104,28 @@ export function SellStep({
 
       {/* The bar moves on every screen, not only when a step completes, so
           answering something always visibly gets the seller somewhere. */}
-      <View style={[styles.track, { backgroundColor: theme.colors.surfaceMuted }]}>
+      <View style={{ paddingHorizontal: theme.screenPadding, paddingTop: theme.spacing.xs }}>
         <View
-          style={{
-            width: `${Math.round(progressOf(screen) * 100)}%`,
-            height: '100%',
-            backgroundColor: theme.colors.accent,
-          }}
-        />
+          style={[
+            styles.track,
+            { backgroundColor: theme.colors.surfaceMuted, borderRadius: theme.radius.full },
+          ]}
+        >
+          <View
+            style={{
+              width: `${Math.round(progressOf(screen) * 100)}%`,
+              height: '100%',
+              borderRadius: theme.radius.full,
+              backgroundColor: theme.colors.accent,
+            }}
+          />
+        </View>
       </View>
 
-      <View style={{ paddingHorizontal: theme.screenPadding, paddingTop: theme.spacing.xl }}>
+      <View style={{ paddingHorizontal: theme.screenPadding, paddingTop: theme.spacing.xxl }}>
         <Text variant="display">{title}</Text>
         {hint ? (
-          <Text variant="meta" tone="muted" style={{ marginTop: theme.spacing.xs }}>
+          <Text variant="body" tone="muted" style={{ marginTop: theme.spacing.xs }}>
             {hint}
           </Text>
         ) : null}
@@ -134,11 +151,12 @@ export function SellStep({
           styles.footer,
           {
             paddingHorizontal: theme.screenPadding,
-            paddingTop: theme.spacing.md,
+            paddingTop: theme.spacing.lg,
             paddingBottom: Platform.OS === 'ios' ? theme.spacing.sm : theme.spacing.lg,
             borderTopColor: theme.colors.border,
-            backgroundColor: theme.colors.background,
+            backgroundColor: theme.colors.surface,
           },
+          theme.elevation.md,
         ]}
       >
         {footerNote}
@@ -186,11 +204,15 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   track: {
-    height: 3,
+    height: 4,
     width: '100%',
     overflow: 'hidden',
   },
   footer: {
-    borderTopWidth: StyleSheet.hairlineWidth * 2,
+    borderTopWidth: 1,
+  },
+  stepPill: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

@@ -3,7 +3,6 @@ import { Image } from 'expo-image';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { useTheme } from '../theme';
-import { Chip } from './Chip';
 import { Text } from './Text';
 
 export type ListingCardData = {
@@ -29,8 +28,8 @@ export type ListingCardProps = {
   listing: ListingCardData;
   /**
    * Half a screen wide, for the two-column grid. Everything shrinks to suit:
-   * smaller type, smaller chips, and only the specifications that earn their
-   * place at that width.
+   * smaller type, and only the specifications that earn their place at that
+   * width.
    */
   compact?: boolean;
   /** Set by the grid so two cards and the gap between them fill the row exactly. */
@@ -39,10 +38,10 @@ export type ListingCardProps = {
   onToggleFavorite?: () => void;
 };
 
-/** How many chips fit before a card starts to look crowded. */
+/** How many facts fit on one line before a card starts to look crowded. */
 const COMPACT_SPECS = 3;
 
-const PHOTO_RATIO = 0.68;
+const PHOTO_RATIO = 0.7;
 
 export function ListingCard({
   listing,
@@ -72,7 +71,7 @@ export function ListingCard({
               width: photoWidth,
               height: photoHeight,
               backgroundColor: theme.colors.skeleton,
-              borderRadius: theme.radius.md,
+              borderRadius: theme.radius.lg,
               overflow: 'hidden',
             },
           ]}
@@ -90,7 +89,7 @@ export function ListingCard({
             <View
               style={[
                 styles.offer,
-                { backgroundColor: theme.colors.accent, borderBottomRightRadius: theme.radius.sm },
+                { backgroundColor: theme.colors.accent, borderBottomRightRadius: theme.radius.md },
               ]}
             >
               <Text variant="caption" tone="onAccent" style={styles.offerLabel}>
@@ -121,8 +120,8 @@ export function ListingCard({
         </View>
 
         <Text
-          variant={compact ? 'label' : 'bodyStrong'}
-          numberOfLines={compact ? 2 : 1}
+          variant="bodyStrong"
+          numberOfLines={1}
           style={{ marginTop: theme.spacing.sm }}
         >
           {listing.title}
@@ -138,11 +137,17 @@ export function ListingCard({
           </Text>
         ) : null}
 
-        <View style={[styles.specs, { gap: theme.spacing.xxs, marginTop: theme.spacing.sm }]}>
-          {specs.map((spec) => (
-            <Chip key={spec} label={spec} size={compact ? 'sm' : 'md'} />
-          ))}
-        </View>
+        {/* One quiet line of facts rather than a wrapping row of chips: at
+            half a screen wide, chips wrap to two rows and make every card a
+            different height. */}
+        <Text
+          variant={compact ? 'caption' : 'meta'}
+          tone="muted"
+          numberOfLines={1}
+          style={{ marginTop: theme.spacing.xs }}
+        >
+          {specs.join(' · ')}
+        </Text>
 
         <View style={[styles.location, { marginTop: theme.spacing.sm, gap: theme.spacing.xxs }]}>
           <Ionicons
@@ -174,14 +179,15 @@ export function ListingCard({
             height: favoriteSize,
             top: theme.spacing.sm,
             left: photoWidth - favoriteSize - theme.spacing.sm,
-            backgroundColor: listing.favorited ? theme.colors.success : theme.colors.surface,
+            backgroundColor: theme.colors.surface,
           },
+          theme.elevation.sm,
         ]}
       >
         <Ionicons
           name={listing.favorited ? 'heart' : 'heart-outline'}
           size={compact ? 17 : 20}
-          color={listing.favorited ? '#FFFFFF' : theme.colors.text}
+          color={listing.favorited ? theme.colors.danger : theme.colors.text}
         />
       </Pressable>
     </View>
@@ -201,18 +207,14 @@ const styles = StyleSheet.create({
   },
   offerLabel: {
     fontWeight: '700',
-    fontSize: 9,
-    letterSpacing: 0.4,
+    fontSize: 9.5,
+    letterSpacing: 0.5,
   },
   favorite: {
     position: 'absolute',
     borderRadius: 999,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  specs: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
   },
   location: {
     flexDirection: 'row',

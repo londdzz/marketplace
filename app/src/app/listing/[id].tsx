@@ -171,10 +171,13 @@ export default function ListingDetail() {
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.xs, marginTop: theme.spacing.md }}>
             {car.price_negotiable ? <Chip label={t('listing:negotiable')} /> : null}
             {car.customs_cleared ? <Chip label={t('listing:customs')} /> : null}
-            <Chip label={t('listing:views', { count: car.view_count })} />
           </View>
 
-          <Text variant="heading" tone="muted" style={{ marginTop: theme.spacing.xxl }}>
+          <Text variant="meta" tone="muted" style={{ marginTop: theme.spacing.md }}>
+            {t('listing:views', { count: car.view_count })}
+          </Text>
+
+          <Text variant="title" style={{ marginTop: theme.spacing.xxl }}>
             {t('listing:specs')}
           </Text>
 
@@ -183,7 +186,7 @@ export default function ListingDetail() {
               .filter(([, , value]) => value !== null)
               .map(([icon, label, value]) => (
                 <View key={label} style={[styles.spec, { marginBottom: theme.spacing.lg, gap: theme.spacing.md }]}>
-                  <Ionicons name={icon} size={22} color={theme.colors.accent} />
+                  <Ionicons name={icon} size={20} color={theme.colors.textMuted} />
                   <View style={{ flexShrink: 1 }}>
                     <Text variant="caption" tone="muted">
                       {label}
@@ -196,7 +199,7 @@ export default function ListingDetail() {
 
           {car.description ? (
             <>
-              <Text variant="heading" tone="muted" style={{ marginTop: theme.spacing.lg }}>
+              <Text variant="title" style={{ marginTop: theme.spacing.lg }}>
                 {t('listing:description')}
               </Text>
               <Text variant="body" style={{ marginTop: theme.spacing.sm }}>
@@ -207,7 +210,7 @@ export default function ListingDetail() {
 
           {car.features.length > 0 ? (
             <>
-              <Text variant="heading" tone="muted" style={{ marginTop: theme.spacing.xxl }}>
+              <Text variant="title" style={{ marginTop: theme.spacing.xxl }}>
                 {t('listing:features')}
               </Text>
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.xs, marginTop: theme.spacing.md }}>
@@ -218,7 +221,7 @@ export default function ListingDetail() {
             </>
           ) : null}
 
-          <Text variant="heading" tone="muted" style={{ marginTop: theme.spacing.xxl }}>
+          <Text variant="title" style={{ marginTop: theme.spacing.xxl }}>
             {t('listing:seller')}
           </Text>
 
@@ -226,9 +229,9 @@ export default function ListingDetail() {
             style={{
               marginTop: theme.spacing.md,
               padding: theme.spacing.lg,
-              borderRadius: theme.radius.md,
+              borderRadius: theme.radius.lg,
               backgroundColor: theme.colors.surface,
-              borderWidth: StyleSheet.hairlineWidth * 2,
+              borderWidth: 1,
               borderColor: theme.colors.border,
             }}
           >
@@ -265,12 +268,14 @@ export default function ListingDetail() {
             borderTopColor: theme.colors.border,
             gap: theme.spacing.md,
           },
+          theme.elevation.md,
         ]}
       >
         <Button
           label={t('listing:call')}
           size="lg"
           icon="call"
+          variant="secondary"
           style={{ flex: 1 }}
           onPress={() => {
             if (car.seller?.phone) {
@@ -296,7 +301,7 @@ const styles = StyleSheet.create({
   topBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderBottomWidth: StyleSheet.hairlineWidth * 2,
+    borderBottomWidth: 1,
   },
   counter: {
     position: 'absolute',
@@ -319,6 +324,6 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     flexDirection: 'row',
-    borderTopWidth: StyleSheet.hairlineWidth * 2,
+    borderTopWidth: 1,
   },
 });

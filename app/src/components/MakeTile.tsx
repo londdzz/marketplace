@@ -17,10 +17,10 @@ export type MakeTileProps = {
 /**
  * One make in the picker grid.
  *
- * Draws the maker's mark when the API has one, and a monogram from the name
- * when it does not, so logos can be added a few at a time without the grid ever
- * showing a hole. The mark is tinted to the text colour so a single monochrome
- * file works in both light and dark.
+ * Draws the maker's mark when the API has one, and a monogram on a tinted
+ * square when it does not, so logos can be added a few at a time without the
+ * grid ever showing a hole. The mark is tinted to the text colour so a single
+ * monochrome file works in both light and dark.
  */
 export function MakeTile({ name, logoUrl, selected = false, width, onPress, testID }: MakeTileProps) {
   const theme = useTheme();
@@ -31,6 +31,8 @@ export function MakeTile({ name, logoUrl, selected = false, width, onPress, test
     .map((part) => part[0])
     .join('')
     .toUpperCase();
+
+  const mark = Math.round(width * 0.42);
 
   return (
     <Pressable
@@ -43,42 +45,43 @@ export function MakeTile({ name, logoUrl, selected = false, width, onPress, test
         {
           width,
           height: width,
-          borderRadius: theme.radius.md,
-          backgroundColor: selected ? theme.colors.accentMuted : theme.colors.surfaceMuted,
+          paddingHorizontal: 4,
+          borderRadius: theme.radius.lg,
+          backgroundColor: selected ? theme.colors.accentMuted : theme.colors.surface,
           borderColor: selected ? theme.colors.accent : theme.colors.border,
-          opacity: pressed ? 0.7 : 1,
+          borderWidth: selected ? 1.5 : 1,
+          opacity: pressed ? 0.75 : 1,
         },
       ]}
     >
-      {logoUrl ? (
-        <Image
-          source={{ uri: logoUrl }}
-          style={{ width: width * 0.52, height: width * 0.52 }}
-          contentFit="contain"
-          tintColor={selected ? theme.colors.accent : theme.colors.text}
-          transition={120}
-        />
-      ) : (
-        <View
-          style={[
-            styles.monogram,
-            { borderColor: selected ? theme.colors.accent : theme.colors.textMuted },
-          ]}
-        >
+      <View style={[styles.mark, { width: mark, height: mark }]}>
+        {logoUrl ? (
+          <Image
+            source={{ uri: logoUrl }}
+            style={{ width: mark, height: mark }}
+            contentFit="contain"
+            tintColor={selected ? theme.colors.accent : theme.colors.text}
+            transition={120}
+          />
+        ) : (
           <Text
-            variant="bodyStrong"
-            style={{ color: selected ? theme.colors.accent : theme.colors.text }}
+            variant="title"
+            style={{ color: selected ? theme.colors.accent : theme.colors.textMuted }}
           >
             {monogram}
           </Text>
-        </View>
-      )}
+        )}
+      </View>
 
       <Text
         variant="caption"
-        tone={selected ? 'accent' : 'muted'}
         numberOfLines={1}
-        style={{ marginTop: 6, maxWidth: width - 8, textAlign: 'center' }}
+        style={{
+          marginTop: 7,
+          maxWidth: width - 10,
+          textAlign: 'center',
+          color: selected ? theme.colors.accentText : theme.colors.text,
+        }}
       >
         {name}
       </Text>
@@ -90,13 +93,8 @@ const styles = StyleSheet.create({
   tile: {
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: StyleSheet.hairlineWidth * 2,
   },
-  monogram: {
-    width: 38,
-    height: 38,
-    borderRadius: 999,
-    borderWidth: 2,
+  mark: {
     alignItems: 'center',
     justifyContent: 'center',
   },

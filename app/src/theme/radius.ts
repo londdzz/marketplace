@@ -2,19 +2,20 @@
  * Corner radii.
  *
  * Taken from the mobile.de app rather than their website: cards, sheets and the
- * search bar are generously rounded, while the small metadata chips stay closer
- * to square.
+ * search bar are generously rounded. Everything here is one of five steps, so
+ * nothing on screen has a corner that belongs to no scale.
  */
 export const radius = {
   none: 0,
-  /** Metadata chips and small tags. */
-  sm: 6,
-  /** Buttons, inputs, cards. */
-  md: 10,
-  /** The search bar, bottom sheets, photos. */
-  lg: 14,
-  xl: 20,
-  /** Avatars, the favourite button, anything genuinely circular. */
+  /** Small tags and photo thumbnails. */
+  sm: 8,
+  /** Buttons, inputs, rows. */
+  md: 12,
+  /** Cards, sheets, tiles. */
+  lg: 16,
+  /** The panel a sheet rises into. */
+  xl: 22,
+  /** Chips, avatars, the favourite button: anything a pill or a circle. */
   full: 999,
 } as const;
 

@@ -70,6 +70,7 @@ export default function SellPriceScreen() {
         keyboardType="number-pad"
         placeholder="0"
         prefix="€"
+        inputVariant="price"
         autoFocus
         error={price !== null && !valid ? t('sell:price_invalid') : undefined}
         testID="price-input"

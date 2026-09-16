@@ -76,22 +76,37 @@ export default function SellReviewScreen() {
     void publish();
   };
 
-  const section = (label: string, value: string | null, screen: Parameters<typeof pathTo>[0]) => (
+  const section = (
+    label: string,
+    value: string | null,
+    screen: Parameters<typeof pathTo>[0],
+    last = false,
+  ) => (
     <Pressable
       key={label}
       accessibilityRole="button"
       onPress={() => router.push(pathTo(screen))}
-      style={[styles.row, { paddingVertical: theme.spacing.md, borderBottomColor: theme.colors.border }]}
+      style={({ pressed }) => [
+        styles.row,
+        {
+          paddingHorizontal: theme.spacing.lg,
+          paddingVertical: theme.spacing.md,
+          gap: theme.spacing.md,
+          borderBottomColor: theme.colors.border,
+          borderBottomWidth: last ? 0 : 1,
+          backgroundColor: pressed ? theme.colors.surfaceMuted : 'transparent',
+        },
+      ]}
     >
       <View style={{ flex: 1 }}>
         <Text variant="caption" tone="muted">
           {label}
         </Text>
-        <Text variant="body" tone={value ? 'default' : 'muted'}>
+        <Text variant="body" tone={value ? 'default' : 'subtle'} numberOfLines={2}>
           {value ?? t('sell:not_set')}
         </Text>
       </View>
-      <Ionicons name="pencil" size={16} color={theme.colors.textMuted} />
+      <Ionicons name="chevron-forward" size={18} color={theme.colors.textSubtle} />
     </Pressable>
   );
 
@@ -107,7 +122,6 @@ export default function SellReviewScreen() {
       <SellStep
         screen="review"
         title={t('sell:review')}
-        hint={t('sell:credits_balance', { count: balance })}
         continueLabel={publishing ? t('sell:publishing') : t('sell:publish')}
         canContinue={!publishing && missing.length === 0}
         onContinue={onPublish}
@@ -119,6 +133,29 @@ export default function SellReviewScreen() {
           ) : null
         }
       >
+        <View
+          style={{
+            alignSelf: 'flex-start',
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: theme.spacing.xs,
+            marginBottom: theme.spacing.lg,
+            paddingHorizontal: theme.spacing.md,
+            paddingVertical: 5,
+            borderRadius: theme.radius.full,
+            backgroundColor: balance > 0 ? theme.colors.accentMuted : theme.colors.surfaceMuted,
+          }}
+        >
+          <Ionicons
+            name="pricetag"
+            size={13}
+            color={balance > 0 ? theme.colors.accent : theme.colors.textMuted}
+          />
+          <Text variant="label" tone={balance > 0 ? 'accent' : 'muted'}>
+            {t('sell:credits_balance', { count: balance })}
+          </Text>
+        </View>
+
         {draft && draft.photos.length > 0 ? (
           <ScrollView
             horizontal
@@ -138,7 +175,18 @@ export default function SellReviewScreen() {
           </ScrollView>
         ) : null}
 
-        <Text variant="title">{draft ? listingTitle(draft) : ''}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.sm }}>
+          {draft?.make?.logo_url ? (
+            <Image
+              source={{ uri: draft.make.logo_url }}
+              style={{ width: 22, height: 22 }}
+              contentFit="contain"
+              tintColor={theme.colors.text}
+              transition={120}
+            />
+          ) : null}
+          <Text variant="title">{draft ? listingTitle(draft) : ''}</Text>
+        </View>
         {draft?.variant ? (
           <Text variant="meta" tone="muted">
             {draft.variant}
@@ -171,6 +219,8 @@ export default function SellReviewScreen() {
               padding: theme.spacing.lg,
               borderRadius: theme.radius.md,
               backgroundColor: theme.colors.warningMuted,
+              borderWidth: 1,
+              borderColor: theme.colors.warning,
               gap: theme.spacing.sm,
             }}
             testID="review-missing"
@@ -200,7 +250,16 @@ export default function SellReviewScreen() {
           </View>
         ) : null}
 
-        <View style={{ marginTop: theme.spacing.xl }}>
+        <View
+          style={{
+            marginTop: theme.spacing.xl,
+            borderRadius: theme.radius.lg,
+            borderWidth: 1,
+            borderColor: theme.colors.border,
+            backgroundColor: theme.colors.surface,
+            overflow: 'hidden',
+          }}
+        >
           {section(t('sell:summary_make'), draft?.make?.name ?? null, 'make')}
           {section(t('sell:summary_model'), draft?.model?.name ?? null, 'model')}
           {section(t('sell:summary_photos'), t('sell:photos_count', { count: draft?.photos.length ?? 0, max: 15 }), 'photos')}
@@ -216,6 +275,7 @@ export default function SellReviewScreen() {
               ? t('sell:features_selected', { count: draft.features.length })
               : null,
             'description',
+            true,
           )}
         </View>
 
@@ -240,6 +300,5 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderBottomWidth: StyleSheet.hairlineWidth,
   },
 });

@@ -166,12 +166,12 @@ export function CreditsSheet({ open, onClose, onGranted }: CreditsSheetProps) {
       enablePanDownToClose
       onClose={onClose}
       backdropComponent={backdrop}
-      backgroundStyle={{ backgroundColor: theme.colors.surface }}
+      backgroundStyle={{ backgroundColor: theme.colors.surface, borderRadius: theme.radius.xl }}
       handleIndicatorStyle={{ backgroundColor: theme.colors.borderStrong }}
     >
       <BottomSheetView style={{ paddingHorizontal: theme.screenPadding, paddingBottom: theme.spacing.xxxl }}>
         <View style={[styles.head, { marginBottom: theme.spacing.xs }]}>
-          <Text variant="title">{t('sell:credits_title')}</Text>
+          <Text variant="display">{t('sell:credits_title')}</Text>
           <Pressable accessibilityRole="button" onPress={onClose} hitSlop={8} testID="credits-close">
             <Ionicons name="close" size={24} color={theme.colors.textMuted} />
           </Pressable>
@@ -181,9 +181,20 @@ export function CreditsSheet({ open, onClose, onGranted }: CreditsSheetProps) {
           {t('sell:credits_body')}
         </Text>
 
-        <Text variant="label" style={{ marginTop: theme.spacing.md }}>
-          {t('sell:credits_balance', { count: balance })}
-        </Text>
+        <View
+          style={{
+            alignSelf: 'flex-start',
+            marginTop: theme.spacing.md,
+            paddingHorizontal: theme.spacing.md,
+            paddingVertical: 5,
+            borderRadius: theme.radius.full,
+            backgroundColor: theme.colors.surfaceMuted,
+          }}
+        >
+          <Text variant="label" tone="muted">
+            {t('sell:credits_balance', { count: balance })}
+          </Text>
+        </View>
 
         {credits.isLoading ? (
           <ActivityIndicator style={{ marginTop: theme.spacing.xxl }} color={theme.colors.accent} />
@@ -199,8 +210,9 @@ export function CreditsSheet({ open, onClose, onGranted }: CreditsSheetProps) {
                   padding: theme.spacing.lg,
                   borderRadius: theme.radius.lg,
                   gap: theme.spacing.md,
-                  backgroundColor: pack.most_popular ? theme.colors.accentMuted : theme.colors.surfaceMuted,
+                  backgroundColor: pack.most_popular ? theme.colors.accentMuted : theme.colors.surface,
                   borderColor: pack.most_popular ? theme.colors.accent : theme.colors.border,
+                  borderWidth: pack.most_popular ? 1.5 : 1,
                 },
               ]}
               testID={`pack-${pack.product_id}`}
@@ -269,7 +281,6 @@ const styles = StyleSheet.create({
   pack: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: StyleSheet.hairlineWidth * 2,
   },
   status: {
     flexDirection: 'row',

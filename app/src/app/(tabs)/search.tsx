@@ -267,6 +267,6 @@ const styles = StyleSheet.create({
   bar: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderTopWidth: StyleSheet.hairlineWidth * 2,
+    borderTopWidth: 1,
   },
 });

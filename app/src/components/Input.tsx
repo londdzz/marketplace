@@ -1,5 +1,6 @@
 import { forwardRef, useState } from 'react';
 import {
+  Platform,
   type StyleProp,
   StyleSheet,
   TextInput,
@@ -9,7 +10,14 @@ import {
 } from 'react-native';
 
 import { useTheme } from '../theme';
+import type { TypographyKey } from '../theme/typography';
 import { Text } from './Text';
+
+/**
+ * The browser draws its own focus ring on a text field, in its own colour,
+ * which has nothing to do with this design. The field already shows focus.
+ */
+const noOutline = Platform.OS === 'web' ? ({ outlineStyle: 'none' } as object) : null;
 
 export type InputProps = TextInputProps & {
   label?: string;
@@ -19,11 +27,13 @@ export type InputProps = TextInputProps & {
   hint?: string;
   /** Fixed text before the field, such as a dialling prefix. */
   prefix?: string;
+  /** The type the value is set in. A price deserves to be read as a price. */
+  inputVariant?: TypographyKey;
   containerStyle?: StyleProp<ViewStyle>;
 };
 
 export const Input = forwardRef<TextInput, InputProps>(function Input(
-  { label, error, hint, prefix, containerStyle, style, onFocus, onBlur, ...rest },
+  { label, error, hint, prefix, inputVariant = 'body', containerStyle, style, onFocus, onBlur, ...rest },
   ref,
 ) {
   const theme = useTheme();
@@ -33,7 +43,7 @@ export const Input = forwardRef<TextInput, InputProps>(function Input(
     ? theme.colors.danger
     : focused
       ? theme.colors.accent
-      : theme.colors.borderStrong;
+      : theme.colors.border;
 
   return (
     <View style={containerStyle}>
@@ -48,24 +58,24 @@ export const Input = forwardRef<TextInput, InputProps>(function Input(
           styles.field,
           {
             borderColor,
-            backgroundColor: theme.colors.surface,
+            // Resting fields are a soft fill; focus lifts one to a white
+            // surface with an accent ring, so the active field is obvious.
+            backgroundColor: focused ? theme.colors.surface : theme.colors.surfaceMuted,
             borderRadius: theme.radius.md,
-            paddingHorizontal: theme.spacing.md,
-            // A focused field gains a second ring rather than moving, so the
-            // layout never shifts under the thumb.
-            borderWidth: focused || error ? 2 : StyleSheet.hairlineWidth * 2,
+            paddingHorizontal: theme.spacing.lg,
+            borderWidth: 1.5,
           },
         ]}
       >
         {prefix ? (
-          <Text variant="body" tone="muted" style={{ marginRight: theme.spacing.sm }}>
+          <Text variant={inputVariant} tone="muted" style={{ marginRight: theme.spacing.sm }}>
             {prefix}
           </Text>
         ) : null}
 
         <TextInput
           ref={ref}
-          style={[styles.input, theme.typography.body, { color: theme.colors.text }, style]}
+          style={[styles.input, theme.typography[inputVariant], { color: theme.colors.text }, noOutline, style]}
           placeholderTextColor={theme.colors.textSubtle}
           onFocus={(event) => {
             setFocused(true);
@@ -96,10 +106,10 @@ const styles = StyleSheet.create({
   field: {
     flexDirection: 'row',
     alignItems: 'center',
-    minHeight: 46,
+    minHeight: 50,
   },
   input: {
     flex: 1,
-    paddingVertical: 10,
+    paddingVertical: 12,
   },
 });

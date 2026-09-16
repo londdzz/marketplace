@@ -34,7 +34,7 @@ export function Badge({ label, tone = 'neutral', style, testID }: BadgeProps) {
         styles.base,
         {
           backgroundColor: surfaces[tone].background,
-          borderRadius: theme.radius.sm,
+          borderRadius: theme.radius.full,
           paddingHorizontal: theme.spacing.sm,
           paddingVertical: theme.spacing.xxs,
         },

@@ -2,6 +2,7 @@ import { createContext, useContext } from 'react';
 import { useColorScheme } from 'react-native';
 
 import { darkColors, lightColors, type ThemeColors } from './colors';
+import { darkElevation, lightElevation, type Elevation } from './elevation';
 import { radius } from './radius';
 import { screenPadding, spacing } from './spacing';
 import { typography } from './typography';
@@ -11,6 +12,8 @@ export type Theme = {
   spacing: typeof spacing;
   radius: typeof radius;
   typography: typeof typography;
+  /** Drop shadows, for the few things that genuinely sit above the page. */
+  elevation: Elevation;
   screenPadding: number;
   isDark: boolean;
 };
@@ -20,6 +23,7 @@ export const lightTheme: Theme = {
   spacing,
   radius,
   typography,
+  elevation: lightElevation,
   screenPadding,
   isDark: false,
 };
@@ -29,6 +33,7 @@ export const darkTheme: Theme = {
   spacing,
   radius,
   typography,
+  elevation: darkElevation,
   screenPadding,
   isDark: true,
 };
@@ -51,6 +56,7 @@ export function useSystemTheme(): Theme {
 }
 
 export * from './colors';
+export * from './elevation';
 export * from './palette';
 export * from './radius';
 export * from './spacing';

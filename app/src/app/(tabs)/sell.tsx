@@ -129,6 +129,7 @@ export default function MyListingsTab() {
             backgroundColor: theme.colors.surface,
             borderColor: theme.colors.border,
             gap: theme.spacing.md,
+            ...theme.elevation.sm,
           },
         ]}
         testID={`my-listing-${listing.id}`}
@@ -141,7 +142,13 @@ export default function MyListingsTab() {
                 ? continueDraft(listing)
                 : router.push({ pathname: '/listing/[id]', params: { id: listing.id } })
             }
-            style={{ width: 96, height: 72, borderRadius: theme.radius.md, overflow: 'hidden', backgroundColor: theme.colors.surfaceMuted }}
+            style={{
+              width: 104,
+              height: 78,
+              borderRadius: theme.radius.md,
+              overflow: 'hidden',
+              backgroundColor: theme.colors.surfaceMuted,
+            }}
           >
             {listing.photos[0] ? (
               <Image
@@ -190,7 +197,16 @@ export default function MyListingsTab() {
         </View>
 
         {listing.status !== 'sold' && listing.status !== 'removed' ? (
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.sm }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: theme.spacing.sm,
+              paddingTop: theme.spacing.md,
+              borderTopWidth: 1,
+              borderTopColor: theme.colors.border,
+            }}
+          >
             {isDraft ? (
               <Button
                 label={t('sell:resume')}
@@ -203,8 +219,9 @@ export default function MyListingsTab() {
             {listing.status === 'active' || listing.status === 'expired' ? (
               <Button
                 label={renew.isPending ? t('sell:renewing') : t('sell:renew')}
+                icon="refresh"
                 size="sm"
-                variant={listing.status === 'expired' ? 'primary' : 'outline'}
+                variant={listing.status === 'expired' ? 'primary' : 'secondary'}
                 disabled={working}
                 onPress={() => renew.mutate(listing)}
                 testID={`renew-${listing.id}`}
@@ -215,24 +232,46 @@ export default function MyListingsTab() {
               <Button
                 label={t('sell:sold')}
                 size="sm"
-                variant="secondary"
+                variant="ghost"
                 disabled={working}
                 onPress={() => markSold.mutate(listing)}
                 testID={`sold-${listing.id}`}
               />
             ) : null}
 
-            <Button
-              label={confirming === listing.id ? t('sell:confirm_delete') : t('common:delete')}
-              size="sm"
-              variant={confirming === listing.id ? 'danger' : 'ghost'}
-              destructive
-              disabled={working}
-              onPress={() =>
-                confirming === listing.id ? remove.mutate(listing) : setConfirming(listing.id)
-              }
-              testID={`delete-${listing.id}`}
-            />
+            <View style={{ flex: 1 }} />
+
+            {/* Deleting is one tap away but never the loudest thing on the
+                card, and it asks before it does anything. */}
+            {confirming === listing.id ? (
+              <Button
+                label={t('sell:confirm_delete')}
+                size="sm"
+                variant="danger"
+                disabled={working}
+                onPress={() => remove.mutate(listing)}
+                testID={`delete-${listing.id}`}
+              />
+            ) : (
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={t('common:delete')}
+                onPress={() => setConfirming(listing.id)}
+                hitSlop={8}
+                style={({ pressed }) => [
+                  styles.centre,
+                  {
+                    width: 36,
+                    height: 36,
+                    borderRadius: theme.radius.md,
+                    backgroundColor: pressed ? theme.colors.dangerMuted : 'transparent',
+                  },
+                ]}
+                testID={`delete-${listing.id}`}
+              >
+                <Ionicons name="trash-outline" size={18} color={theme.colors.textMuted} />
+              </Pressable>
+            )}
           </View>
         ) : null}
       </View>
@@ -303,7 +342,8 @@ export default function MyListingsTab() {
           renderItem={({ item }) => row(item)}
           contentContainerStyle={{
             paddingHorizontal: theme.screenPadding,
-            paddingBottom: theme.spacing.huge,
+            paddingTop: theme.spacing.xs,
+            paddingBottom: theme.spacing.xl,
             gap: theme.spacing.md,
           }}
           refreshing={listings.isFetching}
@@ -315,20 +355,34 @@ export default function MyListingsTab() {
               </Text>
             ) : null
           }
-          ListFooterComponent={
-            <Button
-              label={t('sell:new_listing')}
-              icon="add"
-              block
-              size="lg"
-              onPress={startNew}
-              style={{ marginTop: theme.spacing.lg }}
-              testID="new-listing"
-            />
-          }
           showsVerticalScrollIndicator={false}
         />
       )}
+
+      {data.length > 0 ? (
+        <View
+          style={[
+            {
+              paddingHorizontal: theme.screenPadding,
+              paddingTop: theme.spacing.md,
+              paddingBottom: theme.spacing.md,
+              borderTopWidth: 1,
+              borderTopColor: theme.colors.border,
+              backgroundColor: theme.colors.surface,
+            },
+            theme.elevation.md,
+          ]}
+        >
+          <Button
+            label={t('sell:new_listing')}
+            icon="add"
+            block
+            size="lg"
+            onPress={startNew}
+            testID="new-listing"
+          />
+        </View>
+      ) : null}
 
       <CreditsSheet
         open={sheetOpen}
@@ -341,7 +395,7 @@ export default function MyListingsTab() {
 
 const styles = StyleSheet.create({
   card: {
-    borderWidth: StyleSheet.hairlineWidth * 2,
+    borderWidth: 1,
   },
   centre: {
     alignItems: 'center',

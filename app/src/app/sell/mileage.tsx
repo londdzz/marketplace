@@ -49,13 +49,14 @@ export default function SellMileageScreen() {
         onChangeText={(next) => setValue(next.replace(/[^0-9]/g, ''))}
         keyboardType="number-pad"
         placeholder="0"
+        inputVariant="price"
         autoFocus
         error={km !== null && !valid ? t('mileage_too_high') : undefined}
         hint={valid && km !== null ? formatKm(km) : undefined}
         testID="mileage-input"
       />
 
-      <Text variant="label" tone="muted" style={{ marginTop: theme.spacing.xl }}>
+      <Text variant="heading" tone="muted" style={{ marginTop: theme.spacing.xl }}>
         {t('quick_pick')}
       </Text>
 

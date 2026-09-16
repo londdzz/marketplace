@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, View } from 'react-native';
 
 import { referenceApi } from '../../api/reference';
-import { Button, Input, OptionRow, Text } from '../../components';
+import { Button, Input, ListGroup, OptionRow, Text } from '../../components';
 import { SellStep } from '../../sell/SellStep';
 import { useSell } from '../../sell/SellProvider';
 import { pathTo } from '../../sell/steps';
@@ -76,10 +76,11 @@ export default function SellModelScreen() {
         </View>
       ) : null}
 
-      <View style={{ gap: theme.spacing.sm }}>
+      <ListGroup inset={theme.spacing.lg}>
         {matching.map((model) => (
           <OptionRow
             key={model.id}
+            flat
             label={model.name}
             caption={model.body_type ? t(`listing:body_type.${model.body_type}`, model.body_type) : null}
             selected={selected === model.id}
@@ -87,7 +88,7 @@ export default function SellModelScreen() {
             testID={`model-${model.id}`}
           />
         ))}
-      </View>
+      </ListGroup>
 
       {!models.isLoading && matching.length === 0 ? (
         <Text variant="meta" tone="muted">

@@ -56,7 +56,7 @@ export function ListingRow({
       style={{
         backgroundColor: theme.colors.surface,
         borderRadius: theme.radius.lg,
-        borderWidth: StyleSheet.hairlineWidth * 2,
+        borderWidth: 1,
         borderColor: theme.colors.border,
         overflow: 'hidden',
       }}

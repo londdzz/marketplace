@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
 import { Pressable, type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
 
 import { useTheme } from '../theme';
@@ -13,6 +14,10 @@ export type OptionRowProps = {
   chevron?: boolean;
   /** An icon before the label, for the rows that read better with one. */
   icon?: keyof typeof Ionicons.glyphMap;
+  /** Drops the card treatment, for a row inside a ListGroup. */
+  flat?: boolean;
+  /** A maker's mark before the label, tinted to the text colour. */
+  logoUrl?: string | null;
   onPress?: () => void;
   style?: StyleProp<ViewStyle>;
   testID?: string;
@@ -21,10 +26,10 @@ export type OptionRowProps = {
 /**
  * One choice in a list of choices.
  *
- * The sell flow asks one thing per screen, and most of those things are a
- * choice from a list, so this row is what most of the flow is made of. A tick
- * on the right marks what is already chosen; a chevron marks a row that leads
- * somewhere else.
+ * An unselected row carries no empty circle waiting to be filled: forty of them
+ * down a screen is forty pieces of furniture saying nothing. Selection shows
+ * itself by tinting the row and ticking it, which is visible at a glance and
+ * silent until it happens.
  */
 export function OptionRow({
   label,
@@ -32,6 +37,8 @@ export function OptionRow({
   selected = false,
   chevron = false,
   icon,
+  flat = false,
+  logoUrl,
   onPress,
   style,
   testID,
@@ -48,27 +55,51 @@ export function OptionRow({
         styles.row,
         {
           paddingHorizontal: theme.spacing.lg,
-          paddingVertical: theme.spacing.md,
-          borderRadius: theme.radius.md,
-          borderWidth: StyleSheet.hairlineWidth * 2,
+          paddingVertical: flat ? theme.spacing.sm : theme.spacing.md,
+          minHeight: flat ? 50 : 56,
+          borderRadius: flat ? 0 : theme.radius.md,
           gap: theme.spacing.md,
-          backgroundColor: selected ? theme.colors.accentMuted : theme.colors.surface,
+          backgroundColor: selected
+            ? theme.colors.accentMuted
+            : pressed
+              ? theme.colors.surfaceMuted
+              : theme.colors.surface,
           borderColor: selected ? theme.colors.accent : theme.colors.border,
-          opacity: pressed ? 0.75 : 1,
+          borderWidth: flat ? 0 : selected ? 1.5 : 1,
         },
         style,
       ]}
     >
-      {icon ? (
-        <Ionicons
-          name={icon}
-          size={20}
-          color={selected ? theme.colors.accent : theme.colors.textMuted}
+      {logoUrl ? (
+        <Image
+          source={{ uri: logoUrl }}
+          style={{ width: 22, height: 22 }}
+          contentFit="contain"
+          tintColor={selected ? theme.colors.accent : theme.colors.text}
+          transition={120}
         />
       ) : null}
 
+      {icon ? (
+        <View
+          style={[
+            styles.icon,
+            {
+              borderRadius: theme.radius.sm,
+              backgroundColor: selected ? theme.colors.accent : theme.colors.surfaceMuted,
+            },
+          ]}
+        >
+          <Ionicons
+            name={icon}
+            size={18}
+            color={selected ? theme.colors.textOnAccent : theme.colors.textMuted}
+          />
+        </View>
+      ) : null}
+
       <View style={styles.label}>
-        <Text variant="bodyStrong" tone={selected ? 'accent' : 'default'} numberOfLines={1}>
+        <Text variant="bodyStrong" numberOfLines={1}>
           {label}
         </Text>
         {caption ? (
@@ -79,12 +110,10 @@ export function OptionRow({
       </View>
 
       {chevron ? (
-        <Ionicons name="chevron-forward" size={20} color={theme.colors.textMuted} />
+        <Ionicons name="chevron-forward" size={18} color={theme.colors.textSubtle} />
       ) : selected ? (
         <Ionicons name="checkmark-circle" size={22} color={theme.colors.accent} />
-      ) : (
-        <View style={[styles.empty, { borderColor: theme.colors.borderStrong }]} />
-      )}
+      ) : null}
     </Pressable>
   );
 }
@@ -94,13 +123,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  icon: {
+    width: 34,
+    height: 34,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   label: {
     flex: 1,
-  },
-  empty: {
-    width: 22,
-    height: 22,
-    borderRadius: 999,
-    borderWidth: StyleSheet.hairlineWidth * 2,
   },
 });
