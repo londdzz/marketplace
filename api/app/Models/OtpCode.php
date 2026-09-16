@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Database\Factories\OtpCodeFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class OtpCode extends Model
 {
-    /** @use HasFactory<\Database\Factories\OtpCodeFactory> */
+    /** @use HasFactory<OtpCodeFactory> */
     use HasFactory;
 
     public const UPDATED_AT = null;

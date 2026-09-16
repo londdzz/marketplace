@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Support\TextNormalizer;
+use Database\Factories\VehicleModelFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -16,7 +17,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class VehicleModel extends Model
 {
-    /** @use HasFactory<\Database\Factories\VehicleModelFactory> */
+    /** @use HasFactory<VehicleModelFactory> */
     use HasFactory;
 
     protected $table = 'models';

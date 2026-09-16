@@ -23,6 +23,12 @@ namespace App\Support;
  *
  * Step 5 only ever collapses letters, never digits: "2000" must not become
  * "20" and "911" must not become "91".
+ *
+ * Known limit: transliteration cannot bridge a spelling that differs in the
+ * source alphabet itself. Cyrillic к always becomes k, so "Октавија" normalizes
+ * to "oktavija" and does not match the Latin "Octavia". Cross-script matching
+ * works for the vast majority of makes and models, where the two spellings
+ * agree once diacritics and doubled letters are gone.
  */
 final class TextNormalizer
 {

@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Enums\CreditReason;
 use App\Enums\Store;
+use Database\Factories\CreditTransactionFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -17,7 +18,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class CreditTransaction extends Model
 {
-    /** @use HasFactory<\Database\Factories\CreditTransactionFactory> */
+    /** @use HasFactory<CreditTransactionFactory> */
     use HasFactory, HasUuids;
 
     protected $fillable = [

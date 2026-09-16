@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Database\Factories\ListingPhotoFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ListingPhoto extends Model
 {
-    /** @use HasFactory<\Database\Factories\ListingPhotoFactory> */
+    /** @use HasFactory<ListingPhotoFactory> */
     use HasFactory, HasUuids;
 
     protected $fillable = [

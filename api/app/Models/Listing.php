@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Enums\FuelType;
 use App\Enums\ListingStatus;
 use App\Enums\Transmission;
+use Database\Factories\ListingFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -16,7 +17,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Listing extends Model
 {
-    /** @use HasFactory<\Database\Factories\ListingFactory> */
+    /** @use HasFactory<ListingFactory> */
     use HasFactory, HasUuids, SoftDeletes;
 
     /**

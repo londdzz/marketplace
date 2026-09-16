@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Database\Factories\CountryFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Country extends Model
 {
-    /** @use HasFactory<\Database\Factories\CountryFactory> */
+    /** @use HasFactory<CountryFactory> */
     use HasFactory;
 
     protected $primaryKey = 'code';
@@ -60,9 +62,9 @@ class Country extends Model
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<ExchangeRate, $this>
+     * @return BelongsTo<ExchangeRate, $this>
      */
-    public function exchangeRate(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function exchangeRate(): BelongsTo
     {
         return $this->belongsTo(ExchangeRate::class, 'currency', 'currency');
     }
