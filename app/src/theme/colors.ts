@@ -38,6 +38,10 @@ export type ThemeColors = {
   dangerPressed: string;
   dangerMuted: string;
 
+  /** The wide promotional card under the search bar. */
+  banner: string;
+  bannerText: string;
+
   /** Behind a modal or bottom sheet. */
   scrim: string;
   /** Skeletons while a list loads. */
@@ -68,6 +72,9 @@ export const lightColors: ThemeColors = {
   danger: red[600],
   dangerPressed: red[500],
   dangerMuted: red[100],
+
+  banner: blue[600],
+  bannerText: grey[0],
 
   scrim: 'rgba(12, 14, 18, 0.45)',
   skeleton: grey[100],
@@ -100,6 +107,11 @@ export const darkColors: ThemeColors = {
   danger: red[500],
   dangerPressed: red[600],
   dangerMuted: 'rgba(211, 48, 47, 0.18)',
+
+  // A deep blue rather than the light accent: a full-width block of the accent
+  // is glaring against a near-black page.
+  banner: blue[800],
+  bannerText: grey[0],
 
   scrim: 'rgba(0, 0, 0, 0.6)',
   skeleton: grey[800],

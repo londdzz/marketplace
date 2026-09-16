@@ -197,6 +197,16 @@ release, and update it whenever a placeholder is added or replaced.
 - **Exchange rates: pick the provider carefully.** The European Central Bank publishes
   neither the Albanian lek nor the Macedonian denar, so an ECB-backed feed cannot cover
   three of the five markets.
+- **The tab bar mirrors the reference app, not the specification's list.** The spec named
+  Search, Favorites, Sell, Messages and Profile. The tabs are Home, Search, My searches,
+  Saved and Sell, with messages and the profile reached from the header, which is where
+  the reference app keeps them. The profile stays two taps away, so account deletion
+  inside it is the second tap and the App Store requirement still holds.
+- **The home screen follows the reference app closely**: header, search bar, a wide banner
+  where their advertisement sits, a section header with a Show all link, and cards with a
+  small thumbnail on the left rather than a full-width photo. The banner carries a deep
+  brand blue in both schemes, because a full-width block of the light accent is glaring
+  against a near-black page.
 - **Reopening a conversation is not a new contact.** The daily limit of twenty counts
   threads started, and `contact_count` only rises the first time.
 - **`listings:reindex`** rebuilds every listing's searchable text. Run it after any change

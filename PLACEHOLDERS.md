@@ -94,8 +94,22 @@ Development stores photos on the local disk. Production needs the S3 disk.
 | Privacy policy and terms URLs, once hosted | `docs/`, `app/app.json` |
 | Support email and phone shown in the stores | store listings |
 
-## 7. Content that is representative, not final
+## 7. Brand name and wordmark
 
+| What | Where |
+|---|---|
+| The name in the header, currently `vetura` | `app/src/components/AppHeader.tsx` |
+| App name and slug | `app/app.json` |
+
+`vetura` is Albanian for "the car" and is a stand-in, not a chosen brand. It appears in
+the header wordmark and will also need to match the App Store and Play Store listings,
+the bundle identifier and the domain. Decide it before phase 12.
+
+## 8. Content that is representative, not final
+
+- The cars on the home and search screens are hard-coded stand-ins until phase 9 wires
+  them to the search endpoint, and their photos are grey blocks because nothing has been
+  uploaded yet.
 - Seeded cities are the thirty largest across the five markets, with real coordinates.
 - Seeded makes and models cover the ten popular makes. The long tail gets filled in from
   real listing data after launch.

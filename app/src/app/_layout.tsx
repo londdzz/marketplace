@@ -42,7 +42,7 @@ function AuthGate() {
     if (!user && !inAuthFlow) {
       router.replace('/(auth)/phone');
     } else if (user && inAuthFlow) {
-      router.replace('/(tabs)/search');
+      router.replace('/(tabs)/home');
     }
 
     setReady(true);

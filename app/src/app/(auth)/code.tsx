@@ -54,7 +54,7 @@ export default function CodeScreen() {
       );
 
       await signIn(session);
-      router.replace('/(tabs)/search');
+      router.replace('/(tabs)/home');
     } catch (error) {
       setCode('');
       submitted.current = false;

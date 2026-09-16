@@ -1,94 +1,55 @@
-import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 
-import { ListingCard, Screen, Text, type ListingCardData } from '../../components';
+import { ListingCard, Screen, SearchBar, type ListingCardData } from '../../components';
 import { useTheme } from '../../theme';
 
 /**
- * The landing screen: a search bar, then cars.
- *
- * The real results arrive in phase 9, wired to GET /listings. These stand-ins
- * are here so the layout can be judged now.
+ * Results. Phase 9 replaces these stand-ins with GET /listings, adds the filter
+ * chips above them and the filter sheet behind those.
  */
 const PLACEHOLDER: ListingCardData[] = [
   {
     id: '1',
     title: 'Volkswagen Passat 2.0 TDI',
     priceEur: '8.950 €',
-    priceLocal: '1.094.000 ALL',
+    priceNote: '1.094.000 ALL',
     specs: ['2016', 'Diesel', '150 hp', '168.000 km', 'Manual'],
-    location: 'Prishtinë, Kosovë',
-    featured: true,
-    favorited: true,
+    location: '10000 Prishtinë, Kosovë',
   },
   {
     id: '2',
     title: 'Audi A4 Avant 2.0 TDI',
     priceEur: '12.400 €',
-    priceLocal: '762.000 MKD',
+    priceNote: '762.000 MKD',
     specs: ['2018', 'Diesel', '190 hp', '121.000 km', 'Automatic'],
-    location: 'Skopje, North Macedonia',
+    location: '1000 Skopje, North Macedonia',
     crossBorder: true,
   },
 ];
 
 export default function SearchTab() {
   const theme = useTheme();
-  const { t } = useTranslation(['home', 'tabs']);
+  const { t } = useTranslation('home');
 
   return (
     <Screen flush edges={['top']}>
       <ScrollView
         contentContainerStyle={{
           paddingHorizontal: theme.screenPadding,
-          paddingBottom: theme.spacing.xxxl,
+          paddingTop: theme.spacing.md,
+          paddingBottom: theme.spacing.huge,
+          gap: theme.spacing.xxxl,
         }}
         showsVerticalScrollIndicator={false}
       >
-        <Pressable
-          accessibilityRole="search"
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: theme.spacing.md,
-            backgroundColor: theme.colors.surfaceMuted,
-            borderRadius: theme.radius.lg,
-            padding: theme.spacing.lg,
-            marginTop: theme.spacing.md,
-          }}
-        >
-          <Ionicons name="search" size={22} color={theme.colors.textMuted} />
-          <View style={{ flex: 1 }}>
-            <Text variant="bodyStrong">{t('home:search_placeholder')}</Text>
-            <Text variant="meta" tone="muted">
-              {t('home:search_hint')}
-            </Text>
+        <SearchBar title={t('search_placeholder')} hint={t('search_hint')} />
+
+        {PLACEHOLDER.map((listing) => (
+          <View key={listing.id}>
+            <ListingCard listing={listing} />
           </View>
-        </Pressable>
-
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            marginTop: theme.spacing.xxl,
-            marginBottom: theme.spacing.md,
-          }}
-        >
-          <Text variant="title">{t('home:saved')}</Text>
-          <Pressable accessibilityRole="button">
-            <Text variant="label" tone="accent">
-              {t('home:show_all')}
-            </Text>
-          </Pressable>
-        </View>
-
-        <View style={{ gap: theme.spacing.lg }}>
-          {PLACEHOLDER.map((listing) => (
-            <ListingCard key={listing.id} listing={listing} />
-          ))}
-        </View>
+        ))}
       </ScrollView>
     </Screen>
   );

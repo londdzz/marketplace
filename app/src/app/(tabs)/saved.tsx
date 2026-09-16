@@ -3,10 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { EmptyState, Screen } from '../../components';
 
 /**
- * Filled in by a later phase. The tab exists now so the shape of the app is
- * real and navigable.
+ * The cars a buyer kept. Wired to GET /favorites in phase 9.
  */
-export default function FavoritesTab() {
+export default function SavedTab() {
   const { t } = useTranslation(['tabs', 'home']);
 
   return (

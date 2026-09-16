@@ -12,7 +12,10 @@
     "favorites": "Saved",
     "sell": "Sell",
     "messages": "Messages",
-    "profile": "Profile"
+    "profile": "Profile",
+    "home": "Home",
+    "my_searches": "My searches",
+    "saved": "Saved"
   },
   "auth": {
     "phone_title": "Sign in with your number",
@@ -43,6 +46,12 @@
     "customs_cleared": "Customs cleared",
     "negotiable": "Negotiable",
     "empty_title": "No saved cars yet",
-    "empty_body": "Cars you save show up here."
+    "empty_body": "Cars you save show up here.",
+    "parked": "Saved vehicles",
+    "promo_title": "Sell your car",
+    "promo_body": "1 credit = 1 listing, live for 2 weeks",
+    "promo_cta": "Start",
+    "special_offer": "SPECIAL OFFER",
+    "vat_note": "{{net}} (net) + VAT"
   }
 }

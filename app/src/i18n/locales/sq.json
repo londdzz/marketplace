@@ -12,7 +12,10 @@
     "favorites": "Të ruajtura",
     "sell": "Shit",
     "messages": "Mesazhe",
-    "profile": "Profili"
+    "profile": "Profili",
+    "home": "Ballina",
+    "my_searches": "Kërkimet e mia",
+    "saved": "Të ruajtura"
   },
   "auth": {
     "phone_title": "Hyr me numrin tënd",
@@ -43,6 +46,12 @@
     "customs_cleared": "E zhdoganuar",
     "negotiable": "E negociueshme",
     "empty_title": "Ende asnjë makinë e ruajtur",
-    "empty_body": "Makinat që ruan shfaqen këtu."
+    "empty_body": "Makinat që ruan shfaqen këtu.",
+    "parked": "Makinat e ruajtura",
+    "promo_title": "Shite makinën tënde",
+    "promo_body": "1 kredi = 1 shpallje aktive për 2 javë",
+    "promo_cta": "Fillo",
+    "special_offer": "OFERTË",
+    "vat_note": "{{net}} (neto) + TVSH"
   }
 }
