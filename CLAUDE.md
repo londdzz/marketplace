@@ -223,8 +223,10 @@ release, and update it whenever a placeholder is added or replaced.
 - **Three things in the reference are deliberately absent**, because the specification puts
   them under "do not build": the price rating bars, financing, and seller star ratings. The
   vehicle-type row is gone too, since the marketplace sells cars only.
-- **Make tiles draw a monogram, not a logo.** Manufacturer logos are trademarks we have no
-  licence to ship. Swapping in licensed artwork means changing `MakeTile` alone.
+- **Make logos are supported but not shipped.** `makes.logo_path` holds the file,
+  `MakeResource` exposes `logo_url`, `MakeTile` draws it tinted to the text colour, and
+  `php artisan makes:logos` links files dropped into `makes/` on the storage disk. A make
+  with no file falls back to a monogram, so logos can be added a few at a time.
 - **The tab bar mirrors the reference app, not the specification's list.** The spec named
   Search, Favorites, Sell, Messages and Profile. The tabs are Home, Search, My searches,
   Saved and Sell, with messages and the profile reached from the header, which is where

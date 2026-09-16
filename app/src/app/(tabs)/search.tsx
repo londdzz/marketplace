@@ -6,7 +6,7 @@ import { ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native'
 
 import { listingsApi } from '../../api/listings';
 import { referenceApi } from '../../api/reference';
-import { AccordionCard, Button, Chip, Input, MakeTile, Screen, Text } from '../../components';
+import { AccordionCard, Button, Chip, Input, MakeTile, Screen, SearchField, Text } from '../../components';
 import { useFilters } from '../../search/FiltersProvider';
 import { useTheme } from '../../theme';
 
@@ -58,11 +58,11 @@ export default function SearchTab() {
   return (
     <Screen flush edges={['top']}>
       <View style={{ paddingHorizontal: theme.screenPadding, paddingTop: theme.spacing.sm }}>
-        <Input
+        <SearchField
           placeholder={t('search:anything')}
           value={filters.q ?? ''}
           onChangeText={(value) => set({ q: value })}
-          returnKeyType="search"
+          onReset={reset}
           testID="search-input"
         />
       </View>
@@ -87,6 +87,7 @@ export default function SearchTab() {
               <MakeTile
                 key={make.id}
                 name={make.name}
+                logoUrl={make.logo_url}
                 width={tileWidth}
                 selected={filters.makeId === make.id}
                 onPress={() => set({ makeId: filters.makeId === make.id ? undefined : make.id })}
@@ -97,10 +98,11 @@ export default function SearchTab() {
 
           <Button
             label={t('search:all_makes')}
-            variant="secondary"
+            variant="outline"
             block
             style={{ marginTop: theme.spacing.md }}
             onPress={() => router.push('/filters')}
+            testID="all-makes"
           />
         </AccordionCard>
 
@@ -240,8 +242,9 @@ export default function SearchTab() {
       >
         <Button
           label={count > 0 ? `${t('search:more_filters')} (${count})` : t('search:more_filters')}
-          variant="secondary"
+          variant="outline"
           size="lg"
+          icon="options-outline"
           style={{ flex: 1 }}
           onPress={() => router.push('/filters')}
           testID="more-filters"
@@ -249,6 +252,7 @@ export default function SearchTab() {
         <Button
           label={total > 0 ? t('search:offers', { count: total }) : t('search:offers_zero')}
           size="lg"
+          icon="search"
           style={{ flex: 1.3 }}
           loading={preview.isLoading}
           onPress={() => router.push('/results')}

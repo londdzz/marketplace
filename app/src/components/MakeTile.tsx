@@ -1,3 +1,4 @@
+import { Image } from 'expo-image';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { useTheme } from '../theme';
@@ -5,6 +6,8 @@ import { Text } from './Text';
 
 export type MakeTileProps = {
   name: string;
+  /** The maker's mark, served by the API. A monogram stands in until there is one. */
+  logoUrl?: string | null;
   selected?: boolean;
   width: number;
   onPress?: () => void;
@@ -14,11 +17,12 @@ export type MakeTileProps = {
 /**
  * One make in the picker grid.
  *
- * The reference app shows manufacturer logos here. Those are trademarks we have
- * no licence to ship, so this draws a monogram from the make's own name
- * instead. Swapping in licensed artwork later means changing only this file.
+ * Draws the maker's mark when the API has one, and a monogram from the name
+ * when it does not, so logos can be added a few at a time without the grid ever
+ * showing a hole. The mark is tinted to the text colour so a single monochrome
+ * file works in both light and dark.
  */
-export function MakeTile({ name, selected = false, width, onPress, testID }: MakeTileProps) {
+export function MakeTile({ name, logoUrl, selected = false, width, onPress, testID }: MakeTileProps) {
   const theme = useTheme();
 
   const monogram = name
@@ -46,19 +50,29 @@ export function MakeTile({ name, selected = false, width, onPress, testID }: Mak
         },
       ]}
     >
-      <View
-        style={[
-          styles.monogram,
-          { borderColor: selected ? theme.colors.accent : theme.colors.textMuted },
-        ]}
-      >
-        <Text
-          variant="bodyStrong"
-          style={{ color: selected ? theme.colors.accent : theme.colors.text }}
+      {logoUrl ? (
+        <Image
+          source={{ uri: logoUrl }}
+          style={{ width: width * 0.52, height: width * 0.52 }}
+          contentFit="contain"
+          tintColor={selected ? theme.colors.accent : theme.colors.text}
+          transition={120}
+        />
+      ) : (
+        <View
+          style={[
+            styles.monogram,
+            { borderColor: selected ? theme.colors.accent : theme.colors.textMuted },
+          ]}
         >
-          {monogram}
-        </Text>
-      </View>
+          <Text
+            variant="bodyStrong"
+            style={{ color: selected ? theme.colors.accent : theme.colors.text }}
+          >
+            {monogram}
+          </Text>
+        </View>
+      )}
 
       <Text
         variant="caption"

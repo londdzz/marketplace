@@ -1,9 +1,10 @@
+import { Ionicons } from '@expo/vector-icons';
 import { ActivityIndicator, Pressable, type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
 
 import { useTheme } from '../theme';
 import { Text } from './Text';
 
-type Variant = 'primary' | 'secondary' | 'ghost' | 'danger';
+type Variant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'outline';
 type Size = 'sm' | 'md' | 'lg';
 
 export type ButtonProps = {
@@ -15,6 +16,8 @@ export type ButtonProps = {
   loading?: boolean;
   /** Fills the width of its parent, which is what a form's submit does. */
   block?: boolean;
+  /** Drawn before the label, the way a Call button carries a handset. */
+  icon?: keyof typeof Ionicons.glyphMap;
   style?: StyleProp<ViewStyle>;
   testID?: string;
 };
@@ -27,6 +30,7 @@ export function Button({
   disabled = false,
   loading = false,
   block = false,
+  icon,
   style,
   testID,
 }: ButtonProps) {
@@ -53,6 +57,13 @@ export function Button({
       border: 'transparent',
       pressed: theme.colors.accentMuted,
     },
+    // An outline in the accent colour, which is how the reference app draws its
+    // secondary actions: Contact, Park, All makes.
+    outline: {
+      background: 'transparent',
+      border: theme.colors.accent,
+      pressed: theme.colors.accentMuted,
+    },
     danger: {
       background: theme.colors.danger,
       border: theme.colors.danger,
@@ -60,7 +71,15 @@ export function Button({
     },
   };
 
-  const tone = variant === 'primary' || variant === 'danger' ? 'onAccent' : variant === 'ghost' ? 'accent' : 'default';
+  const tone =
+    variant === 'primary' || variant === 'danger'
+      ? 'onAccent'
+      : variant === 'ghost' || variant === 'outline'
+        ? 'accent'
+        : 'default';
+
+  const iconColor =
+    tone === 'onAccent' ? theme.colors.textOnAccent : tone === 'accent' ? theme.colors.accent : theme.colors.text;
 
   return (
     <Pressable
@@ -89,7 +108,8 @@ export function Button({
           color={variant === 'primary' || variant === 'danger' ? theme.colors.textOnAccent : theme.colors.accent}
         />
       ) : (
-        <View style={styles.label}>
+        <View style={[styles.label, { gap: theme.spacing.sm }]}>
+          {icon ? <Ionicons name={icon} size={size === 'sm' ? 16 : 19} color={iconColor} /> : null}
           <Text variant={textVariant} tone={tone} numberOfLines={1}>
             {label}
           </Text>
@@ -107,6 +127,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   label: {
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
   },

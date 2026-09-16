@@ -3,14 +3,15 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Stack, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, FlatList, Linking, Pressable, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, FlatList, Linking, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 
 import { listingsApi } from '../api/listings';
 import { referenceApi } from '../api/reference';
 import type { Listing } from '../api/types';
-import { Button, EmptyState, ListingRow, Screen, Text } from '../components';
+import { Button, EmptyState, ListingCard, ListingRow, Screen, Text } from '../components';
 import { formatEur, formatKm, formatLocal, listingLocation, listingTitle } from '../format';
 import { useExchangeRates } from '../hooks/useExchangeRates';
+import { useListingCardMapper } from '../hooks/useListingCard';
 import { useListingSearch } from '../hooks/useListingSearch';
 import { useFilters } from '../search/FiltersProvider';
 import { useTheme } from '../theme';
@@ -21,10 +22,12 @@ export default function ResultsScreen() {
   const theme = useTheme();
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { width } = useWindowDimensions();
   const { t } = useTranslation(['search', 'listing', 'common']);
   const { filters, set } = useFilters();
 
   const [saved, setSaved] = useState(false);
+  const [grid, setGrid] = useState(false);
 
   const search = useListingSearch(filters);
   const { byCurrency } = useExchangeRates();
@@ -51,6 +54,11 @@ export default function ResultsScreen() {
 
   const currencyFor = (code: string | null) =>
     countries.data?.find((country) => country.code === code)?.currency ?? 'EUR';
+
+  const toCard = useListingCardMapper(byCurrency, currencyFor, favoriteIds);
+
+  const gridGap = theme.spacing.md;
+  const cardWidth = Math.floor((width - theme.screenPadding * 2 - gridGap) / 2);
 
   /** Everything known about a car on one line, the way a results list reads. */
   const facts = (listing: Listing) =>
@@ -96,6 +104,18 @@ export default function ResultsScreen() {
         <Pressable accessibilityRole="button" onPress={cycleSort} testID="results-sort">
           <Ionicons name="swap-vertical" size={24} color={theme.colors.text} />
         </Pressable>
+
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => setGrid((value) => !value)}
+          testID="results-layout"
+        >
+          <Ionicons
+            name={grid ? 'list-outline' : 'grid-outline'}
+            size={22}
+            color={theme.colors.text}
+          />
+        </Pressable>
       </View>
 
       <Text
@@ -111,11 +131,14 @@ export default function ResultsScreen() {
       ) : (
         <FlatList
           data={listings}
+          key={grid ? 'grid' : 'rows'}
           keyExtractor={(listing) => listing.id}
+          numColumns={grid ? 2 : 1}
+          columnWrapperStyle={grid ? { gap: gridGap } : undefined}
           contentContainerStyle={{
             padding: theme.screenPadding,
             paddingBottom: 120,
-            gap: theme.spacing.lg,
+            gap: grid ? theme.spacing.xl : theme.spacing.lg,
           }}
           showsVerticalScrollIndicator={false}
           onEndReachedThreshold={0.6}
@@ -138,6 +161,18 @@ export default function ResultsScreen() {
           }
           renderItem={({ item }) => {
             const currency = currencyFor(item.country_code);
+
+            if (grid) {
+              return (
+                <ListingCard
+                  listing={toCard(item)}
+                  compact
+                  width={cardWidth}
+                  onPress={() => router.push(`/listing/${item.id}`)}
+                  onToggleFavorite={() => park.mutate(item)}
+                />
+              );
+            }
 
             return (
               <ListingRow
@@ -178,6 +213,7 @@ export default function ResultsScreen() {
         <Button
           label={t('search:save_search')}
           size="lg"
+          icon="star-outline"
           loading={saveSearch.isPending}
           disabled={saved}
           onPress={() => saveSearch.mutate()}

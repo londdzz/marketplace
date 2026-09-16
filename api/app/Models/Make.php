@@ -20,6 +20,7 @@ class Make extends Model
     protected $fillable = [
         'name',
         'name_normalized',
+        'logo_path',
         'popular',
     ];
 

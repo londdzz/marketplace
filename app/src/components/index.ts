@@ -13,4 +13,5 @@ export { MakeTile, type MakeTileProps } from './MakeTile';
 export { PromoBanner, type PromoBannerProps } from './PromoBanner';
 export { Screen, type ScreenProps } from './Screen';
 export { SearchBar, type SearchBarProps } from './SearchBar';
+export { SearchField, type SearchFieldProps } from './SearchField';
 export { Text, type TextProps } from './Text';

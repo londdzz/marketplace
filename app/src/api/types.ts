@@ -51,6 +51,7 @@ export type Make = {
   id: number;
   name: string;
   popular: boolean;
+  logo_url: string | null;
 };
 
 export type VehicleModel = {

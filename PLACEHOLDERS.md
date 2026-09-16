@@ -100,8 +100,17 @@ Development stores photos on the local disk. Production needs the S3 disk.
 
 - Listing photographs come from `DevListingSeeder`, which generates coloured panels rather
   than photographs of real cars.
-- Make tiles in the search builder draw a monogram from the make's name. Manufacturer logos
-  are trademarks and need licensing before they can be shipped; only `MakeTile` changes.
+- **Manufacturer logos are not in the repository.** The data model, the API and the tiles
+  all support them; no files have been added. Drop image files named after each make into
+  `makes/` on the storage disk, for example `makes/volkswagen.png` or
+  `makes/mercedes-benz.svg`, then run `php artisan makes:logos` from /api. The match is on
+  the normalized name, so `skoda.png` finds Škoda. Until a make has a file, its tile draws
+  a monogram from its name, so logos can be added a few at a time.
+
+  Monochrome files work best: the tile tints them to the text colour, which is what keeps
+  one file legible in both light and dark. Using a maker's mark to identify the car being
+  sold is nominative use and is what every marketplace in the region does, but confirm it
+  with your own lawyer before launch.
 - Seeded cities are the thirty largest across the five markets, with real coordinates.
 - Seeded makes and models cover the ten popular makes. The long tail gets filled in from
   real listing data after launch.

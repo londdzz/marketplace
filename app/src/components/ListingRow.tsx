@@ -87,10 +87,12 @@ export function ListingRow({
             ) : null}
 
             {listing.featured && listing.featuredLabel ? (
-              <View style={[styles.ribbon, { backgroundColor: theme.colors.accent }]}>
-                <Text variant="caption" tone="onAccent" style={styles.ribbonLabel}>
-                  {listing.featuredLabel}
-                </Text>
+              <View style={styles.ribbonClip} pointerEvents="none">
+                <View style={[styles.ribbon, { backgroundColor: theme.colors.accent }]}>
+                  <Text variant="caption" tone="onAccent" style={styles.ribbonLabel}>
+                    {listing.featuredLabel}
+                  </Text>
+                </View>
               </View>
             ) : null}
           </View>
@@ -155,15 +157,17 @@ export function ListingRow({
       >
         <Button
           label={contactLabel}
-          variant="secondary"
-          size="sm"
+          variant="outline"
+          size="md"
+          icon="call-outline"
           style={{ flex: 1 }}
           onPress={onContact}
         />
         <Button
           label={parkLabel}
-          variant={listing.favorited ? 'primary' : 'secondary'}
-          size="sm"
+          variant={listing.favorited ? 'primary' : 'outline'}
+          size="md"
+          icon={listing.favorited ? 'heart' : 'heart-outline'}
           style={{ flex: 1 }}
           onPress={onPark}
         />
@@ -173,18 +177,27 @@ export function ListingRow({
 }
 
 const styles = StyleSheet.create({
-  ribbon: {
+  ribbonClip: {
     position: 'absolute',
     top: 0,
     left: 0,
-    paddingHorizontal: 6,
+    width: 70,
+    height: 70,
+    overflow: 'hidden',
+  },
+  ribbon: {
+    position: 'absolute',
+    top: 12,
+    left: -22,
+    width: 90,
+    alignItems: 'center',
     paddingVertical: 2,
-    borderBottomRightRadius: 6,
+    transform: [{ rotate: '-45deg' }],
   },
   ribbonLabel: {
     fontWeight: '700',
-    fontSize: 9,
-    letterSpacing: 0.5,
+    fontSize: 10,
+    letterSpacing: 0.8,
   },
   seller: {
     flexDirection: 'row',

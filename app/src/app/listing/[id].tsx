@@ -9,6 +9,7 @@ import {
   Linking,
   Pressable,
   ScrollView,
+  Share,
   StyleSheet,
   useWindowDimensions,
   View,
@@ -72,6 +73,48 @@ export default function ListingDetail() {
     <Screen flush scroll={false} edges={['top']}>
       <Stack.Screen options={{ headerShown: false }} />
 
+      <View
+        style={[
+          styles.topBar,
+          {
+            paddingHorizontal: theme.screenPadding,
+            paddingVertical: theme.spacing.sm,
+            gap: theme.spacing.md,
+            borderBottomColor: theme.colors.border,
+          },
+        ]}
+      >
+        <Pressable accessibilityRole="button" onPress={() => router.back()} testID="detail-back">
+          <Ionicons name="chevron-back" size={26} color={theme.colors.text} />
+        </Pressable>
+
+        <Text variant="bodyStrong" numberOfLines={1} style={{ flex: 1, textAlign: 'center' }}>
+          {listingTitle(car)}
+        </Text>
+
+        <Pressable
+          accessibilityRole="button"
+          testID="share-listing"
+          onPress={() => {
+            void Share.share({ message: `${listingTitle(car)} — ${formatEur(car.price_eur)}` });
+          }}
+        >
+          <Ionicons name="share-outline" size={24} color={theme.colors.text} />
+        </Pressable>
+
+        <Pressable
+          accessibilityRole="button"
+          testID="favorite-toggle"
+          onPress={() => setFavorited((value) => !value)}
+        >
+          <Ionicons
+            name={favorited ? 'heart' : 'heart-outline'}
+            size={24}
+            color={favorited ? theme.colors.danger : theme.colors.text}
+          />
+        </Pressable>
+      </View>
+
       <ScrollView contentContainerStyle={{ paddingBottom: 120 }} showsVerticalScrollIndicator={false}>
         <View>
           <ScrollView
@@ -98,34 +141,6 @@ export default function ListingDetail() {
               </View>
             ))}
           </ScrollView>
-
-          <Pressable
-            accessibilityRole="button"
-            onPress={() => router.back()}
-            style={[styles.round, { top: theme.spacing.md, left: theme.spacing.md, backgroundColor: theme.colors.surface }]}
-          >
-            <Ionicons name="arrow-back" size={22} color={theme.colors.text} />
-          </Pressable>
-
-          <Pressable
-            accessibilityRole="button"
-            testID="favorite-toggle"
-            onPress={() => setFavorited((value) => !value)}
-            style={[
-              styles.round,
-              {
-                top: theme.spacing.md,
-                right: theme.spacing.md,
-                backgroundColor: favorited ? theme.colors.success : theme.colors.surface,
-              },
-            ]}
-          >
-            <Ionicons
-              name={favorited ? 'heart' : 'heart-outline'}
-              size={22}
-              color={favorited ? '#FFFFFF' : theme.colors.text}
-            />
-          </Pressable>
 
           {car.photos.length > 1 ? (
             <View style={[styles.counter, { bottom: theme.spacing.md, right: theme.spacing.md, backgroundColor: theme.colors.scrim }]}>
@@ -255,6 +270,7 @@ export default function ListingDetail() {
         <Button
           label={t('listing:call')}
           size="lg"
+          icon="call"
           style={{ flex: 1 }}
           onPress={() => {
             if (car.seller?.phone) {
@@ -266,6 +282,7 @@ export default function ListingDetail() {
         <Button
           label={t('listing:message')}
           size="lg"
+          icon="mail"
           style={{ flex: 1 }}
           onPress={() => router.push('/(tabs)/messages')}
           testID="message-seller"
@@ -276,13 +293,10 @@ export default function ListingDetail() {
 }
 
 const styles = StyleSheet.create({
-  round: {
-    position: 'absolute',
-    width: 40,
-    height: 40,
-    borderRadius: 999,
+  topBar: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    borderBottomWidth: StyleSheet.hairlineWidth * 2,
   },
   counter: {
     position: 'absolute',
