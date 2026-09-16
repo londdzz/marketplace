@@ -67,6 +67,31 @@ return [
     |
     */
 
+    /*
+    |--------------------------------------------------------------------------
+    | Default Country
+    |--------------------------------------------------------------------------
+    |
+    | Used when a phone number's dialling prefix belongs to none of the markets
+    | we cover, which happens with diaspora numbers. The owner can correct it
+    | from their profile.
+    |
+    */
+
+    'default_country' => env('APP_DEFAULT_COUNTRY', 'XK'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Supported Locales
+    |--------------------------------------------------------------------------
+    |
+    | Every language the marketplace ships in. Albanian is the default; English
+    | is the fallback for any key not yet translated.
+    |
+    */
+
+    'supported_locales' => ['sq', 'mk', 'sr', 'bg', 'en'],
+
     'timezone' => env('APP_TIMEZONE', 'UTC'),
 
     /*

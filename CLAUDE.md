@@ -131,7 +131,31 @@ instruction in this document. Do not start the next phase until the user says so
 ## Status
 
 - Phase 1: complete.
-- Next: Phase 2 (Auth), only when the user says "continue with Phase 2".
+- Phase 2: complete.
+- Next: Phase 3 (Listings CRUD and photos), only when the user says so.
+
+## Decisions taken along the way
+
+- **OTP delivery is WhatsApp, behind a driver.** `App\Contracts\OtpSender` has a
+  WhatsApp Cloud API driver for production and a log driver for development, chosen by
+  `OTP_DRIVER`. WhatsApp authentication templates are cheaper than SMS in the region but
+  are not free, and they need an approved template per language. WhatsApp coverage is
+  strong in Kosovo and Albania; Viber is the everyday messenger in Bulgaria and Serbia,
+  so a second channel is needed there before launch. Adding one means writing another
+  `OtpSender` and nothing else.
+- **Draft listings have nullable vehicle columns**, because the sell flow saves after
+  every step. `ListingService::publish()` enforces completeness instead.
+- **`TextNormalizer` collapses repeated letters**, so Passat and Пасат agree. Digits are
+  never collapsed. Cyrillic к always becomes k, so Октавија does not match Octavia.
+- **A new account's country comes from the dialling prefix**, falling back to
+  `app.default_country` for diaspora numbers, and the owner can change it from their
+  profile. Verification also accepts an explicit `country_code`.
+- **Response language**: a signed-in user's `preferred_language` wins, then
+  `Accept-Language`, then Albanian.
+- **`users` keeps a nullable unique `email`** next to `display_name`; there is no `name`
+  column and no password login.
+- Local development runs MariaDB rather than MySQL 8, since no MySQL 8 package was
+  installable in the container. Production stays MySQL 8.
 
 ## Local development notes
 

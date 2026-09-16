@@ -18,3 +18,16 @@ pest()->extend(TestCase::class)
 pest()->extend(TestCase::class)
     ->use(DatabaseMigrations::class)
     ->in('Concurrency');
+
+/**
+ * Forget the resolved authentication guard.
+ *
+ * A test runs against one application instance, so a guard that has already
+ * resolved a user keeps returning it for every later request in the same test.
+ * Production hands every request a fresh application, so a test that makes
+ * several requests in a row calls this between them to behave the same way.
+ */
+function asNewRequest(): void
+{
+    app('auth')->forgetGuards();
+}
