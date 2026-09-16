@@ -4,10 +4,16 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Contracts\ExchangeRateProvider;
 use App\Contracts\OtpSender;
+use App\Contracts\PushSender;
 use App\Support\Otp\LogOtpSender;
 use App\Support\Otp\WhatsAppOtpSender;
 use App\Support\PhoneNumber;
+use App\Support\Push\LogPushSender;
+use App\Support\Push\PlatformPushSender;
+use App\Support\Rates\HttpExchangeRateProvider;
+use App\Support\Rates\NullExchangeRateProvider;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
@@ -25,6 +31,26 @@ class AppServiceProvider extends ServiceProvider
                 'whatsapp' => new WhatsAppOtpSender,
                 'log' => new LogOtpSender,
                 default => throw new InvalidArgumentException("Unknown OTP driver [{$driver}]."),
+            };
+        });
+
+        $this->app->bind(PushSender::class, function (): PushSender {
+            $driver = (string) config('push.driver');
+
+            return match ($driver) {
+                'stores' => $this->app->make(PlatformPushSender::class),
+                'log' => new LogPushSender,
+                default => throw new InvalidArgumentException("Unknown push driver [{$driver}]."),
+            };
+        });
+
+        $this->app->bind(ExchangeRateProvider::class, function (): ExchangeRateProvider {
+            $driver = (string) config('rates.driver');
+
+            return match ($driver) {
+                'http' => new HttpExchangeRateProvider,
+                'none' => new NullExchangeRateProvider,
+                default => throw new InvalidArgumentException("Unknown exchange rate driver [{$driver}]."),
             };
         });
     }

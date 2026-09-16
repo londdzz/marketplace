@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\OtpController;
 use App\Http\Controllers\Auth\ProfileController;
 use App\Http\Controllers\Auth\SessionController;
 use App\Http\Controllers\Credit\CreditController;
+use App\Http\Controllers\Device\DeviceTokenController;
 use App\Http\Controllers\Listing\ListingController;
 use App\Http\Controllers\Listing\ListingLifecycleController;
 use App\Http\Controllers\Listing\ListingPhotoController;
@@ -23,7 +24,7 @@ use Illuminate\Support\Facades\Route;
  * Everything here is served under the /api/v1 prefix, configured in
  * bootstrap/app.php.
  *
- * Scheduled jobs, device tokens and push arrive in phase 7.
+ * The scheduled jobs that go with these live in routes/console.php.
  */
 
 Route::prefix('auth')->group(function (): void {
@@ -73,6 +74,9 @@ Route::middleware(['auth:sanctum', 'blocked'])->group(function (): void {
     Route::post('listings/{listing}/mark-sold', [ListingLifecycleController::class, 'markSold'])->name('listings.mark-sold');
 
     Route::get('credits', [CreditController::class, 'index'])->name('credits.index');
+
+    Route::post('device-tokens', [DeviceTokenController::class, 'store'])->name('device-tokens.store');
+    Route::delete('device-tokens', [DeviceTokenController::class, 'destroy'])->name('device-tokens.destroy');
 
     Route::get('conversations', [ConversationController::class, 'index'])->name('conversations.index');
     Route::get('conversations/{conversation}/messages', [ConversationController::class, 'messages'])->name('conversations.messages');

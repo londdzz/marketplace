@@ -136,7 +136,9 @@ instruction in this document. Do not start the next phase until the user says so
 - Phase 4: complete.
 - Phase 5: complete.
 - Phase 6: complete.
-- Next: Phase 7 (Scheduled jobs and push).
+- Phase 7: complete.
+- Next: Phase 8 (App foundation). It ends with the app running and login working against
+  the local API, so it needs a computer to test on.
 
 ## Placeholders
 
@@ -182,6 +184,19 @@ release, and update it whenever a placeholder is added or replaced.
 - **A saved search is validated by the search rules.** `App\Support\ListingFilterRules`
   is shared between the search endpoint and saved searches, so a saved search can never
   hold a filter that search itself would reject.
+- **Push sits behind a driver**, like OTP delivery. `App\Contracts\PushSender` has real
+  FCM v1 and APNs senders and a log driver, chosen by `PUSH_DRIVER`. A token a store
+  reports as gone for good is deleted; a transient failure keeps it for the next run.
+- **The expiring-soon job reads a window 24 to 48 hours out.** Running daily, each listing
+  passes through that window exactly once, which is what stops a seller being warned about
+  the same listing every day. There is no "warned" column in the schema to do it any other
+  way.
+- **The saved-search job reads a half-open window**, from its last marker up to but not
+  including now. Consecutive windows abut exactly, so nothing is lost between runs and
+  nothing is reported twice, even though `published_at` only has one-second resolution.
+- **Exchange rates: pick the provider carefully.** The European Central Bank publishes
+  neither the Albanian lek nor the Macedonian denar, so an ECB-backed feed cannot cover
+  three of the five markets.
 - **Reopening a conversation is not a new contact.** The daily limit of twenty counts
   threads started, and `contact_count` only rises the first time.
 - **`listings:reindex`** rebuilds every listing's searchable text. Run it after any change

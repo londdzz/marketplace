@@ -2,9 +2,31 @@
 
 declare(strict_types=1);
 
-use Illuminate\Foundation\Inspiring;
-use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Schedule;
 
-Artisan::command('inspire', function () {
-    $this->comment(Inspiring::quote());
-})->purpose('Display an inspiring quote');
+/*
+ * Every scheduled job the marketplace runs.
+ *
+ * All of them are guarded against overlapping, so a slow run never has a second
+ * copy of itself running alongside it.
+ */
+
+// Take listings out of the results as soon as their fortnight is up.
+Schedule::command('listings:expire')
+    ->hourly()
+    ->withoutOverlapping();
+
+// Warn sellers whose listings run out within two days.
+Schedule::command('listings:notify-expiring')
+    ->dailyAt('09:00')
+    ->withoutOverlapping();
+
+// Refresh the rates the apps convert euro prices with.
+Schedule::command('rates:refresh')
+    ->dailyAt('06:00')
+    ->withoutOverlapping();
+
+// Tell buyers about new cars matching a search they saved.
+Schedule::command('saved-searches:process')
+    ->everyFifteenMinutes()
+    ->withoutOverlapping();

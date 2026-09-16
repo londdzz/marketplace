@@ -31,6 +31,19 @@ final class ListingSearchService
             ->with(['make', 'model', 'city', 'photos'])
             ->withCount('photos');
 
+        // Used by the saved-search job to ask for one half-open window of time,
+        // [from, before). Consecutive windows then abut exactly, so no listing
+        // can fall between two runs and none is ever reported twice, even
+        // though published_at only has one-second resolution. Never exposed as
+        // a request filter.
+        if (isset($filters['published_from'])) {
+            $query->where('published_at', '>=', $filters['published_from']);
+        }
+
+        if (isset($filters['published_before'])) {
+            $query->where('published_at', '<', $filters['published_before']);
+        }
+
         $this->applyText($query, $filters['q'] ?? null);
         $this->applyVehicle($query, $filters);
         $this->applyPlace($query, $filters);

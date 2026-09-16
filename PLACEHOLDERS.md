@@ -48,19 +48,31 @@ they have to be kept in step by hand.
 
 | What | Where |
 |---|---|
-| Firebase service account JSON (Android, FCM v1) | `api/.env`, `api/storage/app/firebase.json` |
-| APNs key `.p8`, key id, team id (iOS) | `api/.env` |
+| `PUSH_DRIVER` | `api/.env`, currently `log`; set to `stores` once the rest is real |
+| Firebase service account JSON (Android, FCM v1) | `api/storage/app/firebase.json`, path in `FCM_CREDENTIALS` |
+| `FCM_PROJECT_ID` | `api/.env` |
+| APNs `.p8` key | `api/storage/app/apns.p8`, path in `APNS_KEY_PATH` |
+| `APNS_KEY_ID`, `APNS_TEAM_ID`, `APNS_BUNDLE_ID` | `api/.env` |
+| `APNS_PRODUCTION` | `api/.env`, `false` uses Apple's sandbox |
 
-Until these are real the push channel logs what it would have sent.
+Both senders are written and tested against fakes. Until the credentials are real,
+`PUSH_DRIVER=log` writes what would have been sent to the log and sends nothing. Keep the
+service account JSON and the .p8 key out of version control.
 
 ## 4. Exchange rates — phase 7
 
 | What | Where |
 |---|---|
-| Rates provider URL and key | `api/.env` |
+| `RATES_DRIVER` | `api/.env`, currently `none`; set to `http` once a provider is chosen |
+| `RATES_URL`, `RATES_KEY` | `api/.env` |
 
-Seeded rates for ALL, MKD, RSD and BGN are approximate starting values, not live ones.
-The daily job overwrites them once a provider is configured.
+Seeded rates for ALL, MKD, RSD and BGN are approximate starting values, not live ones. The
+daily job leaves them alone until a provider is configured, and overwrites them after.
+
+Choose the provider with care: the European Central Bank publishes neither the Albanian lek
+nor the Macedonian denar, so an ECB-backed feed cannot cover three of the five markets. The
+provider must answer JSON shaped `{ "rates": { "ALL": 98.5, ... } }` with the euro as base,
+which is what exchangerate.host and openexchangerates return.
 
 ## 5. Production storage
 
