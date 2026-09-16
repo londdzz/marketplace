@@ -197,6 +197,13 @@ release, and update it whenever a placeholder is added or replaced.
 - **Exchange rates: pick the provider carefully.** The European Central Bank publishes
   neither the Albanian lek nor the Macedonian denar, so an ECB-backed feed cannot cover
   three of the five markets.
+- **The product is called vetura**, Albanian for "the car". It is the app name, the slug
+  and the wordmark in the header, and the store listings, bundle identifier and domain
+  should all be built on it.
+- **Saved vehicles are a two-column grid.** A compact card variant shrinks the type and
+  the chips and shows the three specifications that earn their place at half a screen
+  wide. The cross-border marker sits on the photo rather than in the text, so two cards
+  side by side always line up.
 - **The tab bar mirrors the reference app, not the specification's list.** The spec named
   Search, Favorites, Sell, Messages and Profile. The tabs are Home, Search, My searches,
   Saved and Sell, with messages and the profile reached from the header, which is where

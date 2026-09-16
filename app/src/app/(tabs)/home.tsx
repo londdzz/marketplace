@@ -1,8 +1,7 @@
-import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, View } from 'react-native';
-import { useRouter } from 'expo-router';
-
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
+import { Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
 
 import {
   AppHeader,
@@ -19,15 +18,15 @@ import { useTheme } from '../../theme';
 /**
  * Stand-ins until phase 9 wires this to GET /listings.
  */
-function placeholders(offerLabel: string): ListingCardData[] {
+function placeholders(offerLabel: string, crossBorderLabel: string): ListingCardData[] {
   return [
     {
       id: '1',
       title: 'Volkswagen Passat 2.0 TDI',
       priceEur: '8.950 €',
       priceNote: '1.094.000 ALL',
-      specs: ['2016', 'Diesel', '150 hp', '168.000 km', 'Manual'],
-      location: '10000 Prishtinë, Kosovë',
+      specs: ['2016', 'Diesel', '168.000 km', 'Manual'],
+      location: 'Prishtinë, XK',
       featured: true,
       featuredLabel: offerLabel,
       favorited: true,
@@ -37,9 +36,33 @@ function placeholders(offerLabel: string): ListingCardData[] {
       title: 'Audi A4 Avant 2.0 TDI',
       priceEur: '12.400 €',
       priceNote: '762.000 MKD',
-      specs: ['2018', 'Diesel', '190 hp', '121.000 km', 'Automatic'],
-      location: '1000 Skopje, North Macedonia',
+      specs: ['2018', 'Diesel', '121.000 km', 'Automatic'],
+      location: 'Skopje, MK',
       crossBorder: true,
+      crossBorderLabel,
+      favorited: true,
+    },
+    {
+      id: '3',
+      title: 'Škoda Octavia 1.6 TDI',
+      priceEur: '7.300 €',
+      priceNote: '855.000 RSD',
+      specs: ['2015', 'Diesel', '198.000 km', 'Manual'],
+      location: 'Beograd, RS',
+      crossBorder: true,
+      crossBorderLabel,
+      favorited: true,
+    },
+    {
+      id: '4',
+      title: 'BMW 320d Touring',
+      priceEur: '14.900 €',
+      priceNote: '29.100 BGN',
+      specs: ['2019', 'Diesel', '96.000 km', 'Automatic'],
+      location: 'Sofia, BG',
+      crossBorder: true,
+      crossBorderLabel,
+      favorited: true,
     },
   ];
 }
@@ -47,7 +70,12 @@ function placeholders(offerLabel: string): ListingCardData[] {
 export default function HomeTab() {
   const theme = useTheme();
   const router = useRouter();
+  const { width } = useWindowDimensions();
   const { t } = useTranslation(['home', 'common']);
+
+  // Two columns and the gap between them fill the row exactly, on any screen.
+  const gap = theme.spacing.md;
+  const cardWidth = Math.floor((width - theme.screenPadding * 2 - gap) / 2);
 
   return (
     <Screen flush edges={['top']}>
@@ -96,29 +124,30 @@ export default function HomeTab() {
           </Pressable>
         </View>
 
-        <View style={{ gap: theme.spacing.xxxl, marginTop: -theme.spacing.sm }}>
-          {placeholders(t('home:special_offer')).map((listing) => (
-            <ListingCard key={listing.id} listing={listing} />
+        <View style={[styles.grid, { gap, marginTop: -theme.spacing.sm }]}>
+          {placeholders(t('home:special_offer'), t('home:cross_border')).map((listing) => (
+            <ListingCard key={listing.id} listing={listing} compact width={cardWidth} />
           ))}
         </View>
       </ScrollView>
 
-      <Fab
-        accessibilityLabel={t('common:continue')}
-        onPress={() => router.push('/(tabs)/sell')}
-      />
+      <Fab accessibilityLabel={t('common:continue')} onPress={() => router.push('/(tabs)/sell')} />
     </Screen>
   );
 }
 
-const styles = {
+const styles = StyleSheet.create({
   sectionHeader: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
-    justifyContent: 'space-between' as const,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   showAll: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-};
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+});

@@ -90,22 +90,13 @@ Development stores photos on the local disk. Production needs the S3 disk.
 | RevenueCat public SDK keys, iOS and Android | `app/.env` |
 | API base URL | `app/.env` |
 | App icon, adaptive icon, splash art | `app/assets/` |
+| Bundle identifier and package name, built on the vetura name | `app/app.json` |
+| The vetura domain, for the privacy policy and terms links | `docs/` |
 | Apple Developer and Google Play accounts | store consoles |
 | Privacy policy and terms URLs, once hosted | `docs/`, `app/app.json` |
 | Support email and phone shown in the stores | store listings |
 
-## 7. Brand name and wordmark
-
-| What | Where |
-|---|---|
-| The name in the header, currently `vetura` | `app/src/components/AppHeader.tsx` |
-| App name and slug | `app/app.json` |
-
-`vetura` is Albanian for "the car" and is a stand-in, not a chosen brand. It appears in
-the header wordmark and will also need to match the App Store and Play Store listings,
-the bundle identifier and the domain. Decide it before phase 12.
-
-## 8. Content that is representative, not final
+## 7. Content that is representative, not final
 
 - The cars on the home and search screens are hard-coded stand-ins until phase 9 wires
   them to the search endpoint, and their photos are grey blocks because nothing has been
