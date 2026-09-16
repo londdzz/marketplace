@@ -18,6 +18,24 @@ export function formatEur(amount: string | number | null): string {
 }
 
 /**
+ * A price that carries cents, written the way the region writes it: a comma
+ * before the cents. Car prices are whole euro and use formatEur; credit packs
+ * are 1.50 and 9.99, and rounding those would show the buyer a price that is
+ * not what the store charges.
+ */
+export function formatEurExact(amount: string | number | null): string {
+  if (amount === null) {
+    return '';
+  }
+
+  const value = Number(amount);
+  const whole = Math.trunc(value);
+  const cents = Math.round((value - whole) * 100);
+
+  return cents === 0 ? `${groups(whole)} €` : `${groups(whole)},${String(cents).padStart(2, '0')} €`;
+}
+
+/**
  * The same price in the local currency, converted at display time. Prices are
  * only ever stored in euro.
  */

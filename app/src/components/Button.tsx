@@ -18,6 +18,11 @@ export type ButtonProps = {
   block?: boolean;
   /** Drawn before the label, the way a Call button carries a handset. */
   icon?: keyof typeof Ionicons.glyphMap;
+  /**
+   * Draws an outline or ghost button in the warning colour, for an action that
+   * takes something away. A filled destructive action uses the danger variant.
+   */
+  destructive?: boolean;
   style?: StyleProp<ViewStyle>;
   testID?: string;
 };
@@ -31,6 +36,7 @@ export function Button({
   loading = false,
   block = false,
   icon,
+  destructive = false,
   style,
   testID,
 }: ButtonProps) {
@@ -71,15 +77,30 @@ export function Button({
     },
   };
 
+  const quiet = variant === 'ghost' || variant === 'outline';
+
   const tone =
     variant === 'primary' || variant === 'danger'
       ? 'onAccent'
-      : variant === 'ghost' || variant === 'outline'
-        ? 'accent'
+      : quiet
+        ? destructive
+          ? 'danger'
+          : 'accent'
         : 'default';
 
   const iconColor =
-    tone === 'onAccent' ? theme.colors.textOnAccent : tone === 'accent' ? theme.colors.accent : theme.colors.text;
+    tone === 'onAccent'
+      ? theme.colors.textOnAccent
+      : tone === 'danger'
+        ? theme.colors.danger
+        : tone === 'accent'
+          ? theme.colors.accent
+          : theme.colors.text;
+
+  if (destructive && quiet) {
+    surface[variant].border = variant === 'outline' ? theme.colors.danger : 'transparent';
+    surface[variant].pressed = theme.colors.dangerMuted;
+  }
 
   return (
     <Pressable
@@ -105,7 +126,13 @@ export function Button({
       {loading ? (
         <ActivityIndicator
           size="small"
-          color={variant === 'primary' || variant === 'danger' ? theme.colors.textOnAccent : theme.colors.accent}
+          color={
+            variant === 'primary' || variant === 'danger'
+              ? theme.colors.textOnAccent
+              : destructive
+                ? theme.colors.danger
+                : theme.colors.accent
+          }
         />
       ) : (
         <View style={[styles.label, { gap: theme.spacing.sm }]}>

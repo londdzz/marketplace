@@ -97,3 +97,16 @@ it('serves reference data from cache on the second call', function (): void {
         ->assertOk()
         ->assertJsonCount(40, 'data');
 });
+
+it('publishes the closed vocabularies the sell flow picks from', function (): void {
+    $response = $this->getJson('/api/v1/vocabularies')
+        ->assertOk()
+        ->assertJsonStructure(['data' => ['body_types', 'drivetrains', 'colors', 'features']]);
+
+    // The apps translate these keys, so the API and the app must agree on
+    // exactly what the set is.
+    expect($response->json('data.features'))->toBe(config('listings.features'))
+        ->and($response->json('data.body_types'))->toBe(config('listings.body_types'))
+        ->and($response->json('data.colors'))->toBe(config('listings.colors'))
+        ->and($response->json('data.drivetrains'))->toBe(config('listings.drivetrains'));
+});

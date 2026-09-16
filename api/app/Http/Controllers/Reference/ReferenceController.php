@@ -10,6 +10,7 @@ use App\Http\Resources\CountryResource;
 use App\Http\Resources\ExchangeRateResource;
 use App\Http\Resources\MakeResource;
 use App\Http\Resources\VehicleModelResource;
+use App\Http\Resources\VocabularyResource;
 use App\Models\City;
 use App\Models\Country;
 use App\Models\ExchangeRate;
@@ -80,6 +81,22 @@ class ReferenceController extends Controller
             ->get());
 
         return ExchangeRateResource::collection($rates);
+    }
+
+    /**
+     * The closed vocabularies behind the sell flow's pickers.
+     *
+     * They come from configuration rather than the database, so they are not
+     * cached: reading them costs nothing.
+     */
+    public function vocabularies(): VocabularyResource
+    {
+        return VocabularyResource::make([
+            'body_types' => (array) config('listings.body_types'),
+            'drivetrains' => (array) config('listings.drivetrains'),
+            'colors' => (array) config('listings.colors'),
+            'features' => (array) config('listings.features'),
+        ]);
     }
 
     /**

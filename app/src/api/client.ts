@@ -93,6 +93,39 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
   return payload as T;
 }
 
+/**
+ * A multipart upload, for photographs.
+ *
+ * Content-Type is deliberately left unset: the runtime has to add the multipart
+ * boundary itself, and setting it by hand produces a body the server cannot
+ * parse.
+ */
+export async function upload<T>(path: string, form: FormData): Promise<T> {
+  const headers: Record<string, string> = {
+    Accept: 'application/json',
+    'Accept-Language': i18n.language,
+  };
+
+  const token = await tokenStorage.read();
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  const response = await fetch(`${API_URL}${path}`, { method: 'POST', headers, body: form });
+
+  const text = await response.text();
+  const payload = text ? (JSON.parse(text) as unknown) : undefined;
+
+  if (!response.ok) {
+    const errorBody = (payload ?? {}) as ApiErrorBody;
+
+    throw new ApiError(response.status, errorBody.message ?? `Upload failed (${response.status})`, errorBody);
+  }
+
+  return payload as T;
+}
+
 export const api = {
   get: <T>(path: string, options?: Omit<RequestOptions, 'method' | 'body'>) =>
     request<T>(path, { ...options, method: 'GET' }),
@@ -102,4 +135,5 @@ export const api = {
     request<T>(path, { ...options, method: 'PATCH', body }),
   delete: <T>(path: string, options?: Omit<RequestOptions, 'method' | 'body'>) =>
     request<T>(path, { ...options, method: 'DELETE' }),
+  upload,
 };

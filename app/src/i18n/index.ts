@@ -35,7 +35,7 @@ void i18n.use(initReactI18next).init({
   lng: deviceLanguage(),
   fallbackLng: 'en',
   defaultNS: 'common',
-  ns: ['common', 'tabs', 'auth', 'home', 'search', 'listing'],
+  ns: ['common', 'tabs', 'auth', 'home', 'search', 'listing', 'sell'],
   interpolation: { escapeValue: false },
   returnNull: false,
 });

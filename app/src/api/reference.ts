@@ -1,6 +1,14 @@
 import { api } from './client';
 import type { ApiResource, City, Country, Make, VehicleModel } from './types';
 
+/** The closed vocabularies the API validates against. Keys, never wording. */
+export type Vocabularies = {
+  body_types: string[];
+  drivetrains: string[];
+  colors: string[];
+  features: string[];
+};
+
 export type ExchangeRate = {
   currency: string;
   rate_per_eur: string;
@@ -23,6 +31,8 @@ export const referenceApi = {
     api
       .get<ApiResource<VehicleModel[]>>(`/makes/${makeId}/models`, { anonymous: true })
       .then((r) => r.data),
+  vocabularies: () =>
+    api.get<ApiResource<Vocabularies>>('/vocabularies', { anonymous: true }).then((r) => r.data),
   exchangeRates: () =>
     api.get<ApiResource<ExchangeRate[]>>('/exchange-rates', { anonymous: true }).then((r) => r.data),
 };

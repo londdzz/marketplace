@@ -96,6 +96,22 @@ Development stores photos on the local disk. Production needs the S3 disk.
 | Privacy policy and terms URLs, once hosted | `docs/`, `app/app.json` |
 | Support email and phone shown in the stores | store listings |
 
+## 6b. In-app purchases — phase 10
+
+| What | Where |
+|---|---|
+| `EXPO_PUBLIC_REVENUECAT_IOS_KEY` | `app/.env` |
+| `EXPO_PUBLIC_REVENUECAT_ANDROID_KEY` | `app/.env` |
+| An offering in RevenueCat exposing `credits_1`, `credits_8`, `credits_25` | RevenueCat dashboard |
+
+The app matches a pack to a store product by its identifier, so those three products must
+exist in App Store Connect and Play Console **as consumables** and be attached to the
+current RevenueCat offering. Until the keys are set the credits sheet lists the packs at
+their euro prices and says purchases are not available, and nothing can be bought.
+
+Credits are granted only by the RevenueCat webhook, never by the app, so the webhook secret
+in section 2 has to be real before a purchase can ever add anything.
+
 ## 7. Content that is representative, not final
 
 - Listing photographs come from `DevListingSeeder`, which generates coloured panels rather

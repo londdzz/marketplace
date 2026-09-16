@@ -119,6 +119,30 @@ instruction in this document. Do not start the next phase until the user says so
   equivalent at 15%, Google Play's 12-tester 14-day closed testing, no payment flow bypassing IAP,
   sandbox IAP tested on a real device). STOP and give the checklist.
 
+## The quality bar
+
+This is a product real money is going into, and real sellers will pay per listing. It has to
+look and behave like something built by people who care, not like a demo. Every session
+holds to this:
+
+- **Nothing on screen is inert.** If it looks like a button, it does something. No control
+  is drawn just because the reference had one. When a feature is not built yet, the screen
+  says so plainly rather than pretending.
+- **Every screen that fetches has three states**: loading, empty, and failed. An empty list
+  says what to do next. A failure says what went wrong and offers the retry.
+- **No lorem ipsum, no "Example Ltd", no placeholder copy ships.** Stand-in data lives in a
+  development seeder and is named as such in PLACEHOLDERS.md.
+- **Forms show the API's own message.** Validation errors land on the field that caused
+  them. The apps never invent an error the server did not give.
+- **Money and counts are never faked.** A credit balance, an offer count and an expiry date
+  come from the API or they are not shown.
+- **Real devices decide.** The web preview is for judging layout. Fonts, safe areas, the
+  keyboard, the keychain, push and in-app purchases only tell the truth on a phone.
+- **Slow is a bug.** Lists paginate, images are thumbnails until they need to be full size,
+  and reference data is cached.
+- **If something is half-finished, it does not merge without being written down** in
+  PLACEHOLDERS.md or the phase notes.
+
 ## Working rules for every session
 
 - Read this file at the start of every session.
@@ -139,7 +163,8 @@ instruction in this document. Do not start the next phase until the user says so
 - Phase 7: complete.
 - Phase 8: complete.
 - Phase 9: complete (search, filter sheet, listing detail, favorites).
-- Next: Phase 10 (App sell flow).
+- Phase 10: complete (sell flow, photos, credits sheet, My Listings).
+- Next: Phase 11 (App messaging and profile).
 - The web build is previewed by a headless browser in `tour.js`, which signs up and walks
   every screen. It is not a substitute for running on a device: native fonts, safe areas
   and the keychain only behave properly there.
@@ -237,6 +262,32 @@ release, and update it whenever a placeholder is added or replaced.
   small thumbnail on the left rather than a full-width photo. The banner carries a deep
   brand blue in both schemes, because a full-width block of the light accent is glaring
   against a near-black page.
+- **The sell flow is eleven screens counted as seven steps.** One decision per
+  screen, as the specification asks, but the counter says "step 2 of 7" while the
+  seller answers year, kilometres, fuel and gearbox: it is honest about how much is
+  left, where "step 5 of 11" would only look longer. The bar across the top moves per
+  screen, so answering anything visibly gets somewhere.
+- **Every step writes the draft before it advances.** `SellProvider.save()` creates
+  the listing on the first step and updates it on every one after, so closing the app
+  halfway leaves a draft on the server rather than losing the work. Resuming jumps to
+  the first thing still missing, not back to the beginning.
+- **`GET /vocabularies`** serves the closed vocabularies (body types, drivetrains,
+  colours, feature keys) so the app never keeps its own copy of a list the API
+  validates against. Public, like the other reference endpoints.
+- **Photographs upload differently on each platform.** React Native sends a file as
+  `{uri, name, type}`; a browser needs the bytes, so the web build reads the blob back
+  out of the picker's uri. Both send one multipart part the API reads the same way.
+  The client resizes to 1600px at quality 0.8 first, and the server resizes again
+  regardless.
+- **Credit pack prices are shown to the cent.** `formatEur` rounds, which is right for
+  cars and wrong for 1,50 €, so `formatEurExact` writes the cents the region's way.
+  Where the store has told us its own price, that wins: the store is what charges.
+- **The app never grants a credit.** A purchase completes on the device before
+  RevenueCat has told the API, so the sheet refetches the balance until it rises, and
+  says the credits are on their way if that takes longer than it should.
+- **`php artisan credits:grant {phone} {amount}`** is the support tool for a purchase a
+  store took but never reported. It goes through CreditService like everything else, so
+  the grant lands in the ledger as an admin grant.
 - **Reopening a conversation is not a new contact.** The daily limit of twenty counts
   threads started, and `contact_count` only rises the first time.
 - **`listings:reindex`** rebuilds every listing's searchable text. Run it after any change

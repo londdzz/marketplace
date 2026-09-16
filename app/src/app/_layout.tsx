@@ -7,6 +7,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { AuthProvider, useAuth } from '../auth/AuthProvider';
 import { FiltersProvider } from '../search/FiltersProvider';
+import { SellProvider } from '../sell/SellProvider';
 import '../i18n';
 import { ThemeProvider } from '../theme/ThemeProvider';
 import { useTheme } from '../theme';
@@ -75,7 +76,9 @@ export default function RootLayout() {
           <QueryClientProvider client={queryClient}>
             <AuthProvider>
               <FiltersProvider>
-                <AuthGate />
+                <SellProvider>
+                  <AuthGate />
+                </SellProvider>
               </FiltersProvider>
             </AuthProvider>
           </QueryClientProvider>

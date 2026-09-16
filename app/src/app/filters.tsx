@@ -71,7 +71,7 @@ export default function FiltersScreen() {
           {(countries.data ?? []).map((country) => (
             <Chip
               key={country.code}
-              label={country.code}
+              label={t(`search:country.${country.code}`, country.code)}
               selected={(filters.countries ?? []).includes(country.code)}
               onPress={() => toggle('countries', country.code)}
               testID={`country-${country.code}`}
