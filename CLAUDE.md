@@ -152,6 +152,28 @@ holds to this:
   from the user (API keys, store accounts, and so on).
 - If anything is unspecified, ask rather than guess.
 
+## Scope as it stands
+
+The specification above describes five markets and five languages. That is the
+plan; it is not what launches. **Launch is North Macedonia alone, in Macedonian
+and English, with prices in euro only.** Nothing for the other markets has been
+deleted — all of it is closed rather than removed:
+
+- **Markets**: `countries.active` decides. Kosovo, Albania, Serbia and Bulgaria
+  are seeded inactive, with their cities, dialling prefixes and currencies.
+  Flipping one to active is the whole job: `/countries` starts returning it, its
+  dialling prefix appears on the sign-in screen, listings can be created there,
+  and the country chooser reappears in search, in the filter sheet and in the
+  sell flow, because all of those are driven by what the API answers.
+- **Languages**: `config('app.supported_locales')` in the API and
+  `SUPPORTED_LANGUAGES` in the app. Albanian, Serbian and Bulgarian are fully
+  translated and still bundled, listed as planned. Shipping one is a line in
+  each place.
+- **Currency**: `SHOW_LOCAL_CURRENCY` in `app/src/market.ts` is off, so prices
+  are euro only. The exchange-rate job, the endpoint and the formatting all
+  still work; turn it on when a market that does not use the euro opens.
+- Store availability for phase 12 is **MK only**, not the five originally listed.
+
 ## Status
 
 - Phase 1: complete.
@@ -164,7 +186,8 @@ holds to this:
 - Phase 8: complete.
 - Phase 9: complete (search, filter sheet, listing detail, favorites).
 - Phase 10: complete (sell flow, photos, credits sheet, My Listings).
-- Next: Phase 11 (App messaging and profile).
+- Phase 11: complete (conversations, thread, profile, language switcher, account deletion).
+- Next: Phase 12 (Store readiness), scoped to North Macedonia.
 - The web build is previewed by a headless browser in `tour.js`, which signs up and walks
   every screen. It is not a substitute for running on a device: native fonts, safe areas
   and the keychain only behave properly there.
@@ -275,6 +298,17 @@ release, and update it whenever a placeholder is added or replaced.
   from Simple Icons, whose files are CC0, and renders flat PNGs that the app
   tints to the text colour, so one file works in light and dark. Run it, then
   `php artisan makes:logos`. A make with no mark still falls back to a monogram.
+- **Messaging is polled, not pushed.** The thread asks every five seconds while
+  it is open, the list every fifteen while it is on screen, and neither costs
+  anything when it is not. Opening a thread marks it read once rather than on
+  every poll. Push notifications already exist for saved searches and expiring
+  listings; wiring them to messages is a phase of its own.
+- **A message button always reaches the same thread.** `POST
+  /listings/{id}/conversations` reopens the existing one rather than starting
+  another, so the button needs no state of its own.
+- **The account's language follows the account.** A signed-in user's
+  `preferred_language` overrides the device on every launch, and the profile
+  switcher changes the app immediately and then saves it.
 - **The sell flow is eleven screens counted as seven steps.** One decision per
   screen, as the specification asks, but the counter says "step 2 of 7" while the
   seller answers year, kilometres, fuel and gearbox: it is honest about how much is
