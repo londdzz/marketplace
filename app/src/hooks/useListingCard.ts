@@ -29,7 +29,7 @@ export function useListingCardMapper(
         listing.mileage_km !== null ? formatKm(listing.mileage_km) : null,
         listing.transmission ? t(`listing:transmission.${listing.transmission}`, listing.transmission) : null,
       ].filter((value): value is string => value !== null),
-      photoUrl: listing.photos[0]?.thumb_url,
+      photoUrl: listing.photos?.[0]?.thumb_url,
       location: listingLocation(listing),
       featured: listing.is_featured,
       featuredLabel: listing.is_featured ? t('home:special_offer') : undefined,

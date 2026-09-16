@@ -35,10 +35,8 @@ export default function SavedTab() {
   return (
     <Screen flush edges={['top']}>
       <Text
-        variant="display"
+        variant="title"
         style={{
-          fontSize: 24,
-          lineHeight: 30,
           paddingHorizontal: theme.screenPadding,
           paddingVertical: theme.spacing.md,
         }}

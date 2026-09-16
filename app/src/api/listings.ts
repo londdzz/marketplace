@@ -41,6 +41,12 @@ export function toQuery(filters: SearchFilters, page = 1): string {
   return params.toString();
 }
 
+/** What GET /favorites actually returns: bookmarks, each carrying its listing. */
+type FavoritePage = {
+  data: Array<{ listing_id: string; listing?: Listing; created_at: string | null }>;
+  meta: ListingPage['meta'];
+};
+
 export const listingsApi = {
   search: (filters: SearchFilters, page = 1) =>
     api.get<ListingPage>(`/listings?${toQuery(filters, page)}`, { anonymous: true }),
@@ -48,7 +54,18 @@ export const listingsApi = {
   show: (id: string) =>
     api.get<ApiResource<Listing>>(`/listings/${id}`, { anonymous: true }).then((r) => r.data),
 
-  favorites: () => api.get<ListingPage>('/favorites'),
+  /**
+   * The saved cars.
+   *
+   * The API answers with favourite rows — when it was saved, and the listing
+   * inside — so the listings are lifted out here. Every screen that shows saved
+   * cars wants the cars, not the bookmarks.
+   */
+  favorites: (): Promise<ListingPage> =>
+    api.get<FavoritePage>('/favorites').then((page) => ({
+      data: page.data.map((row) => row.listing).filter((listing): listing is Listing => Boolean(listing)),
+      meta: page.meta,
+    })),
 
   addFavorite: (listingId: string) => api.post<unknown>('/favorites', { listing_id: listingId }),
 

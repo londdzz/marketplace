@@ -1,10 +1,12 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
 
+import { listingsApi } from '../../api/listings';
 import { referenceApi } from '../../api/reference';
+import type { Listing } from '../../api/types';
 import { AppHeader, ListingCard, PromoBanner, Screen, SearchBar, Text } from '../../components';
 import { useExchangeRates } from '../../hooks/useExchangeRates';
 import { useListingCardMapper } from '../../hooks/useListingCard';
@@ -16,6 +18,7 @@ export default function HomeTab() {
   const router = useRouter();
   const { width } = useWindowDimensions();
   const { t } = useTranslation(['home', 'common']);
+  const queryClient = useQueryClient();
 
   // The newest cars across all five markets, which is what a home screen is
   // for: something to look at before anyone has searched for anything.
@@ -23,8 +26,22 @@ export default function HomeTab() {
   const { byCurrency } = useExchangeRates();
   const countries = useQuery({ queryKey: ['countries'], queryFn: referenceApi.countries });
 
-  const toCard = useListingCardMapper(byCurrency, (code) =>
-    countries.data?.find((country) => country.code === code)?.currency ?? 'EUR',
+  const favorites = useQuery({ queryKey: ['favorites'], queryFn: listingsApi.favorites });
+  const favoriteIds = new Set((favorites.data?.data ?? []).map((listing) => listing.id));
+
+  // The heart on a card does what a heart does, here as well as in the results.
+  const save = useMutation({
+    mutationFn: (listing: Listing) =>
+      favoriteIds.has(listing.id)
+        ? listingsApi.removeFavorite(listing.id)
+        : listingsApi.addFavorite(listing.id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['favorites'] }),
+  });
+
+  const toCard = useListingCardMapper(
+    byCurrency,
+    (code) => countries.data?.find((country) => country.code === code)?.currency ?? 'EUR',
+    favoriteIds,
   );
 
   const listings = (newest.data?.pages[0]?.data ?? []).slice(0, 6);
@@ -94,6 +111,7 @@ export default function HomeTab() {
                 compact
                 width={cardWidth}
                 onPress={() => router.push(`/listing/${listing.id}`)}
+                onToggleFavorite={() => save.mutate(listing)}
               />
             ))}
           </View>
