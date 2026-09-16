@@ -3,6 +3,9 @@
 declare(strict_types=1);
 
 return [
+    'photos' => [
+        'too_many' => 'Një shpallje mund të ketë maksimum :max foto.',
+    ],
     'status' => [
         'draft' => 'Draft',
         'pending_payment' => 'Në pritje të pagesës',

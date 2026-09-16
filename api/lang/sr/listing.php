@@ -3,6 +3,9 @@
 declare(strict_types=1);
 
 return [
+    'photos' => [
+        'too_many' => 'Оглас може имати највише :max фотографија.',
+    ],
     'status' => [
         'draft' => 'Нацрт',
         'pending_payment' => 'Чека уплату',

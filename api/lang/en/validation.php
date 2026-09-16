@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 return [
 
+    'model_not_in_make' => 'The selected model does not belong to the selected make.',
+    'photo_order_mismatch' => 'The new order has to list every photo of this listing exactly once.',
     'city_not_in_country' => 'The selected city does not belong to the selected country.',
 
     /*

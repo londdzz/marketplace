@@ -3,6 +3,9 @@
 declare(strict_types=1);
 
 return [
+    'photos' => [
+        'too_many' => 'A listing can carry at most :max photos.',
+    ],
     'status' => [
         'draft' => 'Draft',
         'pending_payment' => 'Pending payment',

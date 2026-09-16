@@ -3,6 +3,9 @@
 declare(strict_types=1);
 
 return [
+    'photos' => [
+        'too_many' => 'Една обява може да съдържа най-много :max снимки.',
+    ],
     'status' => [
         'draft' => 'Чернова',
         'pending_payment' => 'Очаква плащане',

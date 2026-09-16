@@ -55,6 +55,8 @@ return [
         'file' => 'Fusha :attribute duhet të jetë mes :min dhe :max kilobajt.',
         'array' => 'Fusha :attribute duhet të përmbajë mes :min dhe :max elemente.',
     ],
+    'model_not_in_make' => 'Modeli i zgjedhur nuk i përket markës së zgjedhur.',
+    'photo_order_mismatch' => 'Rendi i ri duhet të listojë çdo foto të kësaj shpallje saktësisht një herë.',
     'city_not_in_country' => 'Qyteti i zgjedhur nuk i përket shtetit të zgjedhur.',
     'custom' => [
     ],

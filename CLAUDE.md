@@ -132,7 +132,8 @@ instruction in this document. Do not start the next phase until the user says so
 
 - Phase 1: complete.
 - Phase 2: complete.
-- Next: Phase 3 (Listings CRUD and photos), only when the user says so.
+- Phase 3: complete.
+- Next: Phase 4 (Publish, renew, credits).
 
 ## Placeholders
 
@@ -151,6 +152,17 @@ release, and update it whenever a placeholder is added or replaced.
   `OtpSender` and nothing else.
 - **Draft listings have nullable vehicle columns**, because the sell flow saves after
   every step. `ListingService::publish()` enforces completeness instead.
+- **The reference endpoints** (`/countries`, `/cities`, `/makes`, `/makes/{id}/models`,
+  `/exchange-rates`) belong to no phase in the plan, so they were built in phase 3 where
+  the make and model pickers first need them. Public and cached for an hour.
+- **`GET /listings/{id}` is phase 3** as the read half of CRUD; `GET /listings`, the
+  search endpoint, stays in phase 5. `POST /listings/{id}/mark-sold` waits for phase 4
+  with the other lifecycle transitions.
+- **Closed vocabularies live in `config/listings.php`**: body types, drivetrains, colors
+  and feature keys. The API validates and returns keys; the apps translate them.
+- **Photos are always re-encoded server-side**, which enforces the 1600px long edge and
+  the 400px thumbnail and strips EXIF, location included. HEIC is refused because GD
+  cannot decode it and the app converts to JPEG before uploading anyway.
 - **`TextNormalizer` collapses repeated letters**, so Passat and Пасат agree. Digits are
   never collapsed. Cyrillic к always becomes k, so Октавија does not match Octavia.
 - **A new account's country comes from the dialling prefix**, falling back to
