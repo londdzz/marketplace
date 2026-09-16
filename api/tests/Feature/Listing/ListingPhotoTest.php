@@ -13,7 +13,7 @@ use Illuminate\Testing\TestResponse;
 beforeEach(function (): void {
     $this->seed(CountrySeeder::class);
 
-    Storage::fake('local');
+    Storage::fake(config('filesystems.default'));
 
     $this->seller = User::factory()->create(['country_code' => 'XK']);
     $this->listing = Listing::factory()->create(['user_id' => $this->seller->id]);
@@ -35,7 +35,7 @@ function upload(array $files): TestResponse
  */
 function imageSize(string $path): array
 {
-    $info = getimagesizefromstring(Storage::disk('local')->get($path));
+    $info = getimagesizefromstring(Storage::disk(config('filesystems.default'))->get($path));
 
     return [(int) $info[0], (int) $info[1]];
 }
@@ -45,8 +45,8 @@ it('resizes to a 1600px long edge and writes a 400px thumbnail', function (): vo
 
     $photo = ListingPhoto::query()->sole();
 
-    Storage::disk('local')->assertExists($photo->path);
-    Storage::disk('local')->assertExists($photo->thumb_path);
+    Storage::disk(config('filesystems.default'))->assertExists($photo->path);
+    Storage::disk(config('filesystems.default'))->assertExists($photo->thumb_path);
 
     expect(imageSize($photo->path))->toBe([1600, 1067])
         ->and(imageSize($photo->thumb_path))->toBe([400, 267])
@@ -158,8 +158,8 @@ it('removes a photo and its files, closing the gap in the order', function (): v
         ->deleteJson("/api/v1/listings/{$this->listing->id}/photos/{$ids[1]}")
         ->assertNoContent();
 
-    Storage::disk('local')->assertMissing($middle->path);
-    Storage::disk('local')->assertMissing($middle->thumb_path);
+    Storage::disk(config('filesystems.default'))->assertMissing($middle->path);
+    Storage::disk(config('filesystems.default'))->assertMissing($middle->thumb_path);
 
     expect($this->listing->photos()->orderBy('position')->pluck('id')->all())
         ->toBe([$ids[0], $ids[2]])
@@ -219,7 +219,7 @@ it('refuses an order naming a photo from another listing', function (): void {
 it('strips camera metadata by re-encoding every upload', function (): void {
     upload([UploadedFile::fake()->image('one.jpg', 1200, 800)])->assertStatus(201);
 
-    $contents = Storage::disk('local')->get(ListingPhoto::query()->sole()->path);
+    $contents = Storage::disk(config('filesystems.default'))->get(ListingPhoto::query()->sole()->path);
 
     expect($contents)->not->toContain('Exif')
         ->and($contents)->not->toContain('GPS');

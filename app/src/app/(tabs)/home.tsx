@@ -1,77 +1,33 @@
 import { Ionicons } from '@expo/vector-icons';
+import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
 
-import {
-  AppHeader,
-  Fab,
-  ListingCard,
-  PromoBanner,
-  Screen,
-  SearchBar,
-  Text,
-  type ListingCardData,
-} from '../../components';
+import { referenceApi } from '../../api/reference';
+import { AppHeader, Fab, ListingCard, PromoBanner, Screen, SearchBar, Text } from '../../components';
+import { useExchangeRates } from '../../hooks/useExchangeRates';
+import { useListingCardMapper } from '../../hooks/useListingCard';
+import { useListingSearch } from '../../hooks/useListingSearch';
 import { useTheme } from '../../theme';
-
-/**
- * Stand-ins until phase 9 wires this to GET /listings.
- */
-function placeholders(offerLabel: string, crossBorderLabel: string): ListingCardData[] {
-  return [
-    {
-      id: '1',
-      title: 'Volkswagen Passat 2.0 TDI',
-      priceEur: '8.950 €',
-      priceNote: '1.094.000 ALL',
-      specs: ['2016', 'Diesel', '168.000 km', 'Manual'],
-      location: 'Prishtinë, XK',
-      featured: true,
-      featuredLabel: offerLabel,
-      favorited: true,
-    },
-    {
-      id: '2',
-      title: 'Audi A4 Avant 2.0 TDI',
-      priceEur: '12.400 €',
-      priceNote: '762.000 MKD',
-      specs: ['2018', 'Diesel', '121.000 km', 'Automatic'],
-      location: 'Skopje, MK',
-      crossBorder: true,
-      crossBorderLabel,
-      favorited: true,
-    },
-    {
-      id: '3',
-      title: 'Škoda Octavia 1.6 TDI',
-      priceEur: '7.300 €',
-      priceNote: '855.000 RSD',
-      specs: ['2015', 'Diesel', '198.000 km', 'Manual'],
-      location: 'Beograd, RS',
-      crossBorder: true,
-      crossBorderLabel,
-      favorited: true,
-    },
-    {
-      id: '4',
-      title: 'BMW 320d Touring',
-      priceEur: '14.900 €',
-      priceNote: '29.100 BGN',
-      specs: ['2019', 'Diesel', '96.000 km', 'Automatic'],
-      location: 'Sofia, BG',
-      crossBorder: true,
-      crossBorderLabel,
-      favorited: true,
-    },
-  ];
-}
 
 export default function HomeTab() {
   const theme = useTheme();
   const router = useRouter();
   const { width } = useWindowDimensions();
   const { t } = useTranslation(['home', 'common']);
+
+  // The newest cars across all five markets, which is what a home screen is
+  // for: something to look at before anyone has searched for anything.
+  const newest = useListingSearch({ sort: 'newest' });
+  const { byCurrency } = useExchangeRates();
+  const countries = useQuery({ queryKey: ['countries'], queryFn: referenceApi.countries });
+
+  const toCard = useListingCardMapper(byCurrency, (code) =>
+    countries.data?.find((country) => country.code === code)?.currency ?? 'EUR',
+  );
+
+  const listings = (newest.data?.pages[0]?.data ?? []).slice(0, 6);
 
   // Two columns and the gap between them fill the row exactly, on any screen.
   const gap = theme.spacing.md;
@@ -109,7 +65,7 @@ export default function HomeTab() {
 
         <View style={styles.sectionHeader}>
           <Text variant="display" style={{ fontSize: 24, lineHeight: 30 }}>
-            {t('home:parked')}
+            {t('home:newest')}
           </Text>
           <Pressable accessibilityRole="button" style={styles.showAll}>
             <Text variant="bodyStrong" tone="accent">
@@ -124,11 +80,21 @@ export default function HomeTab() {
           </Pressable>
         </View>
 
-        <View style={[styles.grid, { gap, marginTop: -theme.spacing.sm }]}>
-          {placeholders(t('home:special_offer'), t('home:cross_border')).map((listing) => (
-            <ListingCard key={listing.id} listing={listing} compact width={cardWidth} />
-          ))}
-        </View>
+        {newest.isLoading ? (
+          <ActivityIndicator color={theme.colors.accent} style={{ marginTop: theme.spacing.xl }} />
+        ) : (
+          <View style={[styles.grid, { gap, marginTop: -theme.spacing.sm }]}>
+            {listings.map((listing) => (
+              <ListingCard
+                key={listing.id}
+                listing={toCard(listing)}
+                compact
+                width={cardWidth}
+                onPress={() => router.push(`/listing/${listing.id}`)}
+              />
+            ))}
+          </View>
+        )}
       </ScrollView>
 
       <Fab accessibilityLabel={t('common:continue')} onPress={() => router.push('/(tabs)/sell')} />

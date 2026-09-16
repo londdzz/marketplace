@@ -154,7 +154,7 @@ it('ignores an attempt to change the phone number or the balance', function (): 
 });
 
 it('deletes the account and everything attached to it', function (): void {
-    Storage::fake('local');
+    Storage::fake(config('filesystems.default'));
 
     $user = $this->user;
     $other = User::factory()->create(['country_code' => 'XK']);
@@ -164,8 +164,8 @@ it('deletes the account and everything attached to it', function (): void {
     $soldListing = Listing::factory()->create(['user_id' => $user->id]);
     $soldListing->delete();
 
-    Storage::disk('local')->put('listings/photo.jpg', 'x');
-    Storage::disk('local')->put('listings/photo-thumb.jpg', 'x');
+    Storage::disk(config('filesystems.default'))->put('listings/photo.jpg', 'x');
+    Storage::disk(config('filesystems.default'))->put('listings/photo-thumb.jpg', 'x');
 
     ListingPhoto::query()->create([
         'listing_id' => $listing->id,
@@ -229,8 +229,8 @@ it('deletes the account and everything attached to it', function (): void {
         ->and(OtpCode::query()->count())->toBe(0)
         ->and(PersonalAccessToken::query()->count())->toBe(0);
 
-    Storage::disk('local')->assertMissing('listings/photo.jpg');
-    Storage::disk('local')->assertMissing('listings/photo-thumb.jpg');
+    Storage::disk(config('filesystems.default'))->assertMissing('listings/photo.jpg');
+    Storage::disk(config('filesystems.default'))->assertMissing('listings/photo-thumb.jpg');
 
     // The other account is untouched.
     expect(User::query()->whereKey($other->id)->exists())->toBeTrue();

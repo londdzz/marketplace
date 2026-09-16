@@ -33,7 +33,7 @@ it('will not let another seller delete my listing', function (): void {
 });
 
 it('will not let another seller add photos to my listing', function (): void {
-    Storage::fake('local');
+    Storage::fake(config('filesystems.default'));
 
     $this->actingAs($this->stranger, 'sanctum')
         ->postJson("/api/v1/listings/{$this->listing->id}/photos", [
@@ -45,7 +45,7 @@ it('will not let another seller add photos to my listing', function (): void {
 });
 
 it('will not let another seller reorder or remove my photos', function (): void {
-    Storage::fake('local');
+    Storage::fake(config('filesystems.default'));
 
     $photos = $this->actingAs($this->seller, 'sanctum')
         ->postJson("/api/v1/listings/{$this->listing->id}/photos", [
@@ -108,7 +108,7 @@ it('shuts a blocked seller out of creating listings', function (): void {
 });
 
 it('will not remove a photo through a listing that does not own it', function (): void {
-    Storage::fake('local');
+    Storage::fake(config('filesystems.default'));
 
     $otherListing = Listing::factory()->create(['user_id' => $this->seller->id]);
 

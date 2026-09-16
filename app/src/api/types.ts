@@ -46,3 +46,101 @@ export type OtpChallenge = {
   expires_at: string;
   expires_in_seconds: number;
 };
+
+export type Make = {
+  id: number;
+  name: string;
+  popular: boolean;
+};
+
+export type VehicleModel = {
+  id: number;
+  make_id: number;
+  name: string;
+  body_type: string | null;
+};
+
+export type ListingPhoto = {
+  id: string;
+  url: string;
+  thumb_url: string;
+  position: number;
+  width: number;
+  height: number;
+};
+
+export type Seller = {
+  id: number;
+  display_name: string | null;
+  seller_type: SellerType;
+  dealer_name: string | null;
+  phone: string | null;
+  city: City | null;
+  member_since: string | null;
+};
+
+export type Listing = {
+  id: string;
+  status: string;
+  make: Make | null;
+  model: VehicleModel | null;
+  variant: string | null;
+  year: number | null;
+  mileage_km: number | null;
+  fuel: string | null;
+  transmission: string | null;
+  body_type: string | null;
+  engine_cc: number | null;
+  power_hp: number | null;
+  drivetrain: string | null;
+  color: string | null;
+  doors: number | null;
+  seats: number | null;
+  price_eur: string | null;
+  price_negotiable: boolean;
+  vat_deductible: boolean;
+  customs_cleared: boolean | null;
+  description: string | null;
+  features: string[];
+  country_code: string | null;
+  city: City | null;
+  photos: ListingPhoto[];
+  photo_count?: number;
+  seller?: Seller;
+  view_count: number;
+  is_featured: boolean;
+  published_at: string | null;
+  expires_at: string | null;
+};
+
+export type Pagination = {
+  current_page: number;
+  last_page: number;
+  per_page: number;
+  total: number;
+};
+
+export type ListingPage = {
+  data: Listing[];
+  meta: Pagination;
+};
+
+export type SortOption = 'relevance' | 'price_asc' | 'price_desc' | 'newest' | 'mileage_asc';
+
+/** What the filter sheet holds. Everything optional; absent means no filter. */
+export type SearchFilters = {
+  q?: string;
+  makeId?: number;
+  modelId?: number;
+  yearMin?: number;
+  yearMax?: number;
+  priceMin?: number;
+  priceMax?: number;
+  mileageMax?: number;
+  fuel?: string[];
+  transmission?: string;
+  bodyType?: string;
+  countries?: string[];
+  cityId?: number;
+  sort?: SortOption;
+};

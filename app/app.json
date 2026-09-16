@@ -28,7 +28,8 @@
         {
           "root": "./src/app"
         }
-      ]
+      ],
+      "expo-image"
     ],
     "scheme": "carmarketplace"
   }

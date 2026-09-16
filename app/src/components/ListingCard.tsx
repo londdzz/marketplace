@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { useTheme } from '../theme';
@@ -13,6 +14,8 @@ export type ListingCardData = {
   priceNote?: string;
   specs: string[];
   location: string;
+  /** The thumbnail the API serves. Absent while a draft has no photo yet. */
+  photoUrl?: string;
   crossBorder?: boolean;
   /** The wording on the cross-border marker, already translated. */
   crossBorderLabel?: string;
@@ -74,6 +77,15 @@ export function ListingCard({
             },
           ]}
         >
+          {listing.photoUrl ? (
+            <Image
+              source={{ uri: listing.photoUrl }}
+              style={{ width: photoWidth, height: photoHeight }}
+              contentFit="cover"
+              transition={150}
+            />
+          ) : null}
+
           {listing.featured && listing.featuredLabel ? (
             <View
               style={[

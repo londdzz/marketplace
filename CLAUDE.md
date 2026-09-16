@@ -137,8 +137,12 @@ instruction in this document. Do not start the next phase until the user says so
 - Phase 5: complete.
 - Phase 6: complete.
 - Phase 7: complete.
-- Next: Phase 8 (App foundation). It ends with the app running and login working against
-  the local API, so it needs a computer to test on.
+- Phase 8: complete.
+- Phase 9: complete (search, filter sheet, listing detail, favorites).
+- Next: Phase 10 (App sell flow).
+- The web build is previewed by a headless browser in `tour.js`, which signs up and walks
+  every screen. It is not a substitute for running on a device: native fonts, safe areas
+  and the keychain only behave properly there.
 
 ## Placeholders
 
@@ -197,6 +201,13 @@ release, and update it whenever a placeholder is added or replaced.
 - **Exchange rates: pick the provider carefully.** The European Central Bank publishes
   neither the Albanian lek nor the Macedonian denar, so an ECB-backed feed cannot cover
   three of the five markets.
+- **`DevListingSeeder` publishes eight cars with photographs** for development and for the
+  screenshot tour. It is never called from `DatabaseSeeder`, and it goes through
+  CreditService and ListingService like any other caller, so the photo pipeline, the credit
+  spend and the publish path all run for real. The photographs are generated, so the
+  repository carries no image files.
+- **Development stores photos on the `public` disk**, since the `local` disk is private in
+  Laravel 11 and its files are not servable. Production uses S3.
 - **The product is called vetura**, Albanian for "the car". It is the app name, the slug
   and the wordmark in the header, and the store listings, bundle identifier and domain
   should all be built on it.
