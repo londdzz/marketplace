@@ -135,7 +135,8 @@ instruction in this document. Do not start the next phase until the user says so
 - Phase 3: complete.
 - Phase 4: complete.
 - Phase 5: complete.
-- Next: Phase 6 (Messaging, favorites, saved searches, reports).
+- Phase 6: complete.
+- Next: Phase 7 (Scheduled jobs and push).
 
 ## Placeholders
 
@@ -178,6 +179,11 @@ release, and update it whenever a placeholder is added or replaced.
 - **Featured listings lead every ordering**, including an explicit price sort. That is
   what being featured buys, and it matches the specified default of featured first, then
   bumped_at descending.
+- **A saved search is validated by the search rules.** `App\Support\ListingFilterRules`
+  is shared between the search endpoint and saved searches, so a saved search can never
+  hold a filter that search itself would reject.
+- **Reopening a conversation is not a new contact.** The daily limit of twenty counts
+  threads started, and `contact_count` only rises the first time.
 - **`listings:reindex`** rebuilds every listing's searchable text. Run it after any change
   to TextNormalizer or to what goes into that text.
 - **A non-euro purchase records no price.** RevenueCat reports the store front currency;

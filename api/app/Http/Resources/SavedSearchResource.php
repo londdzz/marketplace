@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Http\Resources;
 
-use App\Models\Message;
+use App\Models\SavedSearch;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * @mixin Message
+ * @mixin SavedSearch
  */
-class MessageResource extends JsonResource
+class SavedSearchResource extends JsonResource
 {
     /**
      * @return array<string, mixed>
@@ -20,11 +20,10 @@ class MessageResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'conversation_id' => $this->conversation_id,
-            'sender_id' => $this->sender_id,
-            'is_mine' => $request->user()?->getKey() === $this->sender_id,
-            'body' => $this->body,
-            'read_at' => $this->read_at?->toIso8601String(),
+            'name' => $this->name,
+            'filters' => $this->filters,
+            'notify' => $this->notify,
+            'last_notified_at' => $this->last_notified_at?->toIso8601String(),
             'created_at' => $this->created_at?->toIso8601String(),
         ];
     }

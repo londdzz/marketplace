@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\MessageResource;
+use App\Http\Resources\StatusResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Laravel\Sanctum\PersonalAccessToken;
@@ -24,6 +24,6 @@ class SessionController extends Controller
             $token->delete();
         }
 
-        return MessageResource::make(__('auth.logged_out'))->response();
+        return StatusResource::make(__('auth.logged_out'))->response();
     }
 }

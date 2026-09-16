@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Listing;
 
-use App\Enums\FuelType;
-use App\Enums\Transmission;
+use App\Support\ListingFilterRules;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
 
 class SearchListingsRequest extends FormRequest
@@ -41,29 +39,10 @@ class SearchListingsRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            'q' => ['sometimes', 'nullable', 'string', 'max:120'],
-            'make_id' => ['sometimes', 'nullable', 'integer', Rule::exists('makes', 'id')],
-            'model_id' => ['sometimes', 'nullable', 'integer', Rule::exists('models', 'id')],
-            'year_min' => ['sometimes', 'nullable', 'integer', 'min:'.config('listings.year_min')],
-            'year_max' => ['sometimes', 'nullable', 'integer', 'min:'.config('listings.year_min')],
-            'price_min' => ['sometimes', 'nullable', 'numeric', 'min:0'],
-            'price_max' => ['sometimes', 'nullable', 'numeric', 'min:0'],
-            'mileage_max' => ['sometimes', 'nullable', 'integer', 'min:0'],
-            'fuel' => ['sometimes', 'nullable', 'array'],
-            'fuel.*' => [Rule::enum(FuelType::class)],
-            'transmission' => ['sometimes', 'nullable', Rule::enum(Transmission::class)],
-            'body_type' => ['sometimes', 'nullable', Rule::in(config('listings.body_types'))],
-            'countries' => ['sometimes', 'nullable', 'array'],
-            'countries.*' => ['string', 'size:2', Rule::exists('countries', 'code')],
-            'city_id' => ['sometimes', 'nullable', 'integer', Rule::exists('cities', 'id')],
-            'radius_km' => ['sometimes', 'nullable', 'numeric', 'min:1', 'max:'.config('listings.search.max_radius_km')],
-            'lat' => ['sometimes', 'nullable', 'numeric', 'between:-90,90'],
-            'lng' => ['sometimes', 'nullable', 'numeric', 'between:-180,180'],
-            'sort' => ['sometimes', 'nullable', Rule::in(['relevance', 'price_asc', 'price_desc', 'newest', 'mileage_asc'])],
+        return array_merge(ListingFilterRules::rules(), [
             'page' => ['sometimes', 'integer', 'min:1'],
             'per_page' => ['sometimes', 'integer', 'min:1', 'max:'.config('listings.search.max_per_page')],
-        ];
+        ]);
     }
 
     /**

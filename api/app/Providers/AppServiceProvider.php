@@ -52,6 +52,16 @@ class AppServiceProvider extends ServiceProvider
             ];
         });
 
+        // No more than twenty new conversations a day, so a single account
+        // cannot spray every seller in five countries.
+        RateLimiter::for('start-conversation', static function (Request $request): Limit {
+            $limit = (int) config('listings.conversations.per_user_per_day');
+
+            return Limit::perDay($limit)
+                ->by('start-conversation:'.$request->user()?->getKey())
+                ->response(fn () => response()->json(['message' => __('conversation.daily_limit')], 429));
+        });
+
         RateLimiter::for('otp-verify', static function (Request $request): Limit {
             $verify = config('otp.rate_limits.verify_per_ip');
 

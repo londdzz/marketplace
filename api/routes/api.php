@@ -11,6 +11,10 @@ use App\Http\Controllers\Listing\ListingLifecycleController;
 use App\Http\Controllers\Listing\ListingPhotoController;
 use App\Http\Controllers\Listing\ListingSearchController;
 use App\Http\Controllers\Listing\MyListingController;
+use App\Http\Controllers\Messaging\ConversationController;
+use App\Http\Controllers\Messaging\FavoriteController;
+use App\Http\Controllers\Messaging\ReportController;
+use App\Http\Controllers\Messaging\SavedSearchController;
 use App\Http\Controllers\Reference\ReferenceController;
 use App\Http\Controllers\Webhook\RevenueCatWebhookController;
 use Illuminate\Support\Facades\Route;
@@ -19,7 +23,7 @@ use Illuminate\Support\Facades\Route;
  * Everything here is served under the /api/v1 prefix, configured in
  * bootstrap/app.php.
  *
- * Messaging, favorites, saved searches and reports arrive in phase 6.
+ * Scheduled jobs, device tokens and push arrive in phase 7.
  */
 
 Route::prefix('auth')->group(function (): void {
@@ -69,6 +73,25 @@ Route::middleware(['auth:sanctum', 'blocked'])->group(function (): void {
     Route::post('listings/{listing}/mark-sold', [ListingLifecycleController::class, 'markSold'])->name('listings.mark-sold');
 
     Route::get('credits', [CreditController::class, 'index'])->name('credits.index');
+
+    Route::get('conversations', [ConversationController::class, 'index'])->name('conversations.index');
+    Route::get('conversations/{conversation}/messages', [ConversationController::class, 'messages'])->name('conversations.messages');
+    Route::post('conversations/{conversation}/messages', [ConversationController::class, 'send'])->name('conversations.send');
+    Route::post('conversations/{conversation}/read', [ConversationController::class, 'read'])->name('conversations.read');
+
+    Route::post('listings/{listing}/conversations', [ConversationController::class, 'store'])
+        ->middleware('throttle:start-conversation')
+        ->name('listings.conversations.store');
+
+    Route::get('favorites', [FavoriteController::class, 'index'])->name('favorites.index');
+    Route::post('favorites', [FavoriteController::class, 'store'])->name('favorites.store');
+    Route::delete('favorites/{listing}', [FavoriteController::class, 'destroy'])->name('favorites.destroy');
+
+    Route::get('saved-searches', [SavedSearchController::class, 'index'])->name('saved-searches.index');
+    Route::post('saved-searches', [SavedSearchController::class, 'store'])->name('saved-searches.store');
+    Route::delete('saved-searches/{savedSearch}', [SavedSearchController::class, 'destroy'])->name('saved-searches.destroy');
+
+    Route::post('listings/{listing}/report', [ReportController::class, 'store'])->name('listings.report');
 
     Route::post('listings/{listing}/photos', [ListingPhotoController::class, 'store'])->name('listings.photos.store');
     Route::patch('listings/{listing}/photos/order', [ListingPhotoController::class, 'order'])->name('listings.photos.order');

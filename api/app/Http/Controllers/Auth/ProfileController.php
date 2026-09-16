@@ -6,7 +6,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\UpdateProfileRequest;
-use App\Http\Resources\MessageResource;
+use App\Http\Resources\StatusResource;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Services\AccountDeletionService;
@@ -53,6 +53,6 @@ class ProfileController extends Controller
 
         $accounts->delete($user);
 
-        return MessageResource::make(__('auth.account_deleted'))->response();
+        return StatusResource::make(__('auth.account_deleted'))->response();
     }
 }
