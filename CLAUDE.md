@@ -133,7 +133,8 @@ instruction in this document. Do not start the next phase until the user says so
 - Phase 1: complete.
 - Phase 2: complete.
 - Phase 3: complete.
-- Next: Phase 4 (Publish, renew, credits).
+- Phase 4: complete.
+- Next: Phase 5 (Search).
 
 ## Placeholders
 
@@ -156,8 +157,18 @@ release, and update it whenever a placeholder is added or replaced.
   `/exchange-rates`) belong to no phase in the plan, so they were built in phase 3 where
   the make and model pickers first need them. Public and cached for an hour.
 - **`GET /listings/{id}` is phase 3** as the read half of CRUD; `GET /listings`, the
-  search endpoint, stays in phase 5. `POST /listings/{id}/mark-sold` waits for phase 4
+  search endpoint, stays in phase 5. `POST /listings/{id}/mark-sold` was built in phase 4
   with the other lifecycle transitions.
+- **Publishing needs a complete listing**: make, model, year, mileage, fuel, transmission,
+  price, country, city and at least four photos. The 422 names what is missing so the app
+  can send the seller back to the right step.
+- **Renewing keeps unused time.** Renewing three days into a fortnight gives seventeen
+  days, not fourteen, so renewing early is never a punishment.
+- **The RevenueCat webhook fails closed.** With no shared secret configured it rejects
+  every delivery rather than trusting the caller. It always answers 200 for authentic
+  deliveries, including replays and events it will never act on, so retries stop.
+- **A non-euro purchase records no price.** RevenueCat reports the store front currency;
+  storing a converted guess would be a number the buyer never saw.
 - **Closed vocabularies live in `config/listings.php`**: body types, drivetrains, colors
   and feature keys. The API validates and returns keys; the apps translate them.
 - **Photos are always re-encoded server-side**, which enforces the 1600px long edge and

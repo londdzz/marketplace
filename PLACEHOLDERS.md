@@ -32,11 +32,17 @@ Still open: WhatsApp is weak in Bulgaria and Serbia, where Viber leads. A second
 
 | What | Where |
 |---|---|
-| `REVENUECAT_WEBHOOK_SECRET` | `api/.env` |
-| Product identifiers | `api/config/credits.php` |
+| `REVENUECAT_WEBHOOK_SECRET` | `api/.env`, currently empty |
+| Product identifiers and prices | `api/config/credits.php` |
 
-The webhook verifies its signature against the shared secret. With a placeholder secret
-it will reject every real call from RevenueCat.
+Set the same secret in the RevenueCat dashboard, which sends it as the Authorization
+header on every delivery. The webhook fails closed: while the secret is empty it rejects
+every delivery, including real ones, so no purchase grants anything until it is set.
+
+The products `credits_1`, `credits_8` and `credits_25` must exist in App Store Connect
+and Play Console as CONSUMABLES at EUR 1.50, 9.99 and 24.99. The store is what actually
+charges the buyer; the prices in config are only used for the ledger and for copy, so
+they have to be kept in step by hand.
 
 ## 3. Push notifications — phase 7
 

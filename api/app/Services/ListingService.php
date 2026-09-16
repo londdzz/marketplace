@@ -4,10 +4,16 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Enums\CreditReason;
 use App\Enums\ListingStatus;
+use App\Exceptions\InsufficientCreditsException;
+use App\Exceptions\ListingNotReadyException;
+use App\Exceptions\ListingStatusException;
 use App\Models\Listing;
 use App\Models\User;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Everything that changes a listing, other than its photos.
@@ -17,6 +23,25 @@ use Illuminate\Support\Facades\Cache;
  */
 final class ListingService
 {
+    /**
+     * What a listing must have before a buyer ever sees it.
+     *
+     * @var array<int, string>
+     */
+    private const REQUIRED_TO_PUBLISH = [
+        'make_id',
+        'model_id',
+        'year',
+        'mileage_km',
+        'fuel',
+        'transmission',
+        'price_eur',
+        'country_code',
+        'city_id',
+    ];
+
+    public function __construct(private readonly CreditService $credits) {}
+
     /**
      * Open a draft. The sell flow saves after every step, so a draft may hold
      * nothing more than a make and a model to begin with.
@@ -58,6 +83,127 @@ final class ListingService
     {
         $listing->forceFill(['status' => ListingStatus::Removed])->save();
         $listing->delete();
+    }
+
+    /**
+     * Put a listing live by spending a credit.
+     *
+     * The spend and the status change share one transaction, so a listing can
+     * never go live without being paid for and a credit can never be taken
+     * without the listing going live.
+     *
+     * @throws ListingNotReadyException|ListingStatusException|InsufficientCreditsException
+     */
+    public function publish(Listing $listing): Listing
+    {
+        if (! in_array($listing->status, [ListingStatus::Draft, ListingStatus::PendingPayment, ListingStatus::Expired], true)) {
+            throw new ListingStatusException('listing.publish.wrong_status');
+        }
+
+        $missing = $this->missingForPublish($listing);
+
+        if ($missing !== []) {
+            throw new ListingNotReadyException($missing);
+        }
+
+        return DB::transaction(function () use ($listing): Listing {
+            $this->credits->spend(
+                $listing->user,
+                (int) config('credits.publish_cost'),
+                CreditReason::ListingPublish,
+                $listing,
+            );
+
+            $now = Carbon::now();
+
+            $listing->forceFill([
+                'status' => ListingStatus::Active,
+                'published_at' => $listing->published_at ?? $now,
+                'bumped_at' => $now,
+                'expires_at' => $now->copy()->addDays((int) config('listings.active_days')),
+            ])->save();
+
+            return $listing->refresh();
+        });
+    }
+
+    /**
+     * Buy another active period for a listing that is live or has just run out,
+     * and bump it back to the top of the results.
+     *
+     * @throws ListingStatusException|InsufficientCreditsException
+     */
+    public function renew(Listing $listing): Listing
+    {
+        if (! in_array($listing->status, [ListingStatus::Active, ListingStatus::Expired], true)) {
+            throw new ListingStatusException('listing.renew.wrong_status');
+        }
+
+        return DB::transaction(function () use ($listing): Listing {
+            $this->credits->spend(
+                $listing->user,
+                (int) config('credits.renew_cost'),
+                CreditReason::Renewal,
+                $listing,
+            );
+
+            $now = Carbon::now();
+            $days = (int) config('listings.active_days');
+
+            // Time still left is kept rather than thrown away, so renewing
+            // early is never a punishment.
+            $from = $listing->expires_at !== null && $listing->expires_at->isFuture()
+                ? $listing->expires_at->copy()
+                : $now->copy();
+
+            $listing->forceFill([
+                'status' => ListingStatus::Active,
+                'published_at' => $listing->published_at ?? $now,
+                'bumped_at' => $now,
+                'expires_at' => $from->addDays($days),
+            ])->save();
+
+            return $listing->refresh();
+        });
+    }
+
+    /**
+     * The car is gone. No credit is spent and none is given back.
+     *
+     * @throws ListingStatusException
+     */
+    public function markSold(Listing $listing): Listing
+    {
+        if (! in_array($listing->status, [ListingStatus::Active, ListingStatus::Expired], true)) {
+            throw new ListingStatusException('listing.sold.wrong_status');
+        }
+
+        $listing->forceFill(['status' => ListingStatus::Sold])->save();
+
+        return $listing->refresh();
+    }
+
+    /**
+     * The fields a listing still needs before it can be published, including
+     * the minimum number of photos.
+     *
+     * @return array<int, string>
+     */
+    public function missingForPublish(Listing $listing): array
+    {
+        $missing = [];
+
+        foreach (self::REQUIRED_TO_PUBLISH as $field) {
+            if ($listing->{$field} === null) {
+                $missing[] = $field;
+            }
+        }
+
+        if ($listing->photos()->count() < (int) config('listings.photos.min_to_publish')) {
+            $missing[] = 'photos';
+        }
+
+        return $missing;
     }
 
     /**

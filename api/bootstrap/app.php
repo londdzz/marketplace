@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Middleware\EnsureUserIsNotBlocked;
 use App\Http\Middleware\SetLocale;
+use App\Http\Middleware\VerifyRevenueCatWebhook;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -26,6 +27,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'blocked' => EnsureUserIsNotBlocked::class,
+            'revenuecat' => VerifyRevenueCatWebhook::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

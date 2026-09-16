@@ -3,6 +3,16 @@
 declare(strict_types=1);
 
 return [
+    'publish' => [
+        'not_ready' => 'This listing still needs a few details before it can go live.',
+        'wrong_status' => 'This listing cannot be published from its current state.',
+    ],
+    'renew' => [
+        'wrong_status' => 'Only a live or recently expired listing can be renewed.',
+    ],
+    'sold' => [
+        'wrong_status' => 'Only a live or recently expired listing can be marked as sold.',
+    ],
     'photos' => [
         'too_many' => 'A listing can carry at most :max photos.',
     ],

@@ -5,18 +5,21 @@ declare(strict_types=1);
 use App\Http\Controllers\Auth\OtpController;
 use App\Http\Controllers\Auth\ProfileController;
 use App\Http\Controllers\Auth\SessionController;
+use App\Http\Controllers\Credit\CreditController;
 use App\Http\Controllers\Listing\ListingController;
+use App\Http\Controllers\Listing\ListingLifecycleController;
 use App\Http\Controllers\Listing\ListingPhotoController;
 use App\Http\Controllers\Listing\MyListingController;
 use App\Http\Controllers\Reference\ReferenceController;
+use App\Http\Controllers\Webhook\RevenueCatWebhookController;
 use Illuminate\Support\Facades\Route;
 
 /*
  * Everything here is served under the /api/v1 prefix, configured in
  * bootstrap/app.php.
  *
- * Publishing and credits arrive in phase 4, search in phase 5, and messaging,
- * favorites, saved searches and reports in phase 6.
+ * Search arrives in phase 5, and messaging, favorites, saved searches and
+ * reports in phase 6.
  */
 
 Route::prefix('auth')->group(function (): void {
@@ -60,7 +63,22 @@ Route::middleware(['auth:sanctum', 'blocked'])->group(function (): void {
     Route::patch('listings/{listing}', [ListingController::class, 'update'])->name('listings.update');
     Route::delete('listings/{listing}', [ListingController::class, 'destroy'])->name('listings.destroy');
 
+    Route::post('listings/{listing}/publish', [ListingLifecycleController::class, 'publish'])->name('listings.publish');
+    Route::post('listings/{listing}/renew', [ListingLifecycleController::class, 'renew'])->name('listings.renew');
+    Route::post('listings/{listing}/mark-sold', [ListingLifecycleController::class, 'markSold'])->name('listings.mark-sold');
+
+    Route::get('credits', [CreditController::class, 'index'])->name('credits.index');
+
     Route::post('listings/{listing}/photos', [ListingPhotoController::class, 'store'])->name('listings.photos.store');
     Route::patch('listings/{listing}/photos/order', [ListingPhotoController::class, 'order'])->name('listings.photos.order');
     Route::delete('listings/{listing}/photos/{photo}', [ListingPhotoController::class, 'destroy'])->name('listings.photos.destroy');
 });
+
+/*
+ * The store tells us about purchases, never the app. No authentication
+ * middleware: the shared secret in the Authorization header is what proves the
+ * caller, and the grant is idempotent because webhooks retry.
+ */
+Route::post('webhooks/revenuecat', RevenueCatWebhookController::class)
+    ->middleware('revenuecat')
+    ->name('webhooks.revenuecat');
