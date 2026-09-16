@@ -179,6 +179,7 @@ export default function SearchTab() {
               <Chip
                 key={fuel}
                 label={t(`listing:fuel.${fuel}`)}
+                checkable
                 selected={(filters.fuel ?? []).includes(fuel)}
                 onPress={() => toggle('fuel', fuel)}
                 testID={`fuel-${fuel}`}
@@ -194,6 +195,7 @@ export default function SearchTab() {
               <Chip
                 key={gearbox}
                 label={t(`listing:transmission.${gearbox}`)}
+                checkable
                 selected={filters.transmission === gearbox}
                 onPress={() =>
                   set({ transmission: filters.transmission === gearbox ? undefined : gearbox })
@@ -206,7 +208,9 @@ export default function SearchTab() {
         <AccordionCard
           title={t('search:location')}
           subtitle={
-            filters.countries?.length ? filters.countries.join(', ') : t('search:location_any')
+            filters.countries?.length
+              ? filters.countries.map((code) => t(`search:country.${code}`, code)).join(', ')
+              : t('search:location_any')
           }
           icon="location-outline"
           testID="section-location"
@@ -218,7 +222,8 @@ export default function SearchTab() {
             {(countries.data ?? []).map((country) => (
               <Chip
                 key={country.code}
-                label={country.code}
+                label={t(`search:country.${country.code}`, country.code)}
+                checkable
                 selected={(filters.countries ?? []).includes(country.code)}
                 onPress={() => toggle('countries', country.code)}
                 testID={`country-${country.code}`}
