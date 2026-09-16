@@ -6,6 +6,8 @@ return [
 
     'model_not_in_make' => 'The selected model does not belong to the selected make.',
     'photo_order_mismatch' => 'The new order has to list every photo of this listing exactly once.',
+    'radius_needs_origin' => 'A radius needs either coordinates or a city to measure from.',
+    'coordinates_need_both' => 'Latitude and longitude have to be given together.',
     'city_not_in_country' => 'The selected city does not belong to the selected country.',
 
     /*

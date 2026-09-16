@@ -7,7 +7,9 @@ namespace App\Models;
 use App\Enums\FuelType;
 use App\Enums\ListingStatus;
 use App\Enums\Transmission;
+use App\Observers\ListingObserver;
 use Database\Factories\ListingFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -15,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+#[ObservedBy(ListingObserver::class)]
 class Listing extends Model
 {
     /** @use HasFactory<ListingFactory> */

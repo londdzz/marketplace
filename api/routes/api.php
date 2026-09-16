@@ -9,6 +9,7 @@ use App\Http\Controllers\Credit\CreditController;
 use App\Http\Controllers\Listing\ListingController;
 use App\Http\Controllers\Listing\ListingLifecycleController;
 use App\Http\Controllers\Listing\ListingPhotoController;
+use App\Http\Controllers\Listing\ListingSearchController;
 use App\Http\Controllers\Listing\MyListingController;
 use App\Http\Controllers\Reference\ReferenceController;
 use App\Http\Controllers\Webhook\RevenueCatWebhookController;
@@ -18,8 +19,7 @@ use Illuminate\Support\Facades\Route;
  * Everything here is served under the /api/v1 prefix, configured in
  * bootstrap/app.php.
  *
- * Search arrives in phase 5, and messaging, favorites, saved searches and
- * reports in phase 6.
+ * Messaging, favorites, saved searches and reports arrive in phase 6.
  */
 
 Route::prefix('auth')->group(function (): void {
@@ -54,6 +54,7 @@ Route::get('exchange-rates', [ReferenceController::class, 'exchangeRates'])->nam
 /*
  * A published listing is public. Everything that changes one needs the seller.
  */
+Route::get('listings', ListingSearchController::class)->name('listings.index');
 Route::get('listings/{listing}', [ListingController::class, 'show'])->name('listings.show');
 
 Route::middleware(['auth:sanctum', 'blocked'])->group(function (): void {

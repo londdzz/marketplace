@@ -134,7 +134,8 @@ instruction in this document. Do not start the next phase until the user says so
 - Phase 2: complete.
 - Phase 3: complete.
 - Phase 4: complete.
-- Next: Phase 5 (Search).
+- Phase 5: complete.
+- Next: Phase 6 (Messaging, favorites, saved searches, reports).
 
 ## Placeholders
 
@@ -167,6 +168,18 @@ release, and update it whenever a placeholder is added or replaced.
 - **The RevenueCat webhook fails closed.** With no shared secret configured it rejects
   every delivery rather than trusting the caller. It always answers 200 for authentic
   deliveries, including replays and events it will never act on, so retries stop.
+- **Short words are matched with LIKE, not the fulltext index.** InnoDB will not index a
+  word shorter than its minimum token size, which is exactly the model names buyers type
+  most: A4, Q7, X5, C3. Long words go through the index, short ones through LIKE, so
+  nothing is silently unfindable.
+- **Search tests run outside a transaction** (`tests/Search`, DatabaseTruncation). InnoDB
+  only adds rows to a fulltext index when their transaction commits, so a MATCH inside the
+  usual test transaction finds nothing the test just inserted.
+- **Featured listings lead every ordering**, including an explicit price sort. That is
+  what being featured buys, and it matches the specified default of featured first, then
+  bumped_at descending.
+- **`listings:reindex`** rebuilds every listing's searchable text. Run it after any change
+  to TextNormalizer or to what goes into that text.
 - **A non-euro purchase records no price.** RevenueCat reports the store front currency;
   storing a converted guess would be a number the buyer never saw.
 - **Closed vocabularies live in `config/listings.php`**: body types, drivetrains, colors

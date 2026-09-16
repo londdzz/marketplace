@@ -144,6 +144,26 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Search
+    |--------------------------------------------------------------------------
+    |
+    | The fulltext index will not hold a word shorter than the server's minimum
+    | token size, which rules out exactly the model names buyers type most: A4,
+    | Q7, X5, C3. Tokens that short are matched with LIKE instead, so the index
+    | carries the long words and nothing is silently unfindable.
+    |
+    */
+
+    'search' => [
+        'min_token_size' => (int) env('DB_FT_MIN_TOKEN_SIZE', 3),
+        'max_tokens' => 10,
+        'per_page' => 20,
+        'max_per_page' => 50,
+        'max_radius_km' => 500,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Reference data caching
     |--------------------------------------------------------------------------
     */
