@@ -34,7 +34,7 @@ class UserFactory extends Factory
             'phone_verified_at' => Carbon::now(),
             'country_code' => Country::factory(),
             'city_id' => null,
-            'preferred_language' => 'sq',
+            'preferred_language' => 'mk',
             'seller_type' => SellerType::Private,
             'dealer_name' => null,
         ];

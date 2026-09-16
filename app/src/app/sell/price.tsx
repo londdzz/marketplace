@@ -8,6 +8,7 @@ import { referenceApi } from '../../api/reference';
 import { Input, Text, ToggleRow } from '../../components';
 import { formatLocal } from '../../format';
 import { useExchangeRates } from '../../hooks/useExchangeRates';
+import { SHOW_LOCAL_CURRENCY } from '../../market';
 import { SellStep } from '../../sell/SellStep';
 import { useSell } from '../../sell/SellProvider';
 import { pathTo } from '../../sell/steps';
@@ -38,7 +39,8 @@ export default function SellPriceScreen() {
   // The seller's own market, so the euro price is shown in money they know.
   const currency =
     countries.data?.find((country) => country.code === draft?.country_code)?.currency ?? 'EUR';
-  const local = valid ? formatLocal(price, currency, byCurrency[currency]) : undefined;
+  const local =
+    valid && SHOW_LOCAL_CURRENCY ? formatLocal(price, currency, byCurrency[currency]) : undefined;
 
   const onContinue = async () => {
     if (!valid) {

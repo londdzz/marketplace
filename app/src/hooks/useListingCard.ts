@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import type { Listing } from '../api/types';
 import type { ListingCardData } from '../components';
 import { formatEur, formatKm, formatLocal, listingLocation, listingTitle } from '../format';
+import { SHOW_LOCAL_CURRENCY } from '../market';
 
 /**
  * Turns a listing from the API into what a card needs to draw, in the reader's
@@ -22,7 +23,9 @@ export function useListingCardMapper(
       id: listing.id,
       title: listingTitle(listing),
       priceEur: formatEur(listing.price_eur),
-      priceNote: formatLocal(listing.price_eur, currency, rates[currency]),
+      priceNote: SHOW_LOCAL_CURRENCY
+        ? formatLocal(listing.price_eur, currency, rates[currency])
+        : undefined,
       specs: [
         listing.year ? String(listing.year) : null,
         listing.fuel ? t(`listing:fuel.${listing.fuel}`, listing.fuel) : null,

@@ -10,7 +10,8 @@
     "delete": "Fshi",
     "error_loading": "Nuk u ngarkua dot",
     "done": "U krye",
-    "optional": "Opsionale"
+    "optional": "Opsionale",
+    "save": "Ruaj"
   },
   "tabs": {
     "search": "Kërko",
@@ -308,5 +309,37 @@
     "summary_location": "Vendndodhja",
     "summary_description": "Përshkrimi",
     "summary_features": "Pajisjet"
+  },
+  "messages": {
+    "title": "Mesazhet",
+    "someone": "Dikush",
+    "you": "Ti: ",
+    "no_messages_yet": "Ende asnjë mesazh",
+    "empty_title": "Ende asnjë bisedë",
+    "empty_body": "Shkruaji shitësit te cilado makinë dhe biseda shfaqet këtu.",
+    "browse": "Shfleto makinat",
+    "thread_empty": "Përshëndete. Shitësit përgjigjen më shpejt kur përmend makinën.",
+    "write": "Shkruaj një mesazh",
+    "send": "Dërgo"
+  },
+  "profile": {
+    "title": "Profili",
+    "no_name": "Ende pa emër",
+    "details": "Të dhënat e tua",
+    "display_name": "Emri",
+    "display_name_placeholder": "Si të shohin blerësit",
+    "dealer": "Shes si tregtar",
+    "dealer_hint": "Emri i biznesit shfaqet në çdo shpallje.",
+    "dealer_name": "Emri i biznesit",
+    "dealer_name_placeholder": "Emri i regjistruar",
+    "saved": "U ruajt",
+    "language": "Gjuha",
+    "account": "Llogaria",
+    "sign_out": "Dil",
+    "buy_credits": "Blej",
+    "delete_title": "Fshi llogarinë",
+    "delete_body": "Shpalljet, mesazhet, makinat e ruajtura dhe kreditet fshihen bashkë me të. Kjo nuk kthehet mbrapsht.",
+    "delete_account": "Fshi llogarinë time",
+    "delete_confirm": "Fshije përgjithmonë"
   }
 }

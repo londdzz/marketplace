@@ -59,8 +59,10 @@ export default function SellLocationScreen() {
       canContinue={cityId !== null}
       onContinue={() => void onContinue()}
     >
+      {/* With one market open there is nothing to pick; the draft already
+          carries it. The chips return when a second market opens. */}
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.sm }}>
-        {(countries.data ?? []).map((entry) => (
+        {((countries.data ?? []).length > 1 ? (countries.data ?? []) : []).map((entry) => (
           <Chip
             key={entry.code}
             label={t(`search:country.${entry.code}`, entry.code)}

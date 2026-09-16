@@ -11,7 +11,7 @@ beforeEach(function (): void {
 });
 
 it('revokes the token the request arrived with', function (): void {
-    $user = User::factory()->create(['country_code' => 'XK']);
+    $user = User::factory()->create(['country_code' => 'MK']);
     $token = $user->createToken('iPhone')->plainTextToken;
 
     $this->withToken($token)
@@ -29,7 +29,7 @@ it('revokes the token the request arrived with', function (): void {
 });
 
 it('leaves the account signed in on its other devices', function (): void {
-    $user = User::factory()->create(['country_code' => 'XK']);
+    $user = User::factory()->create(['country_code' => 'MK']);
     $phone = $user->createToken('iPhone')->plainTextToken;
     $tablet = $user->createToken('iPad')->plainTextToken;
 
@@ -43,14 +43,14 @@ it('leaves the account signed in on its other devices', function (): void {
 });
 
 it('cannot be called without a token', function (): void {
-    $this->withHeader('Accept-Language', 'sq')
+    $this->withHeader('Accept-Language', 'mk')
         ->postJson('/api/v1/auth/logout')
         ->assertStatus(401)
-        ->assertJsonPath('message', trans('auth.unauthenticated', [], 'sq'));
+        ->assertJsonPath('message', trans('auth.unauthenticated', [], 'mk'));
 });
 
 it('rejects a token that has already been revoked', function (): void {
-    $user = User::factory()->create(['country_code' => 'XK']);
+    $user = User::factory()->create(['country_code' => 'MK']);
     $token = $user->createToken('iPhone')->plainTextToken;
 
     $this->withToken($token)->postJson('/api/v1/auth/logout')->assertOk();

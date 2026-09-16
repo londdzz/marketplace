@@ -57,7 +57,7 @@ it('writes the notification in the language the account chose', function (string
 
     expect($this->sender->last()['title'])
         ->toBe(trans('push.listing_expiring.title', [], $language));
-})->with(['sq', 'mk', 'sr', 'bg', 'en']);
+})->with(['mk', 'en']);
 
 it('fills in the values the message carries', function (): void {
     registerDevice($this->user, 'iphone');

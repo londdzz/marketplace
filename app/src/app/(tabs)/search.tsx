@@ -205,6 +205,9 @@ export default function SearchTab() {
           </View>
         </AccordionCard>
 
+        {/* One open market means nothing to choose between. The section comes
+            back on its own as soon as the API returns a second country. */}
+        {(countries.data ?? []).length > 1 ? (
         <AccordionCard
           title={t('search:location')}
           subtitle={
@@ -231,6 +234,7 @@ export default function SearchTab() {
             ))}
           </View>
         </AccordionCard>
+        ) : null}
       </ScrollView>
 
       <View

@@ -10,7 +10,8 @@
     "delete": "Обриши",
     "error_loading": "Није могло да се учита",
     "done": "Готово",
-    "optional": "Опционо"
+    "optional": "Опционо",
+    "save": "Сачувај"
   },
   "tabs": {
     "search": "Претрага",
@@ -308,5 +309,37 @@
     "summary_location": "Локација",
     "summary_description": "Опис",
     "summary_features": "Опрема"
+  },
+  "messages": {
+    "title": "Поруке",
+    "someone": "Неко",
+    "you": "Ти: ",
+    "no_messages_yet": "Још нема порука",
+    "empty_title": "Још нема разговора",
+    "empty_body": "Пиши продавцу код било ког аутомобила и разговор се појављује овде.",
+    "browse": "Погледај аутомобиле",
+    "thread_empty": "Поздрави. Продавци брже одговарају када поменеш аутомобил.",
+    "write": "Напиши поруку",
+    "send": "Пошаљи"
+  },
+  "profile": {
+    "title": "Профил",
+    "no_name": "Још без имена",
+    "details": "Твоји подаци",
+    "display_name": "Име",
+    "display_name_placeholder": "Како те купци виде",
+    "dealer": "Продајем као дилер",
+    "dealer_hint": "Име фирме се приказује на сваком огласу.",
+    "dealer_name": "Име фирме",
+    "dealer_name_placeholder": "Регистровано име",
+    "saved": "Сачувано",
+    "language": "Језик",
+    "account": "Налог",
+    "sign_out": "Одјави се",
+    "buy_credits": "Купи",
+    "delete_title": "Обриши налог",
+    "delete_body": "Твоји огласи, поруке, сачувани аутомобили и кредити иду са њим. Ово се не може поништити.",
+    "delete_account": "Обриши мој налог",
+    "delete_confirm": "Обриши заувек"
   }
 }

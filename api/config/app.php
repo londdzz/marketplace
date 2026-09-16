@@ -76,21 +76,32 @@ return [
     | we cover, which happens with diaspora numbers. The owner can correct it
     | from their profile.
     |
+    | Launch is North Macedonia only. Which markets are open is decided by the
+    | `active` flag on the countries table, not by deleting anything: the other
+    | four are seeded, inactive, and opening one is flipping a boolean.
+    |
     */
 
-    'default_country' => env('APP_DEFAULT_COUNTRY', 'XK'),
+    'default_country' => env('APP_DEFAULT_COUNTRY', 'MK'),
 
     /*
     |--------------------------------------------------------------------------
     | Supported Locales
     |--------------------------------------------------------------------------
     |
-    | Every language the marketplace ships in. Albanian is the default; English
-    | is the fallback for any key not yet translated.
+    | Every language the marketplace ships in. Launch is North Macedonia, so
+    | Macedonian is the default and English is the fallback for any key not yet
+    | translated.
+    |
+    | `planned_locales` are translated and kept in the repository, ready for the
+    | markets they belong to. Adding one to `supported_locales` is all that is
+    | needed to ship it — nothing else has to be written.
     |
     */
 
-    'supported_locales' => ['sq', 'mk', 'sr', 'bg', 'en'],
+    'supported_locales' => ['mk', 'en'],
+
+    'planned_locales' => ['sq', 'sr', 'bg'],
 
     'timezone' => env('APP_TIMEZONE', 'UTC'),
 
@@ -105,7 +116,7 @@ return [
     |
     */
 
-    'locale' => env('APP_LOCALE', 'en'),
+    'locale' => env('APP_LOCALE', 'mk'),
 
     'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
 

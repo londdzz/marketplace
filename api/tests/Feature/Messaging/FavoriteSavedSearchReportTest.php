@@ -15,7 +15,7 @@ beforeEach(function (): void {
     $this->seed(CountrySeeder::class);
     $this->seed(MakeSeeder::class);
 
-    $this->user = User::factory()->create(['country_code' => 'XK']);
+    $this->user = User::factory()->create(['country_code' => 'MK']);
     $this->listing = Listing::factory()->active()->create();
 });
 
@@ -63,7 +63,7 @@ it('removes a saved listing', function (): void {
 });
 
 it('keeps one person favorites out of another person list', function (): void {
-    $other = User::factory()->create(['country_code' => 'XK']);
+    $other = User::factory()->create(['country_code' => 'MK']);
 
     $this->actingAs($other, 'sanctum')
         ->postJson('/api/v1/favorites', ['listing_id' => $this->listing->id]);
@@ -140,7 +140,7 @@ it('lists and removes a persons saved searches', function (): void {
 });
 
 it('will not let one person touch another persons saved search', function (): void {
-    $other = User::factory()->create(['country_code' => 'XK']);
+    $other = User::factory()->create(['country_code' => 'MK']);
 
     $id = $this->actingAs($other, 'sanctum')
         ->postJson('/api/v1/saved-searches', ['filters' => ['q' => 'golf']])
@@ -187,7 +187,7 @@ it('does not stack repeated reports from the same person', function (): void {
 });
 
 it('keeps reports from different people apart', function (): void {
-    $other = User::factory()->create(['country_code' => 'XK']);
+    $other = User::factory()->create(['country_code' => 'MK']);
 
     $this->actingAs($this->user, 'sanctum')
         ->postJson("/api/v1/listings/{$this->listing->id}/report", ['reason' => ReportReason::Duplicate->value]);

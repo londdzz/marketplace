@@ -19,7 +19,7 @@ beforeEach(function (): void {
     $this->sender = new RecordingPushSender;
     $this->app->instance(PushSender::class, $this->sender);
 
-    $this->seller = User::factory()->create(['country_code' => 'XK', 'preferred_language' => 'sq']);
+    $this->seller = User::factory()->create(['country_code' => 'XK', 'preferred_language' => 'mk']);
 
     DeviceToken::query()->create([
         'user_id' => $this->seller->id,
@@ -42,7 +42,7 @@ it('warns a seller whose listing runs out within two days', function (): void {
 
     expect($this->sender->count())->toBe(1)
         ->and($sent['user_id'])->toBe($this->seller->id)
-        ->and($sent['title'])->toBe(trans('push.listing_expiring.title', [], 'sq'))
+        ->and($sent['title'])->toBe(trans('push.listing_expiring.title', [], 'mk'))
         ->and($sent['data'])->toBe(['type' => 'listing_expiring', 'listing_id' => $listing->id]);
 });
 

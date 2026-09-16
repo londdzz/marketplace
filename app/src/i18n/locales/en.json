@@ -10,7 +10,8 @@
     "delete": "Delete",
     "error_loading": "That could not be loaded",
     "done": "Done",
-    "optional": "Optional"
+    "optional": "Optional",
+    "save": "Save"
   },
   "tabs": {
     "search": "Search",
@@ -308,5 +309,37 @@
     "summary_location": "Location",
     "summary_description": "Description",
     "summary_features": "Features"
+  },
+  "messages": {
+    "title": "Messages",
+    "someone": "Someone",
+    "you": "You: ",
+    "no_messages_yet": "No messages yet",
+    "empty_title": "No conversations yet",
+    "empty_body": "Message a seller from any car and the thread appears here.",
+    "browse": "Browse cars",
+    "thread_empty": "Say hello. Sellers answer faster when you mention the car.",
+    "write": "Write a message",
+    "send": "Send"
+  },
+  "profile": {
+    "title": "Profile",
+    "no_name": "No name yet",
+    "details": "Your details",
+    "display_name": "Name",
+    "display_name_placeholder": "How buyers see you",
+    "dealer": "I sell as a dealer",
+    "dealer_hint": "Your business name shows on every listing.",
+    "dealer_name": "Business name",
+    "dealer_name_placeholder": "Registered name",
+    "saved": "Saved",
+    "language": "Language",
+    "account": "Account",
+    "sign_out": "Sign out",
+    "buy_credits": "Buy",
+    "delete_title": "Delete account",
+    "delete_body": "Your listings, messages, saved cars and credits go with it. This cannot be undone.",
+    "delete_account": "Delete my account",
+    "delete_confirm": "Delete for good"
   }
 }

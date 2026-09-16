@@ -64,11 +64,13 @@ export default function FiltersScreen() {
           ))}
         </View>
 
+        {(countries.data ?? []).length > 1 ? (
         <Text variant="label" tone="muted" style={section}>
           {t('search:countries')}
         </Text>
+        ) : null}
         <View style={row}>
-          {(countries.data ?? []).map((country) => (
+          {((countries.data ?? []).length > 1 ? (countries.data ?? []) : []).map((country) => (
             <Chip
               key={country.code}
               label={t(`search:country.${country.code}`, country.code)}

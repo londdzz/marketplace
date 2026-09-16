@@ -29,7 +29,7 @@ beforeEach(function (): void {
     $this->sender = new RecordingPushSender;
     $this->app->instance(PushSender::class, $this->sender);
 
-    $this->buyer = User::factory()->create(['country_code' => 'XK', 'preferred_language' => 'sq']);
+    $this->buyer = User::factory()->create(['country_code' => 'MK', 'preferred_language' => 'mk']);
 
     DeviceToken::query()->create([
         'user_id' => $this->buyer->id,
@@ -40,7 +40,7 @@ beforeEach(function (): void {
     $this->vw = Make::query()->where('name', 'Volkswagen')->firstOrFail();
     $this->passat = VehicleModel::query()->where('make_id', $this->vw->id)->where('name', 'Passat')->firstOrFail();
     $this->golf = VehicleModel::query()->where('make_id', $this->vw->id)->where('name', 'Golf')->firstOrFail();
-    $this->city = City::query()->where('country_code', 'XK')->firstOrFail();
+    $this->city = City::query()->where('country_code', 'MK')->firstOrFail();
 });
 
 /**
@@ -53,7 +53,7 @@ function publishedListing(array $attributes = []): Listing
         'model_id' => test()->passat->id,
         'fuel' => FuelType::Diesel,
         'price_eur' => '7500.00',
-        'country_code' => 'XK',
+        'country_code' => 'MK',
         'city_id' => test()->city->id,
         'published_at' => Carbon::now(),
     ], $attributes));
@@ -106,7 +106,7 @@ it('tells a buyer when something new matches their saved search', function (): v
 
     expect($this->sender->count())->toBe(1)
         ->and($sent['user_id'])->toBe($this->buyer->id)
-        ->and($sent['title'])->toBe(trans('push.saved_search.title', [], 'sq'))
+        ->and($sent['title'])->toBe(trans('push.saved_search.title', [], 'mk'))
         ->and($sent['body'])->toContain('Diesel Passat')
         ->and($sent['data'])->toBe(['type' => 'saved_search', 'saved_search_id' => $search->id]);
 });

@@ -114,6 +114,30 @@ export type Listing = {
   expires_at: string | null;
 };
 
+export type Message = {
+  id: string;
+  conversation_id: string;
+  sender_id: number;
+  /** Decided by the API from the token, so a bubble never guesses its side. */
+  is_mine: boolean;
+  body: string;
+  read_at: string | null;
+  created_at: string | null;
+};
+
+export type Conversation = {
+  id: string;
+  listing_id: string;
+  listing: Listing | null;
+  /** Which side of this thread the signed-in account is on. */
+  role: 'buyer' | 'seller';
+  counterpart: Seller | null;
+  unread_count?: number;
+  last_message: Message | null;
+  last_message_at: string | null;
+  created_at: string | null;
+};
+
 export type Pagination = {
   current_page: number;
   last_page: number;

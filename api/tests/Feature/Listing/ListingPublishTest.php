@@ -98,10 +98,10 @@ it('answers 402 when the balance cannot cover it and changes nothing', function 
     $listing = readyDraft();
 
     $this->actingAs($this->seller, 'sanctum')
-        ->withHeader('Accept-Language', 'sq')
+        ->withHeader('Accept-Language', 'mk')
         ->postJson("/api/v1/listings/{$listing->id}/publish")
         ->assertStatus(402)
-        ->assertJsonPath('message', trans('credits.insufficient', [], 'sq'));
+        ->assertJsonPath('message', trans('credits.insufficient', [], 'mk'));
 
     expect($listing->fresh()->status)->toBe(ListingStatus::Draft)
         ->and($listing->fresh()->published_at)->toBeNull()

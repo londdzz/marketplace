@@ -4,6 +4,23 @@ import { authApi } from '../api/auth';
 import { ApiError } from '../api/client';
 import { tokenStorage } from '../api/storage';
 import type { AuthSession, User } from '../api/types';
+import i18n, { SUPPORTED_LANGUAGES, type Language } from '../i18n';
+
+/**
+ * The account's chosen language wins over the device's, so signing in on a new
+ * phone brings the language with it.
+ */
+function followAccountLanguage(user: User | null): void {
+  const language = user?.preferred_language;
+
+  if (
+    language &&
+    (SUPPORTED_LANGUAGES as readonly string[]).includes(language) &&
+    i18n.language !== language
+  ) {
+    void i18n.changeLanguage(language as Language);
+  }
+}
 
 type AuthState = {
   /** Null until the stored token has been checked on launch. */
@@ -13,6 +30,10 @@ type AuthState = {
   signIn: (session: AuthSession) => Promise<void>;
   signOut: () => Promise<void>;
   refresh: () => Promise<void>;
+  /** Take the account the API just returned, after a profile change. */
+  apply: (user: User) => void;
+  /** Delete the account for good, then leave the app signed out. */
+  deleteAccount: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthState | undefined>(undefined);
@@ -24,6 +45,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signIn = useCallback(async (session: AuthSession) => {
     await tokenStorage.save(session.token);
     setUser(session.user);
+    followAccountLanguage(session.user);
   }, []);
 
   const signOut = useCallback(async () => {
@@ -37,9 +59,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   }, []);
 
+  const apply = useCallback((updated: User) => {
+    setUser(updated);
+    followAccountLanguage(updated);
+  }, []);
+
+  const deleteAccount = useCallback(async () => {
+    await authApi.deleteAccount();
+    await tokenStorage.clear();
+    setUser(null);
+  }, []);
+
   const refresh = useCallback(async () => {
     try {
-      setUser(await authApi.me());
+      const current = await authApi.me();
+
+      setUser(current);
+      followAccountLanguage(current);
     } catch (error) {
       if (error instanceof ApiError && error.isUnauthenticated) {
         await tokenStorage.clear();
@@ -89,8 +125,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo<AuthState>(
-    () => ({ user, restoring, signIn, signOut, refresh }),
-    [user, restoring, signIn, signOut, refresh],
+    () => ({ user, restoring, signIn, signOut, refresh, apply, deleteAccount }),
+    [user, restoring, signIn, signOut, refresh, apply, deleteAccount],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

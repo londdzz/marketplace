@@ -6,6 +6,7 @@ use App\Enums\FuelType;
 use App\Enums\ListingStatus;
 use App\Enums\Transmission;
 use App\Models\City;
+use App\Models\Country;
 use App\Models\Listing;
 use App\Models\Make;
 use App\Models\User;
@@ -119,7 +120,18 @@ it('refuses a city that sits in another country', function (): void {
         ->assertJsonValidationErrors('city_id');
 });
 
-it('accepts a city when the country moves with it', function (): void {
+it('refuses a listing in a market that is not open yet', function (): void {
+    $closed = City::query()->where('country_code', 'BG')->firstOrFail();
+
+    $this->actingAs($this->seller, 'sanctum')
+        ->postJson('/api/v1/listings', ['country_code' => 'BG', 'city_id' => $closed->id])
+        ->assertStatus(422)
+        ->assertJsonValidationErrors('country_code');
+});
+
+it('accepts a city when the country moves with it, once that market is open', function (): void {
+    Country::query()->where('code', 'BG')->update(['active' => true]);
+
     $foreign = City::query()->where('country_code', 'BG')->firstOrFail();
 
     $this->actingAs($this->seller, 'sanctum')

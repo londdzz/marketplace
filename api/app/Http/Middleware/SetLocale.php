@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
  * A signed-in user's saved preference wins, because it is the language they
  * chose in their profile and it should follow them onto any device. Failing
  * that the Accept-Language header decides, and failing that the application
- * default, Albanian.
+ * default, which is the language of the market we are open in.
  */
 class SetLocale
 {
@@ -23,6 +23,13 @@ class SetLocale
         $locale = $this->fromUser($request)
             ?? $this->fromHeader($request)
             ?? (string) config('app.locale');
+
+        // A preference saved before a language was withdrawn, or before a
+        // market opened, must not leave the response in a language we no
+        // longer ship.
+        if (! in_array($locale, (array) config('app.supported_locales'), true)) {
+            $locale = (string) config('app.locale');
+        }
 
         app()->setLocale($locale);
 

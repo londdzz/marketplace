@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Image } from 'expo-image';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
@@ -16,10 +16,12 @@ import {
 } from 'react-native';
 
 import { listingsApi } from '../../api/listings';
+import { messagingApi } from '../../api/messaging';
 import { referenceApi } from '../../api/reference';
 import { Button, Chip, Screen, Text } from '../../components';
 import { formatEur, formatKm, formatLocal, listingLocation, listingTitle } from '../../format';
 import { useExchangeRates } from '../../hooks/useExchangeRates';
+import { SHOW_LOCAL_CURRENCY } from '../../market';
 import { useTheme } from '../../theme';
 
 export default function ListingDetail() {
@@ -30,7 +32,8 @@ export default function ListingDetail() {
   const { t } = useTranslation(['listing', 'home', 'common']);
 
   const [photoIndex, setPhotoIndex] = useState(0);
-  const [favorited, setFavorited] = useState(false);
+  const [contactFailure, setContactFailure] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
   const listing = useQuery({
     queryKey: ['listing', id],
@@ -40,6 +43,28 @@ export default function ListingDetail() {
 
   const { byCurrency } = useExchangeRates();
   const countries = useQuery({ queryKey: ['countries'], queryFn: referenceApi.countries });
+
+  // The heart saves the car rather than only colouring itself in.
+  const favorites = useQuery({ queryKey: ['favorites'], queryFn: listingsApi.favorites });
+  const favorited = (favorites.data?.data ?? []).some((saved) => saved.id === id);
+
+  const save = useMutation({
+    mutationFn: () => (favorited ? listingsApi.removeFavorite(id) : listingsApi.addFavorite(id)),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['favorites'] }),
+  });
+
+  /**
+   * Messaging the seller opens the thread for this listing, or reopens the one
+   * that already exists: the API keeps one thread per buyer per listing.
+   */
+  const contact = useMutation({
+    mutationFn: () => messagingApi.start(id),
+    onSuccess: (conversation) => {
+      void queryClient.invalidateQueries({ queryKey: ['conversations'] });
+      router.push({ pathname: '/conversation/[id]', params: { id: conversation.id } });
+    },
+    onError: (error) => setContactFailure(error instanceof Error ? error.message : String(error)),
+  });
 
   if (listing.isLoading || !listing.data) {
     return (
@@ -52,7 +77,9 @@ export default function ListingDetail() {
 
   const car = listing.data;
   const currency = countries.data?.find((c) => c.code === car.country_code)?.currency ?? 'EUR';
-  const local = formatLocal(car.price_eur, currency, byCurrency[currency]);
+  const local = SHOW_LOCAL_CURRENCY
+    ? formatLocal(car.price_eur, currency, byCurrency[currency])
+    : undefined;
 
   const specs: Array<[keyof typeof Ionicons.glyphMap, string, string | null]> = [
     ['speedometer-outline', t('listing:mileage'), car.mileage_km !== null ? formatKm(car.mileage_km) : null],
@@ -105,7 +132,7 @@ export default function ListingDetail() {
         <Pressable
           accessibilityRole="button"
           testID="favorite-toggle"
-          onPress={() => setFavorited((value) => !value)}
+          onPress={() => save.mutate()}
         >
           <Ionicons
             name={favorited ? 'heart' : 'heart-outline'}
@@ -258,6 +285,16 @@ export default function ListingDetail() {
         </View>
       </ScrollView>
 
+      {contactFailure ? (
+        <Text
+          variant="meta"
+          tone="danger"
+          style={{ paddingHorizontal: theme.screenPadding, paddingBottom: theme.spacing.sm }}
+        >
+          {contactFailure}
+        </Text>
+      ) : null}
+
       <View
         style={[
           styles.actions,
@@ -289,7 +326,8 @@ export default function ListingDetail() {
           size="lg"
           icon="mail"
           style={{ flex: 1 }}
-          onPress={() => router.push('/(tabs)/messages')}
+          loading={contact.isPending}
+          onPress={() => contact.mutate()}
           testID="message-seller"
         />
       </View>

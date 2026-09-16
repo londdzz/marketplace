@@ -9,6 +9,7 @@ use App\Enums\SellerType;
 use App\Enums\Store;
 use App\Models\City;
 use App\Models\Conversation;
+use App\Models\Country;
 use App\Models\CreditTransaction;
 use App\Models\DeviceToken;
 use App\Models\Favorite;
@@ -31,7 +32,7 @@ beforeEach(function (): void {
     $this->seed(CitySeeder::class);
 
     $this->user = User::factory()->create([
-        'country_code' => 'XK',
+        'country_code' => 'MK',
         'display_name' => 'Arben',
     ]);
 });
@@ -43,7 +44,7 @@ it('returns the signed-in account', function (): void {
         ->assertJsonPath('data.id', $this->user->id)
         ->assertJsonPath('data.display_name', 'Arben')
         ->assertJsonPath('data.phone', $this->user->phone)
-        ->assertJsonPath('data.country_code', 'XK')
+        ->assertJsonPath('data.country_code', 'MK')
         ->assertJsonPath('data.seller_type', SellerType::Private->value)
         ->assertJsonPath('data.credits', 0);
 });
@@ -58,29 +59,29 @@ it('reports the balance the ledger holds', function (): void {
 });
 
 it('cannot be read without a token', function (): void {
-    $this->withHeader('Accept-Language', 'sq')
+    $this->withHeader('Accept-Language', 'mk')
         ->getJson('/api/v1/me')
         ->assertStatus(401)
-        ->assertJsonPath('message', trans('auth.unauthenticated', [], 'sq'));
+        ->assertJsonPath('message', trans('auth.unauthenticated', [], 'mk'));
 });
 
 it('shuts a blocked account out of the authenticated endpoints', function (): void {
-    $blocked = User::factory()->blocked()->create(['country_code' => 'XK']);
+    $blocked = User::factory()->blocked()->create(['country_code' => 'MK']);
 
     $this->actingAs($blocked, 'sanctum')
-        ->withHeader('Accept-Language', 'sq')
+        ->withHeader('Accept-Language', 'mk')
         ->getJson('/api/v1/me')
         ->assertStatus(403)
-        ->assertJsonPath('message', trans('auth.blocked', [], 'sq'));
+        ->assertJsonPath('message', trans('auth.blocked', [], 'mk'));
 });
 
 it('updates the parts of a profile the owner controls', function (): void {
-    $city = City::query()->where('country_code', 'XK')->firstOrFail();
+    $city = City::query()->where('country_code', 'MK')->firstOrFail();
 
     $this->actingAs($this->user, 'sanctum')
         ->patchJson('/api/v1/me', [
             'display_name' => 'Arben Krasniqi',
-            'preferred_language' => 'sq',
+            'preferred_language' => 'en',
             'city_id' => $city->id,
         ])
         ->assertOk()
@@ -116,6 +117,15 @@ it('rejects a language the marketplace does not ship in', function (): void {
         ->assertJsonValidationErrors('preferred_language');
 });
 
+it('refuses to move into a market that is not open yet', function (): void {
+    $closed = City::query()->where('country_code', 'BG')->firstOrFail();
+
+    $this->actingAs($this->user, 'sanctum')
+        ->patchJson('/api/v1/me', ['country_code' => 'BG', 'city_id' => $closed->id])
+        ->assertStatus(422)
+        ->assertJsonValidationErrors('country_code');
+});
+
 it('rejects a city that sits in another country', function (): void {
     $foreign = City::query()->where('country_code', 'BG')->firstOrFail();
 
@@ -125,7 +135,9 @@ it('rejects a city that sits in another country', function (): void {
         ->assertJsonValidationErrors('city_id');
 });
 
-it('accepts a city when the country moves with it', function (): void {
+it('accepts a city when the country moves with it, once that market is open', function (): void {
+    Country::query()->where('code', 'BG')->update(['active' => true]);
+
     $foreign = City::query()->where('country_code', 'BG')->firstOrFail();
 
     $this->actingAs($this->user, 'sanctum')
@@ -157,7 +169,7 @@ it('deletes the account and everything attached to it', function (): void {
     Storage::fake(config('filesystems.default'));
 
     $user = $this->user;
-    $other = User::factory()->create(['country_code' => 'XK']);
+    $other = User::factory()->create(['country_code' => 'MK']);
     $token = $user->createToken('iPhone')->plainTextToken;
 
     $listing = Listing::factory()->create(['user_id' => $user->id]);
@@ -212,10 +224,10 @@ it('deletes the account and everything attached to it', function (): void {
     ]);
 
     $this->withToken($token)
-        ->withHeader('Accept-Language', 'sq')
+        ->withHeader('Accept-Language', 'mk')
         ->deleteJson('/api/v1/me')
         ->assertOk()
-        ->assertJsonPath('data.message', trans('auth.account_deleted', [], 'sq'));
+        ->assertJsonPath('data.message', trans('auth.account_deleted', [], 'mk'));
 
     expect(User::query()->whereKey($user->id)->exists())->toBeFalse()
         ->and(Listing::withTrashed()->where('user_id', $user->id)->count())->toBe(0)

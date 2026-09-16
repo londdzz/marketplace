@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Contracts\OtpSender;
+use App\Models\Country;
 use App\Models\OtpCode;
 use App\Models\User;
 use Database\Seeders\CountrySeeder;
@@ -30,7 +31,7 @@ function requestCode(string $phone = '+38344123456'): string
 it('opens an account on the first successful verification', function (): void {
     $code = requestCode();
 
-    $response = $this->withHeader('Accept-Language', 'sq')
+    $response = $this->withHeader('Accept-Language', 'mk')
         ->postJson('/api/v1/auth/otp/verify', [
             'phone' => '+38344123456',
             'code' => $code,
@@ -39,7 +40,7 @@ it('opens an account on the first successful verification', function (): void {
     $response->assertStatus(201)
         ->assertJsonPath('data.token_type', 'Bearer')
         ->assertJsonPath('data.user.phone', '+38344123456')
-        ->assertJsonPath('data.user.country_code', 'XK')
+        ->assertJsonPath('data.user.country_code', 'MK')
         ->assertJsonPath('data.user.credits', 0)
         ->assertJsonStructure(['data' => ['token', 'token_type', 'user' => ['id', 'phone', 'seller_type']]]);
 
@@ -47,7 +48,7 @@ it('opens an account on the first successful verification', function (): void {
 
     expect($user->phone)->toBe('+38344123456')
         ->and($user->phone_verified_at)->not->toBeNull()
-        ->and($user->preferred_language)->toBe('sq')
+        ->and($user->preferred_language)->toBe('mk')
         ->and(PersonalAccessToken::query()->count())->toBe(1);
 });
 
@@ -66,7 +67,7 @@ it('issues a token that works against the authenticated endpoints', function ():
 });
 
 it('signs an existing account back in without creating a second one', function (): void {
-    $existing = User::factory()->create(['phone' => '+38344123456', 'country_code' => 'XK']);
+    $existing = User::factory()->create(['phone' => '+38344123456', 'country_code' => 'MK']);
 
     $code = requestCode();
 
@@ -95,10 +96,10 @@ it('burns the code so it cannot be used twice', function (): void {
 it('rejects a wrong code and counts the attempt', function (): void {
     requestCode();
 
-    $this->withHeader('Accept-Language', 'sq')
+    $this->withHeader('Accept-Language', 'mk')
         ->postJson('/api/v1/auth/otp/verify', ['phone' => '+38344123456', 'code' => '000000'])
         ->assertStatus(422)
-        ->assertJsonPath('message', trans('auth.otp.invalid', [], 'sq'));
+        ->assertJsonPath('message', trans('auth.otp.invalid', [], 'mk'));
 
     expect(OtpCode::query()->sole()->attempts)->toBe(1)
         ->and(User::query()->count())->toBe(0);
@@ -138,10 +139,10 @@ it('burns the code once the attempts are exhausted', function (): void {
     }
 
     // The last wrong guess reports exhaustion rather than another plain refusal.
-    $this->withHeader('Accept-Language', 'sq')
+    $this->withHeader('Accept-Language', 'mk')
         ->postJson('/api/v1/auth/otp/verify', ['phone' => '+38344123456', 'code' => '000000'])
         ->assertStatus(429)
-        ->assertJsonPath('message', trans('auth.otp.too_many_attempts', [], 'sq'));
+        ->assertJsonPath('message', trans('auth.otp.too_many_attempts', [], 'mk'));
 
     // Even the right code is no good now.
     $this->postJson('/api/v1/auth/otp/verify', ['phone' => '+38344123456', 'code' => $code])
@@ -175,14 +176,14 @@ it('refuses a code that belongs to a different number', function (): void {
 });
 
 it('refuses to sign in a blocked account', function (): void {
-    User::factory()->blocked()->create(['phone' => '+38344123456', 'country_code' => 'XK']);
+    User::factory()->blocked()->create(['phone' => '+38344123456', 'country_code' => 'MK']);
 
     $code = requestCode();
 
-    $this->withHeader('Accept-Language', 'sq')
+    $this->withHeader('Accept-Language', 'mk')
         ->postJson('/api/v1/auth/otp/verify', ['phone' => '+38344123456', 'code' => $code])
         ->assertStatus(403)
-        ->assertJsonPath('message', trans('auth.blocked', [], 'sq'));
+        ->assertJsonPath('message', trans('auth.blocked', [], 'mk'));
 
     expect(PersonalAccessToken::query()->count())->toBe(0);
 });
@@ -194,12 +195,22 @@ it('works out the country from the dialling prefix', function (string $phone, st
         ->assertStatus(201)
         ->assertJsonPath('data.user.country_code', $country);
 })->with([
-    ['+38344123456', 'XK'],
-    ['+355691234567', 'AL'],
     ['+38970123456', 'MK'],
-    ['+381641234567', 'RS'],
-    ['+359881234567', 'BG'],
+    // A number from a market that is not open yet still gets an account; it
+    // lands on the default country, and the owner can correct it later.
+    ['+38344123456', 'MK'],
+    ['+355691234567', 'MK'],
 ]);
+
+it('reads the prefix of a market as soon as that market opens', function (): void {
+    Country::query()->where('code', 'XK')->update(['active' => true]);
+
+    $code = requestCode('+38344123456');
+
+    $this->postJson('/api/v1/auth/otp/verify', ['phone' => '+38344123456', 'code' => $code])
+        ->assertStatus(201)
+        ->assertJsonPath('data.user.country_code', 'XK');
+});
 
 it('falls back to the default country for a number from outside the region', function (): void {
     $code = requestCode('+41791234567');
@@ -215,10 +226,20 @@ it('accepts a country the caller states explicitly', function (): void {
     $this->postJson('/api/v1/auth/otp/verify', [
         'phone' => '+41791234567',
         'code' => $code,
-        'country_code' => 'al',
+        'country_code' => 'mk',
     ])
         ->assertStatus(201)
-        ->assertJsonPath('data.user.country_code', 'AL');
+        ->assertJsonPath('data.user.country_code', 'MK');
+});
+
+it('refuses a country that is not open yet', function (): void {
+    $code = requestCode('+41791234567');
+
+    $this->postJson('/api/v1/auth/otp/verify', [
+        'phone' => '+41791234567',
+        'code' => $code,
+        'country_code' => 'al',
+    ])->assertStatus(422);
 });
 
 it('rejects a country that is not one of ours', function (): void {
@@ -249,10 +270,10 @@ it('stores the language the account signed up in', function (): void {
     $this->postJson('/api/v1/auth/otp/verify', [
         'phone' => '+38344123456',
         'code' => $code,
-        'locale' => 'bg',
+        'locale' => 'en',
     ])->assertStatus(201);
 
-    expect(User::query()->sole()->preferred_language)->toBe('bg');
+    expect(User::query()->sole()->preferred_language)->toBe('en');
 });
 
 it('validates the shape of the code', function (string $code): void {

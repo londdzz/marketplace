@@ -2,12 +2,14 @@
 
 declare(strict_types=1);
 
+use App\Models\Country;
 use App\Models\Make;
 use Database\Seeders\CitySeeder;
 use Database\Seeders\CountrySeeder;
 use Database\Seeders\ExchangeRateSeeder;
 use Database\Seeders\MakeSeeder;
 use Database\Seeders\VehicleModelSeeder;
+use Illuminate\Support\Facades\Cache;
 
 beforeEach(function (): void {
     $this->seed(CountrySeeder::class);
@@ -17,14 +19,28 @@ beforeEach(function (): void {
     $this->seed(ExchangeRateSeeder::class);
 });
 
-it('lists the five markets without a token', function (): void {
+it('lists the open markets without a token', function (): void {
     $response = $this->getJson('/api/v1/countries')
         ->assertOk()
-        ->assertJsonCount(5, 'data')
         ->assertJsonStructure(['data' => [['code', 'currency', 'phone_prefix']]]);
 
-    expect(array_column($response->json('data'), 'code'))
-        ->toBe(['AL', 'BG', 'MK', 'RS', 'XK']);
+    // Launch is North Macedonia alone.
+    expect(array_column($response->json('data'), 'code'))->toBe(['MK']);
+});
+
+it('keeps the markets that are not open yet, hidden rather than missing', function (): void {
+    // Expansion is flipping a flag, so the rows, their cities and their
+    // dialling prefixes are already in the database.
+    expect(Country::query()->count())->toBe(5)
+        ->and(Country::query()->where('active', false)->pluck('code')->sort()->values()->all())
+        ->toBe(['AL', 'BG', 'RS', 'XK']);
+
+    Country::query()->where('code', 'XK')->update(['active' => true]);
+    Cache::flush();
+
+    $codes = array_column($this->getJson('/api/v1/countries')->json('data'), 'code');
+
+    expect($codes)->toContain('XK')->toContain('MK');
 });
 
 it('lists cities for one country, largest first', function (): void {

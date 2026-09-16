@@ -11,8 +11,8 @@ use Database\Seeders\CountrySeeder;
 beforeEach(function (): void {
     $this->seed(CountrySeeder::class);
 
-    $this->seller = User::factory()->create(['country_code' => 'XK']);
-    $this->buyer = User::factory()->create(['country_code' => 'XK']);
+    $this->seller = User::factory()->create(['country_code' => 'MK']);
+    $this->buyer = User::factory()->create(['country_code' => 'MK']);
     $this->listing = Listing::factory()->active()->create(['user_id' => $this->seller->id]);
 });
 
@@ -59,10 +59,10 @@ it('opens without a first message', function (): void {
 
 it('will not let a seller message themselves', function (): void {
     $this->actingAs($this->seller, 'sanctum')
-        ->withHeader('Accept-Language', 'sq')
+        ->withHeader('Accept-Language', 'mk')
         ->postJson("/api/v1/listings/{$this->listing->id}/conversations")
         ->assertStatus(422)
-        ->assertJsonPath('message', trans('conversation.own_listing', [], 'sq'));
+        ->assertJsonPath('message', trans('conversation.own_listing', [], 'mk'));
 
     expect(Conversation::query()->count())->toBe(0);
 });
@@ -89,10 +89,10 @@ it('stops after twenty new conversations in a day', function (): void {
     $twentyFirst = Listing::factory()->active()->create();
 
     $this->actingAs($this->buyer, 'sanctum')
-        ->withHeader('Accept-Language', 'sq')
+        ->withHeader('Accept-Language', 'mk')
         ->postJson("/api/v1/listings/{$twentyFirst->id}/conversations")
         ->assertStatus(429)
-        ->assertJsonPath('message', trans('conversation.daily_limit', [], 'sq'));
+        ->assertJsonPath('message', trans('conversation.daily_limit', [], 'mk'));
 
     expect(Conversation::query()->count())->toBe(20);
 });
@@ -105,7 +105,7 @@ it('counts the daily limit per account, not across accounts', function (): void 
             ->assertStatus(201);
     }
 
-    $other = User::factory()->create(['country_code' => 'XK']);
+    $other = User::factory()->create(['country_code' => 'MK']);
     $listing = Listing::factory()->active()->create();
 
     $this->actingAs($other, 'sanctum')
@@ -162,7 +162,7 @@ it('lists both sides of the conversations a person is in', function (): void {
     ]);
 
     $ownListing = Listing::factory()->active()->create(['user_id' => $this->buyer->id]);
-    $stranger = User::factory()->create(['country_code' => 'XK']);
+    $stranger = User::factory()->create(['country_code' => 'MK']);
 
     $asSeller = Conversation::query()->create([
         'listing_id' => $ownListing->id,
@@ -221,7 +221,7 @@ it('keeps a stranger out of a conversation', function (): void {
         'seller_id' => $this->seller->id,
     ]);
 
-    $stranger = User::factory()->create(['country_code' => 'XK']);
+    $stranger = User::factory()->create(['country_code' => 'MK']);
 
     $this->actingAs($stranger, 'sanctum')
         ->getJson("/api/v1/conversations/{$conversation->id}/messages")
@@ -245,7 +245,7 @@ it('shows a stranger nothing in their own conversation list', function (): void 
         'seller_id' => $this->seller->id,
     ]);
 
-    $stranger = User::factory()->create(['country_code' => 'XK']);
+    $stranger = User::factory()->create(['country_code' => 'MK']);
 
     $this->actingAs($stranger, 'sanctum')
         ->getJson('/api/v1/conversations')

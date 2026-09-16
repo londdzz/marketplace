@@ -1,5 +1,5 @@
 import { api } from './client';
-import type { ApiResource, AuthSession, Country, OtpChallenge, User } from './types';
+import type { ApiResource, AuthSession, Country, OtpChallenge, SellerType, User } from './types';
 
 export const authApi = {
   /**
@@ -32,6 +32,22 @@ export const authApi = {
   logout: () => api.post<unknown>('/auth/logout'),
 
   me: () => api.get<ApiResource<User>>('/me').then((response) => response.data),
+
+  /** Change what the account says about itself. Never the phone number. */
+  updateMe: (patch: {
+    display_name?: string | null;
+    preferred_language?: string;
+    country_code?: string;
+    city_id?: number | null;
+    seller_type?: SellerType;
+    dealer_name?: string | null;
+  }) => api.patch<ApiResource<User>>('/me', patch).then((response) => response.data),
+
+  /**
+   * Delete the account and everything attached to it, for good. Apple requires
+   * this to be reachable from inside the app, and it is not reversible.
+   */
+  deleteAccount: () => api.delete<unknown>('/me'),
 
   countries: () =>
     api.get<ApiResource<Country[]>>('/countries', { anonymous: true }).then((response) => response.data),

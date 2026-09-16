@@ -24,7 +24,7 @@ return new class extends Migration
             $table->timestamp('phone_verified_at')->nullable();
             $table->char('country_code', 2);
             $table->foreignId('city_id')->nullable()->constrained('cities')->nullOnDelete();
-            $table->string('preferred_language', 5)->default('sq');
+            $table->string('preferred_language', 5)->default('mk');
             $table->enum('seller_type', SellerType::values())->default(SellerType::Private->value);
             $table->string('dealer_name')->nullable();
             $table->unsignedInteger('credits')->default(0);

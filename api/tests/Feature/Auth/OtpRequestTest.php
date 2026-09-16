@@ -82,10 +82,10 @@ it('allows three codes per phone number every fifteen minutes', function (): voi
             ->assertStatus(202);
     }
 
-    $this->withHeader('Accept-Language', 'sq')
+    $this->withHeader('Accept-Language', 'mk')
         ->postJson('/api/v1/auth/otp/request', ['phone' => '+38344123456'])
         ->assertStatus(429)
-        ->assertJsonPath('message', trans('errors.rate_limited', [], 'sq'));
+        ->assertJsonPath('message', trans('errors.rate_limited', [], 'mk'));
 
     expect($this->sender->count())->toBe(3);
 });
@@ -114,10 +114,10 @@ it('allows ten codes per IP address every hour', function (): void {
 it('reports a delivery failure instead of pretending the code was sent', function (): void {
     $this->sender->failWith = new OtpDeliveryException;
 
-    $this->withHeader('Accept-Language', 'sq')
+    $this->withHeader('Accept-Language', 'mk')
         ->postJson('/api/v1/auth/otp/request', ['phone' => '+38344123456'])
         ->assertStatus(503)
-        ->assertJsonPath('message', trans('auth.otp.delivery_failed', [], 'sq'));
+        ->assertJsonPath('message', trans('auth.otp.delivery_failed', [], 'mk'));
 });
 
 it('answers in the language the caller asks for', function (string $locale): void {
@@ -131,16 +131,16 @@ it('answers in the language the caller asks for', function (string $locale): voi
         ->postJson('/api/v1/auth/otp/request', ['phone' => 'nonsense'])
         ->assertStatus(422)
         ->assertJsonPath('message', $expected);
-})->with(['sq', 'mk', 'sr', 'bg', 'en']);
+})->with(['mk', 'en']);
 
-it('falls back to Albanian when no language is asked for', function (): void {
+it('falls back to the market language when no language is asked for', function (): void {
     $this->withHeader('Accept-Language', 'fr')
         ->postJson('/api/v1/auth/otp/request', ['phone' => 'nonsense'])
         ->assertStatus(422)
         ->assertJsonPath('message', trans(
             'validation.required',
-            ['attribute' => trans('validation.attributes.phone', [], 'sq')],
-            'sq',
+            ['attribute' => trans('validation.attributes.phone', [], config('app.locale'))],
+            config('app.locale'),
         ));
 });
 
