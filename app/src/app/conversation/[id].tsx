@@ -90,9 +90,20 @@ export default function ConversationScreen() {
     return (
       <View>
         {showDay ? (
-          <Text variant="caption" tone="muted" style={{ textAlign: 'center', marginVertical: theme.spacing.md }}>
-            {day}
-          </Text>
+          <View style={[styles.dayRow, { marginVertical: theme.spacing.md }]}>
+            <View
+              style={{
+                paddingHorizontal: theme.spacing.md,
+                paddingVertical: 4,
+                borderRadius: theme.radius.full,
+                backgroundColor: theme.colors.surfaceMuted,
+              }}
+            >
+              <Text variant="caption" tone="muted">
+                {day}
+              </Text>
+            </View>
+          </View>
         ) : null}
 
         <View
@@ -102,11 +113,11 @@ export default function ConversationScreen() {
               alignSelf: message.is_mine ? 'flex-end' : 'flex-start',
               backgroundColor: message.is_mine ? theme.colors.accent : theme.colors.surface,
               borderColor: message.is_mine ? theme.colors.accent : theme.colors.border,
-              borderRadius: theme.radius.lg,
-              borderBottomRightRadius: message.is_mine ? theme.radius.sm : theme.radius.lg,
-              borderBottomLeftRadius: message.is_mine ? theme.radius.lg : theme.radius.sm,
+              borderRadius: 20,
+              borderBottomRightRadius: message.is_mine ? 6 : 20,
+              borderBottomLeftRadius: message.is_mine ? 20 : 6,
               paddingHorizontal: theme.spacing.lg,
-              paddingVertical: theme.spacing.md,
+              paddingVertical: theme.spacing.md - 2,
             },
           ]}
         >
@@ -116,17 +127,29 @@ export default function ConversationScreen() {
           >
             {message.body}
           </Text>
-          <Text
-            variant="caption"
-            style={{
-              marginTop: 3,
-              textAlign: 'right',
-              color: message.is_mine ? theme.colors.textOnAccent : theme.colors.textSubtle,
-              opacity: message.is_mine ? 0.75 : 1,
-            }}
-          >
-            {messageTime(message.created_at)}
-          </Text>
+
+          <View style={[styles.stamp, { marginTop: 2, gap: 4 }]}>
+            <Text
+              variant="caption"
+              style={{
+                color: message.is_mine ? theme.colors.textOnAccent : theme.colors.textSubtle,
+                opacity: message.is_mine ? 0.7 : 1,
+                fontSize: 10.5,
+              }}
+            >
+              {messageTime(message.created_at)}
+            </Text>
+
+            {/* Read receipts on what I sent, from the read_at the API keeps. */}
+            {message.is_mine ? (
+              <Ionicons
+                name={message.read_at ? 'checkmark-done' : 'checkmark'}
+                size={13}
+                color={theme.colors.textOnAccent}
+                style={{ opacity: message.read_at ? 0.95 : 0.6 }}
+              />
+            ) : null}
+          </View>
         </View>
       </View>
     );
@@ -153,42 +176,49 @@ export default function ConversationScreen() {
           <Ionicons name="chevron-back" size={26} color={theme.colors.text} />
         </Pressable>
 
-        <View style={{ flex: 1 }}>
-          <Text variant="bodyStrong" numberOfLines={1}>
-            {counterpart}
-          </Text>
+        <Pressable
+          accessibilityRole="button"
+          disabled={!thread?.listing}
+          onPress={() => router.push({ pathname: '/listing/[id]', params: { id: thread?.listing_id ?? '' } })}
+          testID="thread-listing"
+          style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: theme.spacing.md }}
+        >
           {thread?.listing ? (
-            <Text variant="caption" tone="muted" numberOfLines={1}>
-              {listingTitle(thread.listing)}
-              {thread.listing.price_eur ? ` · ${formatEur(thread.listing.price_eur)}` : ''}
-            </Text>
+            <View
+              style={{
+                width: 42,
+                height: 42,
+                borderRadius: theme.radius.md,
+                overflow: 'hidden',
+                backgroundColor: theme.colors.surfaceMuted,
+              }}
+            >
+              {thread.listing.photos?.[0] ? (
+                <Image
+                  source={{ uri: thread.listing.photos[0].thumb_url }}
+                  style={{ width: 42, height: 42 }}
+                  contentFit="cover"
+                />
+              ) : null}
+            </View>
           ) : null}
-        </View>
 
-        {thread?.listing ? (
-          <Pressable
-            accessibilityRole="button"
-            onPress={() =>
-              router.push({ pathname: '/listing/[id]', params: { id: thread.listing_id } })
-            }
-            testID="thread-listing"
-            style={{
-              width: 44,
-              height: 44,
-              borderRadius: theme.radius.md,
-              overflow: 'hidden',
-              backgroundColor: theme.colors.surfaceMuted,
-            }}
-          >
-            {thread.listing.photos?.[0] ? (
-              <Image
-                source={{ uri: thread.listing.photos[0].thumb_url }}
-                style={{ width: 44, height: 44 }}
-                contentFit="cover"
-              />
+          <View style={{ flex: 1 }}>
+            <Text variant="bodyStrong" numberOfLines={1}>
+              {counterpart}
+            </Text>
+            {thread?.listing ? (
+              <Text variant="caption" tone="muted" numberOfLines={1}>
+                {listingTitle(thread.listing)}
+                {thread.listing.price_eur ? ` · ${formatEur(thread.listing.price_eur)}` : ''}
+              </Text>
             ) : null}
-          </Pressable>
-        ) : null}
+          </View>
+
+          {thread?.listing ? (
+            <Ionicons name="chevron-forward" size={17} color={theme.colors.textSubtle} />
+          ) : null}
+        </Pressable>
       </View>
 
       <KeyboardAvoidingView
@@ -220,9 +250,11 @@ export default function ConversationScreen() {
             }}
             showsVerticalScrollIndicator={false}
             ListEmptyComponent={
-              <Text variant="meta" tone="muted" style={{ textAlign: 'center' }}>
-                {t('messages:thread_empty')}
-              </Text>
+              <View style={[styles.centre, { paddingVertical: theme.spacing.huge }]}>
+                <Text variant="meta" tone="muted" style={{ textAlign: 'center', maxWidth: 260 }}>
+                  {t('messages:thread_empty')}
+                </Text>
+              </View>
             }
           />
         )}
@@ -262,10 +294,12 @@ export default function ConversationScreen() {
               {
                 flex: 1,
                 maxHeight: 120,
-                minHeight: 44,
+                minHeight: 46,
                 color: theme.colors.text,
                 backgroundColor: theme.colors.surfaceMuted,
-                borderRadius: theme.radius.lg,
+                borderRadius: 23,
+                borderWidth: 1,
+                borderColor: theme.colors.border,
                 paddingHorizontal: theme.spacing.lg,
                 paddingVertical: theme.spacing.md,
               },
@@ -280,8 +314,8 @@ export default function ConversationScreen() {
             onPress={() => send.mutate(draft.trim())}
             testID="message-send"
             style={{
-              width: 44,
-              height: 44,
+              width: 46,
+              height: 46,
               borderRadius: theme.radius.full,
               alignItems: 'center',
               justifyContent: 'center',
@@ -315,8 +349,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   bubble: {
-    maxWidth: '82%',
+    maxWidth: '80%',
     borderWidth: 1,
+  },
+  stamp: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-end',
+  },
+  dayRow: {
+    alignItems: 'center',
   },
   composer: {
     flexDirection: 'row',

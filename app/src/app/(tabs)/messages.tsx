@@ -32,7 +32,7 @@ export default function MessagesTab() {
   const threads = conversations.data?.data ?? [];
 
   const row = (thread: Conversation) => {
-    const unread = thread.unread_count ?? 0;
+    const unread = (thread.unread_count ?? 0) > 0;
     const photo = thread.listing?.photos?.[0]?.thumb_url;
     const name =
       thread.counterpart?.dealer_name ??
@@ -47,26 +47,24 @@ export default function MessagesTab() {
         style={({ pressed }) => [
           styles.row,
           {
-            padding: theme.spacing.md,
-            borderRadius: theme.radius.lg,
+            paddingHorizontal: theme.screenPadding,
+            paddingVertical: theme.spacing.md,
             gap: theme.spacing.md,
-            borderWidth: 1,
-            borderColor: unread > 0 ? theme.colors.accentBorder : theme.colors.border,
-            backgroundColor: pressed ? theme.colors.surfaceMuted : theme.colors.surface,
+            backgroundColor: pressed ? theme.colors.surfaceMuted : 'transparent',
           },
         ]}
       >
         <View
           style={{
-            width: 56,
-            height: 56,
+            width: 58,
+            height: 58,
             borderRadius: theme.radius.md,
             overflow: 'hidden',
             backgroundColor: theme.colors.surfaceMuted,
           }}
         >
           {photo ? (
-            <Image source={{ uri: photo }} style={{ width: 56, height: 56 }} contentFit="cover" />
+            <Image source={{ uri: photo }} style={{ width: 58, height: 58 }} contentFit="cover" />
           ) : (
             <View style={[StyleSheet.absoluteFill, styles.centre]}>
               <Ionicons name="car-outline" size={22} color={theme.colors.textSubtle} />
@@ -74,17 +72,17 @@ export default function MessagesTab() {
           )}
         </View>
 
-        <View style={{ flex: 1, gap: 1 }}>
+        <View style={{ flex: 1, gap: 2 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.sm }}>
             <Text variant="bodyStrong" numberOfLines={1} style={{ flex: 1 }}>
               {name}
             </Text>
-            <Text variant="caption" tone="muted">
+            <Text variant="caption" tone={unread ? 'accent' : 'muted'}>
               {shortTime(thread.last_message_at)}
             </Text>
           </View>
 
-          <Text variant="meta" tone="muted" numberOfLines={1}>
+          <Text variant="caption" tone="muted" numberOfLines={1}>
             {thread.listing ? listingTitle(thread.listing) : ''}
             {thread.listing?.price_eur ? ` · ${formatEur(thread.listing.price_eur)}` : ''}
           </Text>
@@ -92,7 +90,7 @@ export default function MessagesTab() {
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.sm }}>
             <Text
               variant="meta"
-              tone={unread > 0 ? 'default' : 'muted'}
+              tone={unread ? 'default' : 'muted'}
               numberOfLines={1}
               style={{ flex: 1 }}
             >
@@ -101,17 +99,15 @@ export default function MessagesTab() {
                 : t('messages:no_messages_yet')}
             </Text>
 
-            {unread > 0 ? (
+            {unread ? (
               <View
-                style={[
-                  styles.unread,
-                  { backgroundColor: theme.colors.accent, borderRadius: theme.radius.full },
-                ]}
-              >
-                <Text variant="caption" style={{ color: theme.colors.textOnAccent, fontWeight: '700' }}>
-                  {unread}
-                </Text>
-              </View>
+                style={{
+                  minWidth: 8,
+                  height: 8,
+                  borderRadius: theme.radius.full,
+                  backgroundColor: theme.colors.accent,
+                }}
+              />
             ) : null}
           </View>
         </View>
@@ -162,11 +158,16 @@ export default function MessagesTab() {
           data={threads}
           keyExtractor={(thread) => thread.id}
           renderItem={({ item }) => row(item)}
-          contentContainerStyle={{
-            paddingHorizontal: theme.screenPadding,
-            paddingBottom: theme.spacing.xl,
-            gap: theme.spacing.sm,
-          }}
+          contentContainerStyle={{ paddingBottom: theme.spacing.xl }}
+          ItemSeparatorComponent={() => (
+            <View
+              style={{
+                height: 1,
+                marginLeft: theme.screenPadding + 58 + theme.spacing.md,
+                backgroundColor: theme.colors.border,
+              }}
+            />
+          )}
           refreshing={conversations.isFetching}
           onRefresh={() => void conversations.refetch()}
           showsVerticalScrollIndicator={false}

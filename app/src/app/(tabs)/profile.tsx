@@ -4,12 +4,12 @@ import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import { authApi } from '../../api/auth';
 import { referenceApi } from '../../api/reference';
 import { useAuth } from '../../auth/AuthProvider';
-import { Button, Input, ListGroup, OptionRow, Screen, Text, ToggleRow } from '../../components';
+import { Button, ListGroup, Screen, SettingRow, Text } from '../../components';
 import i18n, { LANGUAGE_NAMES, SUPPORTED_LANGUAGES, type Language } from '../../i18n';
 import { CreditsSheet } from '../../sell/CreditsSheet';
 import { useCredits } from '../../sell/credits';
@@ -18,78 +18,51 @@ import { useTheme } from '../../theme';
 export default function ProfileTab() {
   const theme = useTheme();
   const router = useRouter();
-  const { t } = useTranslation(['profile', 'sell', 'common']);
+  const { t } = useTranslation(['profile', 'sell', 'tabs', 'common']);
   const { user, apply, signOut, deleteAccount } = useAuth();
 
   const credits = useCredits();
   const countries = useQuery({ queryKey: ['countries'], queryFn: referenceApi.countries });
 
-  const [name, setName] = useState(user?.display_name ?? '');
-  const [dealerName, setDealerName] = useState(user?.dealer_name ?? '');
-  const [isDealer, setIsDealer] = useState(user?.seller_type === 'dealer');
-  const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const [failure, setFailure] = useState<string | null>(null);
-  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [sheetOpen, setSheetOpen] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [failure, setFailure] = useState<string | null>(null);
 
   const country = countries.data?.find((entry) => entry.code === user?.country_code);
+  const balance = credits.data?.balance ?? 0;
 
-  const patch = async (changes: Parameters<typeof authApi.updateMe>[0]) => {
-    setSaving(true);
-    setFailure(null);
-    setFieldErrors({});
+  const location = [user?.city?.name, country ? t(`search:country.${country.code}`, country.code) : null]
+    .filter(Boolean)
+    .join(', ');
+
+  const chooseLanguage = async (language: Language) => {
+    await i18n.changeLanguage(language);
 
     try {
-      apply(await authApi.updateMe(changes));
-      setSaved(true);
-      setTimeout(() => setSaved(false), 2500);
+      apply(await authApi.updateMe({ preferred_language: language }));
     } catch (error) {
-      // The API's own message, on the field that caused it.
-      const body = (error as { body?: { errors?: Record<string, string[]> } }).body;
-
-      if (body?.errors) {
-        setFieldErrors(
-          Object.fromEntries(Object.entries(body.errors).map(([key, list]) => [key, list[0]])),
-        );
-      }
-
       setFailure(error instanceof Error ? error.message : String(error));
-    } finally {
-      setSaving(false);
     }
   };
 
-  /** The app switches straight away; the account remembers for next time. */
-  const chooseLanguage = async (language: Language) => {
-    await i18n.changeLanguage(language);
-    await patch({ preferred_language: language });
+  const sectionLabel = {
+    marginTop: theme.spacing.xxl,
+    marginBottom: theme.spacing.sm,
+    marginLeft: theme.spacing.xs,
   };
-
-  const section = { marginTop: theme.spacing.xxl };
 
   return (
     <Screen flush edges={['top']}>
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          gap: theme.spacing.md,
-          paddingHorizontal: theme.screenPadding,
-          paddingVertical: theme.spacing.md,
-        }}
-      >
-        <Button
-          label=""
-          icon="chevron-back"
-          variant="ghost"
-          size="sm"
+      <View style={[styles.header, { paddingHorizontal: theme.screenPadding, paddingVertical: theme.spacing.md }]}>
+        <Pressable
+          accessibilityRole="button"
           onPress={() => (router.canGoBack() ? router.back() : router.replace('/(tabs)/home'))}
+          hitSlop={8}
           testID="profile-back"
-          style={{ paddingHorizontal: theme.spacing.xs }}
-        />
+        >
+          <Ionicons name="chevron-back" size={26} color={theme.colors.text} />
+        </Pressable>
         <Text variant="title">{t('profile:title')}</Text>
       </View>
 
@@ -99,195 +72,179 @@ export default function ProfileTab() {
           paddingBottom: theme.spacing.huge,
         }}
         showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
       >
-        {/* Who this account is. The phone number is the login and cannot move. */}
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: theme.spacing.md,
-            padding: theme.spacing.lg,
-            borderRadius: theme.radius.lg,
-            borderWidth: 1,
-            borderColor: theme.colors.border,
-            backgroundColor: theme.colors.surface,
-          }}
+        {/* Who this account is, and the one thing a seller checks most. */}
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => router.push('/profile/edit')}
+          testID="profile-identity"
+          style={({ pressed }) => [
+            styles.identity,
+            {
+              padding: theme.spacing.lg,
+              gap: theme.spacing.lg,
+              borderRadius: theme.radius.lg,
+              borderWidth: 1,
+              borderColor: theme.colors.border,
+              backgroundColor: pressed ? theme.colors.surfaceMuted : theme.colors.surface,
+            },
+            theme.elevation.sm,
+          ]}
         >
           <View
             style={{
-              width: 52,
-              height: 52,
+              width: 58,
+              height: 58,
               borderRadius: theme.radius.full,
               alignItems: 'center',
               justifyContent: 'center',
               backgroundColor: theme.colors.accentMuted,
             }}
           >
-            <Ionicons name="person" size={26} color={theme.colors.accent} />
+            {user?.display_name?.trim() ? (
+              <Text variant="title" tone="accent">
+                {user.display_name.trim().charAt(0).toUpperCase()}
+              </Text>
+            ) : (
+              <Ionicons name="person" size={26} color={theme.colors.accent} />
+            )}
           </View>
 
-          <View style={{ flex: 1 }}>
-            <Text variant="bodyStrong" numberOfLines={1}>
+          <View style={{ flex: 1, gap: 2 }}>
+            <Text variant="title" numberOfLines={1}>
               {user?.display_name || t('profile:no_name')}
             </Text>
             <Text variant="meta" tone="muted">
               {user?.phone ?? ''}
             </Text>
-            {country ? (
+            {location ? (
               <Text variant="caption" tone="muted">
-                {t(`search:country.${country.code}`, country.code)}
-                {user?.city ? ` · ${user.city.name}` : ''}
+                {location}
               </Text>
             ) : null}
           </View>
-        </View>
 
-        {/* Credits, because this is where a seller looks for them. */}
+          <Ionicons name="chevron-forward" size={18} color={theme.colors.textSubtle} />
+        </Pressable>
+
+        {/* Credits, because this is where a seller comes looking for them. */}
         <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: theme.spacing.md,
-            marginTop: theme.spacing.md,
-            padding: theme.spacing.lg,
-            borderRadius: theme.radius.lg,
-            borderWidth: 1,
-            borderColor: theme.colors.border,
-            backgroundColor: theme.colors.surface,
-          }}
+          style={[
+            styles.credits,
+            {
+              marginTop: theme.spacing.md,
+              padding: theme.spacing.lg,
+              gap: theme.spacing.md,
+              borderRadius: theme.radius.lg,
+              backgroundColor: theme.colors.accentMuted,
+              borderWidth: 1,
+              borderColor: theme.colors.accentBorder,
+            },
+          ]}
         >
-          <Ionicons name="pricetag" size={20} color={theme.colors.accent} />
+          <Ionicons name="pricetag" size={22} color={theme.colors.accent} />
+
           <View style={{ flex: 1 }}>
-            <Text variant="bodyStrong">
-              {t('sell:credits_balance', { count: credits.data?.balance ?? 0 })}
+            <Text variant="priceSmall" tone="accent">
+              {t('sell:credits_balance', { count: balance })}
             </Text>
-            <Text variant="caption" tone="muted">
+            <Text variant="caption" tone="muted" style={{ marginTop: 1 }}>
               {t('sell:credits_body')}
             </Text>
           </View>
+
           <Button
             label={t('profile:buy_credits')}
             size="sm"
-            variant="secondary"
             onPress={() => setSheetOpen(true)}
             testID="profile-credits"
           />
         </View>
 
-        <Text variant="title" style={section}>
-          {t('profile:details')}
+        <Text variant="overline" tone="muted" style={sectionLabel}>
+          {t('profile:selling')}
         </Text>
-
-        <Input
-          label={t('profile:display_name')}
-          value={name}
-          onChangeText={setName}
-          placeholder={t('profile:display_name_placeholder')}
-          error={fieldErrors.display_name}
-          containerStyle={{ marginTop: theme.spacing.md }}
-          testID="profile-name"
-        />
-
-        <View style={{ marginTop: theme.spacing.md }}>
-          <ToggleRow
-            label={t('profile:dealer')}
-            hint={t('profile:dealer_hint')}
-            value={isDealer}
-            onValueChange={setIsDealer}
-            testID="profile-dealer"
+        <ListGroup inset={58}>
+          <SettingRow
+            icon="pricetag-outline"
+            label={t('sell:my_listings')}
+            hint={t('profile:my_listings_hint')}
+            onPress={() => router.replace('/(tabs)/sell')}
+            testID="profile-listings"
           />
-        </View>
-
-        {isDealer ? (
-          <Input
-            label={t('profile:dealer_name')}
-            value={dealerName}
-            onChangeText={setDealerName}
-            placeholder={t('profile:dealer_name_placeholder')}
-            error={fieldErrors.dealer_name}
-            containerStyle={{ marginTop: theme.spacing.md }}
-            testID="profile-dealer-name"
+          <SettingRow
+            icon="chatbubble-ellipses-outline"
+            label={t('messages:title')}
+            onPress={() => router.replace('/(tabs)/messages')}
+            testID="profile-messages"
           />
-        ) : null}
+        </ListGroup>
 
-        <Button
-          label={saved ? t('profile:saved') : t('common:save')}
-          block
-          loading={saving}
-          icon={saved ? 'checkmark' : undefined}
-          style={{ marginTop: theme.spacing.md }}
-          onPress={() =>
-            void patch({
-              display_name: name.trim() === '' ? null : name.trim(),
-              seller_type: isDealer ? 'dealer' : 'private',
-              dealer_name: isDealer ? (dealerName.trim() === '' ? null : dealerName.trim()) : null,
-            })
-          }
-          testID="profile-save"
-        />
-
-        {failure ? (
-          <Text variant="meta" tone="danger" style={{ marginTop: theme.spacing.sm }}>
-            {failure}
-          </Text>
-        ) : null}
-
-        <Text variant="title" style={section}>
+        <Text variant="overline" tone="muted" style={sectionLabel}>
           {t('profile:language')}
         </Text>
-        <ListGroup style={{ marginTop: theme.spacing.md }} inset={theme.spacing.lg}>
+        <ListGroup inset={theme.spacing.lg}>
           {SUPPORTED_LANGUAGES.map((language) => (
-            <OptionRow
+            <SettingRow
               key={language}
-              flat
               label={LANGUAGE_NAMES[language]}
-              selected={i18n.language === language}
+              chevron={false}
+              accessory={
+                i18n.language === language ? (
+                  <Ionicons name="checkmark" size={20} color={theme.colors.accent} />
+                ) : undefined
+              }
               onPress={() => void chooseLanguage(language)}
               testID={`language-${language}`}
             />
           ))}
         </ListGroup>
 
-        <Text variant="title" style={section}>
+        <Text variant="overline" tone="muted" style={sectionLabel}>
           {t('profile:account')}
         </Text>
+        <ListGroup inset={58}>
+          <SettingRow
+            icon="log-out-outline"
+            label={t('profile:sign_out')}
+            chevron={false}
+            onPress={() => {
+              setBusy(true);
+              void signOut().finally(() => setBusy(false));
+            }}
+            testID="sign-out"
+          />
+          <SettingRow
+            icon="trash-outline"
+            label={t('profile:delete_account')}
+            destructive
+            chevron={false}
+            onPress={() => setConfirmingDelete(true)}
+            testID="delete-account"
+          />
+        </ListGroup>
 
-        <Button
-          label={t('profile:sign_out')}
-          icon="log-out-outline"
-          variant="secondary"
-          block
-          disabled={busy}
-          style={{ marginTop: theme.spacing.md }}
-          onPress={() => {
-            setBusy(true);
-            void signOut().finally(() => setBusy(false));
-          }}
-          testID="sign-out"
-        />
+        {confirmingDelete ? (
+          <View
+            style={{
+              marginTop: theme.spacing.md,
+              padding: theme.spacing.lg,
+              borderRadius: theme.radius.lg,
+              borderWidth: 1,
+              borderColor: theme.colors.danger,
+              backgroundColor: theme.colors.dangerMuted,
+              gap: theme.spacing.md,
+            }}
+            testID="delete-confirm-panel"
+          >
+            <Text variant="bodyStrong" style={{ color: theme.colors.danger }}>
+              {t('profile:delete_title')}
+            </Text>
+            <Text variant="meta" tone="muted">
+              {t('profile:delete_body')}
+            </Text>
 
-        {/* Apple requires deleting an account to be possible from inside the
-            app. It asks once, says plainly what goes, and cannot be undone. */}
-        <View
-          style={{
-            marginTop: theme.spacing.lg,
-            padding: theme.spacing.lg,
-            borderRadius: theme.radius.lg,
-            borderWidth: 1,
-            borderColor: theme.colors.danger,
-            backgroundColor: theme.colors.dangerMuted,
-          }}
-        >
-          <Text variant="bodyStrong" style={{ color: theme.colors.danger }}>
-            {t('profile:delete_title')}
-          </Text>
-          <Text variant="meta" tone="muted" style={{ marginTop: theme.spacing.xs }}>
-            {t('profile:delete_body')}
-          </Text>
-
-          {confirmingDelete ? (
-            <View style={{ flexDirection: 'row', gap: theme.spacing.md, marginTop: theme.spacing.md }}>
+            <View style={{ flexDirection: 'row', gap: theme.spacing.md }}>
               <Button
                 label={t('common:cancel')}
                 variant="secondary"
@@ -303,28 +260,22 @@ export default function ProfileTab() {
                 onPress={() => {
                   setBusy(true);
                   void deleteAccount()
-                    .catch((error) =>
-                      setFailure(error instanceof Error ? error.message : String(error)),
-                    )
+                    .catch((error) => setFailure(error instanceof Error ? error.message : String(error)))
                     .finally(() => setBusy(false));
                 }}
                 testID="delete-confirm"
               />
             </View>
-          ) : (
-            <Button
-              label={t('profile:delete_account')}
-              variant="outline"
-              destructive
-              block
-              style={{ marginTop: theme.spacing.md }}
-              onPress={() => setConfirmingDelete(true)}
-              testID="delete-account"
-            />
-          )}
-        </View>
+          </View>
+        ) : null}
 
-        <Text variant="caption" tone="subtle" style={[styles.version, { marginTop: theme.spacing.xl }]}>
+        {failure ? (
+          <Text variant="meta" tone="danger" style={{ marginTop: theme.spacing.md }}>
+            {failure}
+          </Text>
+        ) : null}
+
+        <Text variant="caption" tone="subtle" style={{ marginTop: theme.spacing.xxl, textAlign: 'center' }}>
           vetura {Constants.expoConfig?.version ?? ''}
         </Text>
       </ScrollView>
@@ -335,7 +286,17 @@ export default function ProfileTab() {
 }
 
 const styles = StyleSheet.create({
-  version: {
-    textAlign: 'center',
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  identity: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  credits: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });

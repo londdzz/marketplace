@@ -340,6 +340,10 @@
     "delete_title": "Delete account",
     "delete_body": "Your listings, messages, saved cars and credits go with it. This cannot be undone.",
     "delete_account": "Delete my account",
-    "delete_confirm": "Delete for good"
+    "delete_confirm": "Delete for good",
+    "selling": "Selling",
+    "my_listings_hint": "Your cars, drafts and renewals",
+    "display_name_hint": "Shown on your listings and in messages.",
+    "phone_fixed": "Your number is how you sign in. It cannot be changed."
   }
 }

@@ -340,6 +340,10 @@
     "delete_title": "Fshi llogarinë",
     "delete_body": "Shpalljet, mesazhet, makinat e ruajtura dhe kreditet fshihen bashkë me të. Kjo nuk kthehet mbrapsht.",
     "delete_account": "Fshi llogarinë time",
-    "delete_confirm": "Fshije përgjithmonë"
+    "delete_confirm": "Fshije përgjithmonë",
+    "selling": "Shitja",
+    "my_listings_hint": "Makinat, draftet dhe rinovimet e tua",
+    "display_name_hint": "Shfaqet në shpalljet e tua dhe në mesazhe.",
+    "phone_fixed": "Me numrin tënd kyçesh. Nuk mund të ndryshohet."
   }
 }

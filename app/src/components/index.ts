@@ -16,5 +16,6 @@ export { PromoBanner, type PromoBannerProps } from './PromoBanner';
 export { Screen, type ScreenProps } from './Screen';
 export { SearchBar, type SearchBarProps } from './SearchBar';
 export { SearchField, type SearchFieldProps } from './SearchField';
+export { SettingRow, type SettingRowProps } from './SettingRow';
 export { Text, type TextProps } from './Text';
 export { ToggleRow, type ToggleRowProps } from './ToggleRow';

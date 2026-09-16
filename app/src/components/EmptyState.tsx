@@ -34,9 +34,19 @@ export function EmptyState({
   return (
     <View testID={testID} style={[styles.base, { padding: theme.spacing.xxl }, style]}>
       {glyph ? (
-        <Text variant="display" tone="subtle" style={{ marginBottom: theme.spacing.md }}>
-          {glyph}
-        </Text>
+        <View
+          style={{
+            width: 72,
+            height: 72,
+            borderRadius: theme.radius.full,
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginBottom: theme.spacing.lg,
+            backgroundColor: theme.colors.surfaceMuted,
+          }}
+        >
+          <Text variant="display">{glyph}</Text>
+        </View>
       ) : null}
 
       <Text variant="title" style={styles.centered}>
@@ -57,8 +67,10 @@ export function EmptyState({
         <Button
           label={actionLabel}
           onPress={onAction}
-          variant="secondary"
-          style={{ marginTop: theme.spacing.xl }}
+          size="lg"
+          // A button sets its own alignment, so centring the column is not
+          // enough to centre the button in it.
+          style={{ marginTop: theme.spacing.xl, alignSelf: 'center', paddingHorizontal: theme.spacing.xxl }}
         />
       ) : null}
     </View>
