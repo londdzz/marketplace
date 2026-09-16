@@ -1,12 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
 import { Stack, useRouter } from 'expo-router';
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, View } from 'react-native';
 
+import { listingsApi } from '../api/listings';
 import { referenceApi } from '../api/reference';
-import type { SearchFilters, SortOption } from '../api/types';
+import type { SortOption } from '../api/types';
 import { Button, Chip, Input, Screen, Text } from '../components';
+import { useFilters } from '../search/FiltersProvider';
 import { useTheme } from '../theme';
 
 const FUELS = ['diesel', 'petrol', 'hybrid', 'electric', 'lpg'] as const;
@@ -25,16 +26,16 @@ export default function FiltersScreen() {
   const router = useRouter();
   const { t } = useTranslation(['search', 'listing', 'common']);
 
-  const [filters, setFilters] = useState<SearchFilters>({});
+  const { filters, set, toggle, reset } = useFilters();
   const countries = useQuery({ queryKey: ['countries'], queryFn: referenceApi.countries });
+  const makes = useQuery({ queryKey: ['makes'], queryFn: referenceApi.makes });
 
-  const toggle = <T,>(list: T[] | undefined, value: T): T[] | undefined => {
-    const next = (list ?? []).includes(value)
-      ? (list ?? []).filter((item) => item !== value)
-      : [...(list ?? []), value];
-
-    return next.length > 0 ? next : undefined;
-  };
+  // The same count the builder shows, so the button never disagrees with it.
+  const preview = useQuery({
+    queryKey: ['listing-count', filters],
+    queryFn: () => listingsApi.search(filters, 1),
+  });
+  const total = preview.data?.meta.total ?? 0;
 
   const section = { marginTop: theme.spacing.xxl };
   const row = { flexDirection: 'row' as const, flexWrap: 'wrap' as const, gap: theme.spacing.xs, marginTop: theme.spacing.sm };
@@ -44,11 +45,25 @@ export default function FiltersScreen() {
       <Stack.Screen options={{ headerShown: false, presentation: 'modal' }} />
 
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingTop: theme.spacing.md }}>
-        <Text variant="title">{t('search:filters')}</Text>
-        <Button label={t('search:clear')} variant="ghost" size="sm" onPress={() => setFilters({})} />
+        <Text variant="title">{t('search:filter')}</Text>
+        <Button label={t('search:reset')} variant="ghost" size="sm" onPress={reset} testID="reset-filters" />
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: theme.spacing.xxxl }}>
+        <Text variant="label" tone="muted" style={section}>
+          {t('search:make_model')}
+        </Text>
+        <View style={row}>
+          {(makes.data ?? []).map((make) => (
+            <Chip
+              key={make.id}
+              label={make.name}
+              selected={filters.makeId === make.id}
+              onPress={() => set({ makeId: filters.makeId === make.id ? undefined : make.id })}
+            />
+          ))}
+        </View>
+
         <Text variant="label" tone="muted" style={section}>
           {t('search:countries')}
         </Text>
@@ -58,7 +73,7 @@ export default function FiltersScreen() {
               key={country.code}
               label={country.code}
               selected={(filters.countries ?? []).includes(country.code)}
-              onPress={() => setFilters((f) => ({ ...f, countries: toggle(f.countries, country.code) }))}
+              onPress={() => toggle('countries', country.code)}
               testID={`country-${country.code}`}
             />
           ))}
@@ -72,13 +87,15 @@ export default function FiltersScreen() {
             placeholder={t('search:min')}
             keyboardType="number-pad"
             containerStyle={{ flex: 1 }}
-            onChangeText={(value) => setFilters((f) => ({ ...f, priceMin: value ? Number(value) : undefined }))}
+            value={filters.priceMin ? String(filters.priceMin) : ''}
+            onChangeText={(value) => set({ priceMin: value ? Number(value) : undefined })}
           />
           <Input
             placeholder={t('search:max')}
             keyboardType="number-pad"
             containerStyle={{ flex: 1 }}
-            onChangeText={(value) => setFilters((f) => ({ ...f, priceMax: value ? Number(value) : undefined }))}
+            value={filters.priceMax ? String(filters.priceMax) : ''}
+            onChangeText={(value) => set({ priceMax: value ? Number(value) : undefined })}
           />
         </View>
 
@@ -90,13 +107,15 @@ export default function FiltersScreen() {
             placeholder={t('search:min')}
             keyboardType="number-pad"
             containerStyle={{ flex: 1 }}
-            onChangeText={(value) => setFilters((f) => ({ ...f, yearMin: value ? Number(value) : undefined }))}
+            value={filters.yearMin ? String(filters.yearMin) : ''}
+            onChangeText={(value) => set({ yearMin: value ? Number(value) : undefined })}
           />
           <Input
             placeholder={t('search:max')}
             keyboardType="number-pad"
             containerStyle={{ flex: 1 }}
-            onChangeText={(value) => setFilters((f) => ({ ...f, yearMax: value ? Number(value) : undefined }))}
+            value={filters.yearMax ? String(filters.yearMax) : ''}
+            onChangeText={(value) => set({ yearMax: value ? Number(value) : undefined })}
           />
         </View>
 
@@ -109,7 +128,7 @@ export default function FiltersScreen() {
               key={fuel}
               label={t(`listing:fuel.${fuel}`)}
               selected={(filters.fuel ?? []).includes(fuel)}
-              onPress={() => setFilters((f) => ({ ...f, fuel: toggle(f.fuel, fuel) }))}
+              onPress={() => toggle('fuel', fuel)}
             />
           ))}
         </View>
@@ -123,9 +142,7 @@ export default function FiltersScreen() {
               key={gearbox}
               label={t(`listing:transmission.${gearbox}`)}
               selected={filters.transmission === gearbox}
-              onPress={() =>
-                setFilters((f) => ({ ...f, transmission: f.transmission === gearbox ? undefined : gearbox }))
-              }
+              onPress={() => set({ transmission: filters.transmission === gearbox ? undefined : gearbox })}
             />
           ))}
         </View>
@@ -139,18 +156,20 @@ export default function FiltersScreen() {
               key={sort}
               label={t(`search:sort_${sort}`)}
               selected={(filters.sort ?? 'relevance') === sort}
-              onPress={() => setFilters((f) => ({ ...f, sort }))}
+              onPress={() => set({ sort })}
             />
           ))}
         </View>
       </ScrollView>
 
       <Button
-        label={t('search:apply')}
+        label={total > 0 ? t('search:offers', { count: total }) : t('search:offers_zero')}
         size="lg"
         block
+        loading={preview.isLoading}
         onPress={() => router.back()}
         style={{ marginBottom: theme.spacing.lg }}
+        testID="apply-filters"
       />
     </Screen>
   );

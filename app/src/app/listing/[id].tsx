@@ -53,18 +53,19 @@ export default function ListingDetail() {
   const currency = countries.data?.find((c) => c.code === car.country_code)?.currency ?? 'EUR';
   const local = formatLocal(car.price_eur, currency, byCurrency[currency]);
 
-  const specs: Array<[string, string | null]> = [
-    [t('listing:year'), car.year ? String(car.year) : null],
-    [t('listing:mileage'), car.mileage_km !== null ? formatKm(car.mileage_km) : null],
-    [t('listing:fuel_label'), car.fuel ? t(`listing:fuel.${car.fuel}`, car.fuel) : null],
+  const specs: Array<[keyof typeof Ionicons.glyphMap, string, string | null]> = [
+    ['speedometer-outline', t('listing:mileage'), car.mileage_km !== null ? formatKm(car.mileage_km) : null],
+    ['calendar-outline', t('listing:year'), car.year ? String(car.year) : null],
+    ['flash-outline', t('listing:power'), car.power_hp ? `${car.power_hp} hp` : null],
+    ['water-outline', t('listing:fuel_label'), car.fuel ? t(`listing:fuel.${car.fuel}`, car.fuel) : null],
     [
+      'git-branch-outline',
       t('listing:transmission_label'),
       car.transmission ? t(`listing:transmission.${car.transmission}`, car.transmission) : null,
     ],
-    [t('listing:power'), car.power_hp ? `${car.power_hp} hp` : null],
-    [t('listing:body'), car.body_type ? t(`listing:body_type.${car.body_type}`, car.body_type) : null],
-    [t('listing:doors'), car.doors ? String(car.doors) : null],
-    [t('listing:seats'), car.seats ? String(car.seats) : null],
+    ['car-outline', t('listing:body'), car.body_type ? t(`listing:body_type.${car.body_type}`, car.body_type) : null],
+    ['browsers-outline', t('listing:doors'), car.doors ? String(car.doors) : null],
+    ['people-outline', t('listing:seats'), car.seats ? String(car.seats) : null],
   ];
 
   return (
@@ -164,13 +165,16 @@ export default function ListingDetail() {
 
           <View style={[styles.specGrid, { marginTop: theme.spacing.md }]}>
             {specs
-              .filter(([, value]) => value !== null)
-              .map(([label, value]) => (
-                <View key={label} style={{ width: '50%', marginBottom: theme.spacing.md }}>
-                  <Text variant="caption" tone="subtle">
-                    {label}
-                  </Text>
-                  <Text variant="bodyStrong">{value}</Text>
+              .filter(([, , value]) => value !== null)
+              .map(([icon, label, value]) => (
+                <View key={label} style={[styles.spec, { marginBottom: theme.spacing.lg, gap: theme.spacing.md }]}>
+                  <Ionicons name={icon} size={22} color={theme.colors.accent} />
+                  <View style={{ flexShrink: 1 }}>
+                    <Text variant="caption" tone="muted">
+                      {label}
+                    </Text>
+                    <Text variant="bodyStrong">{value}</Text>
+                  </View>
                 </View>
               ))}
           </View>
@@ -249,14 +253,7 @@ export default function ListingDetail() {
         ]}
       >
         <Button
-          label={t('listing:message')}
-          size="lg"
-          style={{ flex: 1 }}
-          onPress={() => router.push('/(tabs)/messages')}
-        />
-        <Button
           label={t('listing:call')}
-          variant="secondary"
           size="lg"
           style={{ flex: 1 }}
           onPress={() => {
@@ -264,6 +261,14 @@ export default function ListingDetail() {
               void Linking.openURL(`tel:${car.seller.phone}`);
             }
           }}
+          testID="call-seller"
+        />
+        <Button
+          label={t('listing:message')}
+          size="lg"
+          style={{ flex: 1 }}
+          onPress={() => router.push('/(tabs)/messages')}
+          testID="message-seller"
         />
       </View>
     </Screen>
@@ -288,6 +293,11 @@ const styles = StyleSheet.create({
   specGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
+  },
+  spec: {
+    width: '50%',
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   actions: {
     position: 'absolute',

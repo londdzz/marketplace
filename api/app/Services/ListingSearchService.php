@@ -28,7 +28,9 @@ final class ListingSearchService
     {
         $query = Listing::query()
             ->where('status', ListingStatus::Active)
-            ->with(['make', 'model', 'city', 'photos'])
+            // The seller comes with the results: a results list names who is
+            // selling and lets a buyer call them without opening the car first.
+            ->with(['make', 'model', 'city', 'photos', 'user.city'])
             ->withCount('photos');
 
         // Used by the saved-search job to ask for one half-open window of time,

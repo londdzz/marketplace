@@ -57,6 +57,28 @@ export const listingsApi = {
   report: (listingId: string, reason: string, note?: string) =>
     api.post<unknown>(`/listings/${listingId}/report`, { reason, note }),
 
+  /** Keep this search, so the API can tell the buyer when a match appears. */
+  saveSearch: (filters: SearchFilters, name?: string) =>
+    api.post<unknown>('/saved-searches', {
+      name,
+      filters: {
+        q: filters.q,
+        make_id: filters.makeId,
+        model_id: filters.modelId,
+        year_min: filters.yearMin,
+        year_max: filters.yearMax,
+        price_min: filters.priceMin,
+        price_max: filters.priceMax,
+        mileage_max: filters.mileageMax,
+        fuel: filters.fuel,
+        transmission: filters.transmission,
+        body_type: filters.bodyType,
+        countries: filters.countries,
+        city_id: filters.cityId,
+        sort: filters.sort,
+      },
+    }),
+
   startConversation: (listingId: string, body?: string) =>
     api.post<unknown>(`/listings/${listingId}/conversations`, { body }),
 };

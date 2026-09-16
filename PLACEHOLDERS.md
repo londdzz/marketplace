@@ -98,9 +98,10 @@ Development stores photos on the local disk. Production needs the S3 disk.
 
 ## 7. Content that is representative, not final
 
-- The cars on the home and search screens are hard-coded stand-ins until phase 9 wires
-  them to the search endpoint, and their photos are grey blocks because nothing has been
-  uploaded yet.
+- Listing photographs come from `DevListingSeeder`, which generates coloured panels rather
+  than photographs of real cars.
+- Make tiles in the search builder draw a monogram from the make's name. Manufacturer logos
+  are trademarks and need licensing before they can be shipped; only `MakeTile` changes.
 - Seeded cities are the thirty largest across the five markets, with real coordinates.
 - Seeded makes and models cover the ten popular makes. The long tail gets filled in from
   real listing data after launch.

@@ -215,6 +215,16 @@ release, and update it whenever a placeholder is added or replaced.
   the chips and shows the three specifications that earn their place at half a screen
   wide. The cross-border marker sits on the photo rather than in the text, so two cards
   side by side always line up.
+- **Search is a builder, not a list.** The search tab holds the query box, a grid of the
+  popular makes and collapsible sections for condition, price, technical and location. The
+  button along the bottom always says how many cars the current search would return, so
+  nobody has to run it to learn whether it is worth running. Results live on their own
+  screen with their own header, sort control and Save search.
+- **Three things in the reference are deliberately absent**, because the specification puts
+  them under "do not build": the price rating bars, financing, and seller star ratings. The
+  vehicle-type row is gone too, since the marketplace sells cars only.
+- **Make tiles draw a monogram, not a logo.** Manufacturer logos are trademarks we have no
+  licence to ship. Swapping in licensed artwork means changing `MakeTile` alone.
 - **The tab bar mirrors the reference app, not the specification's list.** The spec named
   Search, Favorites, Sell, Messages and Profile. The tabs are Home, Search, My searches,
   Saved and Sell, with messages and the profile reached from the header, which is where
