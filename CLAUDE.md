@@ -262,6 +262,19 @@ release, and update it whenever a placeholder is added or replaced.
   small thumbnail on the left rather than a full-width photo. The banner carries a deep
   brand blue in both schemes, because a full-width block of the light accent is glaring
   against a near-black page.
+- **The design system was rebuilt once, in phase 10, after the first pass read
+  as a wireframe.** The rules that came out of it: one button language, where
+  only the primary is filled and secondary actions take a soft neutral fill
+  rather than a row of outlines all shouting equally; no empty circle on an
+  unselected row; a long list is one card with dividers (`ListGroup`), never
+  forty floating cards; cards carry one quiet metadata line rather than chips
+  that wrap and make every card a different height; neutrals carry a little of
+  the accent's hue, because flat grey beside a saturated blue reads as cheap;
+  and elevation is for the few things that genuinely sit above the page.
+- **Manufacturer marks are real.** `api/scripts/fetch-make-logos.js` pulls them
+  from Simple Icons, whose files are CC0, and renders flat PNGs that the app
+  tints to the text colour, so one file works in light and dark. Run it, then
+  `php artisan makes:logos`. A make with no mark still falls back to a monogram.
 - **The sell flow is eleven screens counted as seven steps.** One decision per
   screen, as the specification asks, but the counter says "step 2 of 7" while the
   seller answers year, kilometres, fuel and gearbox: it is honest about how much is

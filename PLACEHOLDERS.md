@@ -116,17 +116,16 @@ in section 2 has to be real before a purchase can ever add anything.
 
 - Listing photographs come from `DevListingSeeder`, which generates coloured panels rather
   than photographs of real cars.
-- **Manufacturer logos are not in the repository.** The data model, the API and the tiles
-  all support them; no files have been added. Drop image files named after each make into
-  `makes/` on the storage disk, for example `makes/volkswagen.png` or
-  `makes/mercedes-benz.svg`, then run `php artisan makes:logos` from /api. The match is on
-  the normalized name, so `skoda.png` finds Škoda. Until a make has a file, its tile draws
-  a monogram from its name, so logos can be added a few at a time.
+- **Manufacturer marks are generated, not committed.** `node scripts/fetch-make-logos.js`
+  from /api pulls them from Simple Icons and renders flat PNGs into `storage/app/public/makes`,
+  then `php artisan makes:logos` links them to the makes. Storage is not in the repository, so
+  run both after any fresh checkout or deploy. Thirty-four of the forty seeded makes have a
+  mark; Dodge, Lancia and Lexus have none published, and those tiles fall back to a monogram.
 
-  Monochrome files work best: the tile tints them to the text colour, which is what keeps
-  one file legible in both light and dark. Using a maker's mark to identify the car being
-  sold is nominative use and is what every marketplace in the region does, but confirm it
-  with your own lawyer before launch.
+  The Simple Icons files are CC0, but the marks themselves remain their owners' trademarks.
+  Using a maker's mark to identify the car being sold is nominative use and is what every
+  marketplace in the region does — **confirm it with your own lawyer before launch**, and
+  replace the set with licensed artwork if they advise it.
 - Seeded cities are the thirty largest across the five markets, with real coordinates.
 - Seeded makes and models cover the ten popular makes. The long tail gets filled in from
   real listing data after launch.
