@@ -1,0 +1,48 @@
+{
+  "common": {
+    "continue": "Vazhdo",
+    "back": "Kthehu",
+    "cancel": "Anulo",
+    "retry": "Provo sërish",
+    "loading": "Duke u ngarkuar…",
+    "search": "Kërko"
+  },
+  "tabs": {
+    "search": "Kërko",
+    "favorites": "Të ruajtura",
+    "sell": "Shit",
+    "messages": "Mesazhe",
+    "profile": "Profili"
+  },
+  "auth": {
+    "phone_title": "Hyr me numrin tënd",
+    "phone_subtitle": "Do të të dërgojmë një kod me WhatsApp për të vërtetuar numrin.",
+    "phone_label": "Numri i telefonit",
+    "phone_placeholder": "44 123 456",
+    "country_label": "Shteti",
+    "send_code": "Dërgo kodin",
+    "terms": "Duke vazhduar, pranon Kushtet dhe Politikën e Privatësisë.",
+    "code_title": "Shkruaj kodin",
+    "code_subtitle": "E dërguam te {{phone}}.",
+    "code_label": "Kodi gjashtëshifror",
+    "verify": "Verifiko",
+    "resend": "Dërgo kodin sërish",
+    "resend_in": "Dërgo sërish pas {{seconds}}s",
+    "change_number": "Ndrysho numrin",
+    "invalid_phone": "Shkruaj një numër telefoni të vlefshëm.",
+    "invalid_code": "Kodi duhet të ketë 6 shifra.",
+    "signed_in_as": "I kyçur si"
+  },
+  "home": {
+    "search_placeholder": "Kërko…",
+    "search_hint": "Marka • Viti • Kilometrat",
+    "recent": "Kërkimet e fundit",
+    "saved": "Makinat e ruajtura",
+    "show_all": "Shfaq të gjitha",
+    "cross_border": "Ndërkufitare",
+    "customs_cleared": "E zhdoganuar",
+    "negotiable": "E negociueshme",
+    "empty_title": "Ende asnjë makinë e ruajtur",
+    "empty_body": "Makinat që ruan shfaqen këtu."
+  }
+}

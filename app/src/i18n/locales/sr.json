@@ -1,0 +1,48 @@
+{
+  "common": {
+    "continue": "Настави",
+    "back": "Назад",
+    "cancel": "Откажи",
+    "retry": "Покушај поново",
+    "loading": "Учитавање…",
+    "search": "Претражи"
+  },
+  "tabs": {
+    "search": "Претрага",
+    "favorites": "Сачувано",
+    "sell": "Продај",
+    "messages": "Поруке",
+    "profile": "Профил"
+  },
+  "auth": {
+    "phone_title": "Пријави се својим бројем",
+    "phone_subtitle": "Послаћемо ти код на WhatsApp да потврдимо број.",
+    "phone_label": "Број телефона",
+    "phone_placeholder": "64 123 4567",
+    "country_label": "Држава",
+    "send_code": "Пошаљи код",
+    "terms": "Настављањем прихваташ Услове и Политику приватности.",
+    "code_title": "Унеси код",
+    "code_subtitle": "Послали смо га на {{phone}}.",
+    "code_label": "Шестоцифрени код",
+    "verify": "Потврди",
+    "resend": "Пошаљи код поново",
+    "resend_in": "Пошаљи поново за {{seconds}}с",
+    "change_number": "Промени број",
+    "invalid_phone": "Унеси исправан број телефона.",
+    "invalid_code": "Код има шест цифара.",
+    "signed_in_as": "Пријављен као"
+  },
+  "home": {
+    "search_placeholder": "Претражи…",
+    "search_hint": "Марка • Година • Километража",
+    "recent": "Недавне претраге",
+    "saved": "Сачувани аутомобили",
+    "show_all": "Прикажи све",
+    "cross_border": "Прекогранично",
+    "customs_cleared": "Оцарињено",
+    "negotiable": "По договору",
+    "empty_title": "Још нема сачуваних аутомобила",
+    "empty_body": "Аутомобили које сачуваш појављују се овде."
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "common": {
+    "continue": "Continue",
+    "back": "Back",
+    "cancel": "Cancel",
+    "retry": "Try again",
+    "loading": "Loading…",
+    "search": "Search"
+  },
+  "tabs": {
+    "search": "Search",
+    "favorites": "Saved",
+    "sell": "Sell",
+    "messages": "Messages",
+    "profile": "Profile"
+  },
+  "auth": {
+    "phone_title": "Sign in with your number",
+    "phone_subtitle": "We will send you a code on WhatsApp to confirm it is you.",
+    "phone_label": "Phone number",
+    "phone_placeholder": "44 123 456",
+    "country_label": "Country",
+    "send_code": "Send code",
+    "terms": "By continuing you accept the Terms and the Privacy Policy.",
+    "code_title": "Enter the code",
+    "code_subtitle": "We sent it to {{phone}}.",
+    "code_label": "Six digit code",
+    "verify": "Verify",
+    "resend": "Send the code again",
+    "resend_in": "Send again in {{seconds}}s",
+    "change_number": "Change number",
+    "invalid_phone": "Enter a valid phone number.",
+    "invalid_code": "The code has six digits.",
+    "signed_in_as": "Signed in as"
+  },
+  "home": {
+    "search_placeholder": "Search for…",
+    "search_hint": "Make • Year • Mileage",
+    "recent": "Recent searches",
+    "saved": "Saved cars",
+    "show_all": "Show all",
+    "cross_border": "Cross-border",
+    "customs_cleared": "Customs cleared",
+    "negotiable": "Negotiable",
+    "empty_title": "No saved cars yet",
+    "empty_body": "Cars you save show up here."
+  }
+}

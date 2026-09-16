@@ -1,9 +1,8 @@
 import { Redirect } from 'expo-router';
 
 /**
- * Replaced by the search tab in phase 9. For now the design gallery is the only
- * thing to look at.
+ * The gate in the root layout decides where this actually lands.
  */
 export default function Index() {
-  return <Redirect href="/design" />;
+  return <Redirect href="/(tabs)/search" />;
 }

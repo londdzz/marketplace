@@ -1,0 +1,48 @@
+{
+  "common": {
+    "continue": "Продължи",
+    "back": "Назад",
+    "cancel": "Отказ",
+    "retry": "Опитай отново",
+    "loading": "Зарежда…",
+    "search": "Търси"
+  },
+  "tabs": {
+    "search": "Търсене",
+    "favorites": "Запазени",
+    "sell": "Продай",
+    "messages": "Съобщения",
+    "profile": "Профил"
+  },
+  "auth": {
+    "phone_title": "Влез с номера си",
+    "phone_subtitle": "Ще ти изпратим код в WhatsApp, за да потвърдим номера.",
+    "phone_label": "Телефонен номер",
+    "phone_placeholder": "88 123 4567",
+    "country_label": "Държава",
+    "send_code": "Изпрати код",
+    "terms": "С продължаването приемаш Условията и Политиката за поверителност.",
+    "code_title": "Въведи кода",
+    "code_subtitle": "Изпратихме го на {{phone}}.",
+    "code_label": "Шестцифрен код",
+    "verify": "Потвърди",
+    "resend": "Изпрати кода отново",
+    "resend_in": "Изпрати отново след {{seconds}}с",
+    "change_number": "Смени номера",
+    "invalid_phone": "Въведи валиден телефонен номер.",
+    "invalid_code": "Кодът е от шест цифри.",
+    "signed_in_as": "Влязъл като"
+  },
+  "home": {
+    "search_placeholder": "Търси…",
+    "search_hint": "Марка • Година • Пробег",
+    "recent": "Скорошни търсения",
+    "saved": "Запазени коли",
+    "show_all": "Покажи всички",
+    "cross_border": "Трансгранично",
+    "customs_cleared": "Обмитена",
+    "negotiable": "По договаряне",
+    "empty_title": "Все още няма запазени коли",
+    "empty_body": "Колите, които запазиш, се показват тук."
+  }
+}

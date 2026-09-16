@@ -74,9 +74,11 @@ export const lightColors: ThemeColors = {
 };
 
 export const darkColors: ThemeColors = {
-  background: grey[950],
-  surface: grey[900],
-  surfaceMuted: grey[800],
+  // Near-black, the way the reference app does it, with cards lifted just far
+  // enough above the page to read as separate surfaces.
+  background: '#000000',
+  surface: grey[950],
+  surfaceMuted: grey[900],
   border: grey[800],
   borderStrong: grey[700],
 
