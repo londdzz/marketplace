@@ -12,6 +12,7 @@ use App\Http\Controllers\Listing\ListingLifecycleController;
 use App\Http\Controllers\Listing\ListingPhotoController;
 use App\Http\Controllers\Listing\ListingSearchController;
 use App\Http\Controllers\Listing\MyListingController;
+use App\Http\Controllers\Messaging\BlockController;
 use App\Http\Controllers\Messaging\ConversationController;
 use App\Http\Controllers\Messaging\FavoriteController;
 use App\Http\Controllers\Messaging\ReportController;
@@ -87,6 +88,12 @@ Route::middleware(['auth:sanctum', 'blocked'])->group(function (): void {
     Route::post('listings/{listing}/conversations', [ConversationController::class, 'store'])
         ->middleware('throttle:start-conversation')
         ->name('listings.conversations.store');
+
+    // Blocking someone hides them both ways. Required by both stores of any
+    // app where strangers can message each other.
+    Route::get('blocks', [BlockController::class, 'index'])->name('blocks.index');
+    Route::post('blocks', [BlockController::class, 'store'])->name('blocks.store');
+    Route::delete('blocks/{user}', [BlockController::class, 'destroy'])->name('blocks.destroy');
 
     Route::get('favorites', [FavoriteController::class, 'index'])->name('favorites.index');
     Route::post('favorites', [FavoriteController::class, 'store'])->name('favorites.store');

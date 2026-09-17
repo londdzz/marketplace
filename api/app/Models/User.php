@@ -8,6 +8,7 @@ use App\Enums\SellerType;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -137,6 +138,29 @@ class User extends Authenticatable
     /**
      * @return HasMany<DeviceToken, $this>
      */
+    /**
+     * The people this account has blocked.
+     *
+     * @return BelongsToMany<User, $this>
+     */
+    public function blockedUsers(): BelongsToMany
+    {
+        return $this->belongsToMany(self::class, 'user_blocks', 'blocker_id', 'blocked_id')
+            ->withPivot('created_at');
+    }
+
+    /**
+     * The people who have blocked this account. Needed as well as the other
+     * direction: being blocked has to hide me from them, not only them from me.
+     *
+     * @return BelongsToMany<User, $this>
+     */
+    public function blockedByUsers(): BelongsToMany
+    {
+        return $this->belongsToMany(self::class, 'user_blocks', 'blocked_id', 'blocker_id')
+            ->withPivot('created_at');
+    }
+
     public function deviceTokens(): HasMany
     {
         return $this->hasMany(DeviceToken::class);

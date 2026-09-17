@@ -357,3 +357,34 @@ it('carries the photos and the cross-border country on every result', function (
         ->assertJsonPath('data.0.country_code', 'BG')
         ->assertJsonStructure(['data' => [['id', 'price_eur', 'country_code', 'city', 'photos', 'photo_count']]]);
 });
+
+it('drops a blocked seller out of search, both ways', function (): void {
+    $seller = User::factory()->create(['country_code' => 'MK']);
+    $buyer = User::factory()->create(['country_code' => 'MK']);
+
+    $theirs = Listing::factory()->active()->create(['user_id' => $seller->id]);
+    $mine = Listing::factory()->active()->create(['user_id' => $buyer->id]);
+
+    // Anyone signed out, and both of them, see both cars to begin with.
+    expect(array_column($this->getJson('/api/v1/listings')->json('data'), 'id'))
+        ->toContain($theirs->id, $mine->id);
+
+    $this->actingAs($buyer, 'sanctum')
+        ->postJson('/api/v1/blocks', ['user_id' => $seller->id])
+        ->assertStatus(201);
+
+    expect(array_column($this->actingAs($buyer, 'sanctum')->getJson('/api/v1/listings')->json('data'), 'id'))
+        ->not->toContain($theirs->id)
+        ->toContain($mine->id);
+
+    expect(array_column($this->actingAs($seller, 'sanctum')->getJson('/api/v1/listings')->json('data'), 'id'))
+        ->not->toContain($mine->id)
+        ->toContain($theirs->id);
+
+    // Someone not involved still sees everything, and so does a signed-out
+    // search: a block is between two people, not a takedown.
+    $stranger = User::factory()->create(['country_code' => 'MK']);
+
+    expect(array_column($this->actingAs($stranger, 'sanctum')->getJson('/api/v1/listings')->json('data'), 'id'))
+        ->toContain($theirs->id, $mine->id);
+});

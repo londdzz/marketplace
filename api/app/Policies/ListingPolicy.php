@@ -7,6 +7,7 @@ namespace App\Policies;
 use App\Enums\ListingStatus;
 use App\Models\Listing;
 use App\Models\User;
+use App\Services\BlockService;
 
 /**
  * A listing is private to its seller until it is published. After that anyone
@@ -14,8 +15,17 @@ use App\Models\User;
  */
 class ListingPolicy
 {
+    public function __construct(private readonly BlockService $blocks) {}
+
     public function view(?User $user, Listing $listing): bool
     {
+        // A block hides the car as well as the person. Opening a link to it
+        // has to fail the same way search does, or blocking would only be a
+        // filter on one screen.
+        if ($user !== null && $listing->user !== null && $this->blocks->eitherWay($user, $listing->user)) {
+            return false;
+        }
+
         if ($listing->status === ListingStatus::Active) {
             return true;
         }

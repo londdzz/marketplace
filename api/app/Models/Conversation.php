@@ -86,4 +86,20 @@ class Conversation extends Model
     {
         return in_array($user->getKey(), [$this->buyer_id, $this->seller_id], true);
     }
+
+    /**
+     * The other person in the thread, from one participant's point of view.
+     */
+    public function counterpartFor(User $user): ?User
+    {
+        if ($user->getKey() === $this->buyer_id) {
+            return $this->seller;
+        }
+
+        if ($user->getKey() === $this->seller_id) {
+            return $this->buyer;
+        }
+
+        return null;
+    }
 }

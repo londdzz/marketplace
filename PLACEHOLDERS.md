@@ -119,13 +119,6 @@ their euro prices and says purchases are not available, and nothing can be bough
 Credits are granted only by the RevenueCat webhook, never by the app, so the webhook secret
 in section 2 has to be real before a purchase can ever add anything.
 
-## 6c. Blocking another user — not built
-
-Apple's Guideline 1.2 and Play's UGC policy both require that a user can **block** another
-user, on top of the reporting we already have. There is no `user_blocks` table and no block
-action in the app. It is the most likely reason a first App Store submission is rejected, and
-it is written up at the top of `docs/store/pre-submission-checklist.md`.
-
 ## 7. Content that is representative, not final
 
 - Listing photographs come from `DevListingSeeder`, which generates coloured panels rather

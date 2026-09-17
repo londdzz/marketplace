@@ -1,29 +1,29 @@
 # Pre-submission checklist
 
 Work top to bottom. Everything above "Ready to submit" has to be true before the first build
-goes to either store. The three blockers are first because they are the ones that get an app
-rejected or, worse, launched and then pulled.
+goes to either store. The blockers are first because they are the ones that get an app rejected
+or, worse, launched and then pulled. One of the three is now done.
 
 ---
 
 ## Blockers — these are not optional
 
-### 1. Blocking another user is not built (Apple Guideline 1.2, Play UGC policy)
+### ~~1. Blocking another user~~ — built
 
-An app with user-generated content and user-to-user messaging must offer **all** of:
-filtering objectionable material, **a way to report content**, **a way to block abusive users**,
-and published contact details for the developer.
+An app with user-generated content and user-to-user messaging must offer **all** of: filtering
+objectionable material, a way to report content, a way to block abusive users, and published
+contact details for the developer. All four are now in place:
 
-We have reporting (`POST /listings/{id}/report`) and we can block accounts from our side
-(`users.blocked_at`). **A user cannot block another user.** Apple rejects for this specifically,
-and it is the most likely reason a first submission comes back.
+- **Report** — the report action on a listing (`POST /listings/{id}/report`).
+- **Block** — `POST /blocks`, from the listing and from the message thread. It hides both ways:
+  their cars leave your search and yours leave theirs, the thread closes for both of you, and
+  neither can start a new one. Nothing is deleted, so unblocking restores all of it.
+- **Unblock** — Profile → Blocked people.
+- **Contact** — support@vetura.mk on the listing and in the terms.
+- **Removal** — we can take down a listing and block an account from our side
+  (`users.blocked_at`), which is what a report leads to.
 
-What it takes: a `user_blocks` table; hide listings and conversations either way once blocked;
-a "Block this seller" action in the message thread and on the listing; an unblock list in the
-profile. Roughly a day's work across the API and the app.
-
-Until it exists, do not submit to Apple. Play is more forgiving at review but the policy is the
-same, and an enforcement later is worse than the delay now.
+Mention all of this in the review notes: reviewers look for it and often miss it.
 
 ### 2. Every placeholder in `PLACEHOLDERS.md` is still a placeholder
 
@@ -110,7 +110,7 @@ and an Android phone, and walk the whole app before anything is submitted.
 
 ## Ready to submit
 
-- [ ] All three blockers cleared.
+- [ ] Both remaining blockers cleared (credentials, and a real device).
 - [ ] Sandbox purchase verified on a real device.
 - [ ] 14-day closed test complete on Play.
 - [ ] Someone other than the developer has used the app for a day and reported nothing broken.

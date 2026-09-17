@@ -16,9 +16,10 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { blocksApi } from '../../api/blocks';
 import { messagingApi } from '../../api/messaging';
 import type { Message } from '../../api/types';
-import { Button, Text } from '../../components';
+import { Button, ConfirmDialog, Text } from '../../components';
 import { formatEur, listingTitle } from '../../format';
 import { dayLabel, messageTime } from '../../messaging/time';
 import { useTheme } from '../../theme';
@@ -34,6 +35,7 @@ export default function ConversationScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
 
   const [draft, setDraft] = useState('');
+  const [confirmingBlock, setConfirmingBlock] = useState(false);
   const [failure, setFailure] = useState<string | null>(null);
   const markedRead = useRef<string | null>(null);
 
@@ -53,6 +55,17 @@ export default function ConversationScreen() {
 
   // The API pages newest first; a thread reads oldest first.
   const items = [...(messages.data?.data ?? [])].reverse();
+
+  const block = useMutation({
+    mutationFn: (userId: number) => blocksApi.block(userId),
+    onSuccess: () => {
+      // The thread closes for both sides at once, so there is nothing left
+      // here to come back to.
+      void queryClient.invalidateQueries();
+      router.replace('/(tabs)/messages');
+    },
+    onError: (error) => setFailure(error instanceof Error ? error.message : String(error)),
+  });
 
   const send = useMutation({
     mutationFn: (body: string) => messagingApi.send(id, body),
@@ -219,7 +232,32 @@ export default function ConversationScreen() {
             <Ionicons name="chevron-forward" size={17} color={theme.colors.textSubtle} />
           ) : null}
         </Pressable>
+
+        {thread?.counterpart ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t('messages:block')}
+            onPress={() => setConfirmingBlock((value) => !value)}
+            hitSlop={8}
+            testID="thread-block"
+          >
+            <Ionicons name="ellipsis-horizontal" size={22} color={theme.colors.textMuted} />
+          </Pressable>
+        ) : null}
       </View>
+
+      <ConfirmDialog
+        open={confirmingBlock}
+        title={t('messages:block_title', { name: counterpart })}
+        body={t('messages:block_body')}
+        confirmLabel={t('messages:block')}
+        cancelLabel={t('common:cancel')}
+        destructive
+        loading={block.isPending}
+        onCancel={() => setConfirmingBlock(false)}
+        onConfirm={() => thread?.counterpart && block.mutate(thread.counterpart.id)}
+        testID="thread-block-confirm"
+      />
 
       <KeyboardAvoidingView
         style={styles.flex}

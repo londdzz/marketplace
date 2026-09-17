@@ -12,6 +12,7 @@ use App\Http\Resources\MessageResource;
 use App\Http\Resources\StatusResource;
 use App\Models\Conversation;
 use App\Models\Listing;
+use App\Services\BlockService;
 use App\Services\ConversationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -19,7 +20,10 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class ConversationController extends Controller
 {
-    public function __construct(private readonly ConversationService $conversations) {}
+    public function __construct(
+        private readonly ConversationService $conversations,
+        private readonly BlockService $blocks,
+    ) {}
 
     /**
      * Every thread this person is part of, on either side, most recently active
@@ -29,8 +33,15 @@ class ConversationController extends Controller
     {
         $userId = $request->user()->getKey();
 
+        $hidden = $this->blocks->hiddenFrom($request->user());
+
         $conversations = Conversation::query()
             ->where(fn ($query) => $query->where('buyer_id', $userId)->orWhere('seller_id', $userId))
+            // A blocked thread is hidden, not deleted: unblocking brings the
+            // whole conversation back where it was.
+            ->when($hidden !== [], fn ($query) => $query
+                ->whereNotIn('buyer_id', $hidden)
+                ->whereNotIn('seller_id', $hidden))
             ->with(['listing.photos', 'listing.make', 'listing.model', 'buyer', 'seller', 'lastMessage'])
             ->withCount(['unreadMessages' => fn ($query) => $query->where('sender_id', '!=', $userId)])
             ->orderByDesc('last_message_at')

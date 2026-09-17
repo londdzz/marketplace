@@ -20,7 +20,9 @@ class ListingSearchController extends Controller
 
     public function __invoke(SearchListingsRequest $request): AnonymousResourceCollection
     {
-        $results = $this->search->search($request->filters(), $request->perPage());
+        // Public, but a token is read when one is sent: a search has to hide
+        // the listings of anyone this account has blocked.
+        $results = $this->search->search($request->filters(), $request->perPage(), $request->user());
 
         return ListingResource::collection($results);
     }

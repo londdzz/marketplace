@@ -22,6 +22,8 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  */
 final class ConversationService
 {
+    public function __construct(private readonly BlockService $blocks) {}
+
     /**
      * Open the conversation between a buyer and a listing, or return the one
      * that already exists. Reopening an existing thread is not a new contact
@@ -37,6 +39,12 @@ final class ConversationService
 
         if ($listing->user_id === $buyer->getKey()) {
             throw new HttpException(422, (string) __('conversation.own_listing'));
+        }
+
+        // Either side having blocked the other ends it here, before a thread
+        // exists and before the seller's contact count moves.
+        if ($listing->user !== null && $this->blocks->eitherWay($buyer, $listing->user)) {
+            throw new HttpException(403, (string) __('block.conversation_blocked'));
         }
 
         return DB::transaction(function () use ($listing, $buyer, $body): Conversation {

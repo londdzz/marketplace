@@ -194,7 +194,14 @@
       "service_history": "Service history",
       "first_owner": "One owner",
       "non_smoker": "Non-smoker"
-    }
+    },
+    "block_seller": "Block this seller",
+    "block_title": "Block this seller?",
+    "block_body": "Their cars leave your search and yours leave theirs, and neither of you can message the other. You can undo it in your profile.",
+    "block_confirm": "Block",
+    "unavailable": "This car is no longer here",
+    "unavailable_body": "It may have been sold, taken down, or belong to someone you blocked.",
+    "back_to_search": "Back to search"
   },
   "sell": {
     "step": "Step {{current}} of {{total}}",
@@ -320,7 +327,10 @@
     "browse": "Browse cars",
     "thread_empty": "Say hello. Sellers answer faster when you mention the car.",
     "write": "Write a message",
-    "send": "Send"
+    "send": "Send",
+    "block": "Block",
+    "block_title": "Block {{name}}?",
+    "block_body": "This conversation closes for both of you and their cars leave your search. You can undo it in your profile."
   },
   "profile": {
     "title": "Profile",
@@ -344,6 +354,12 @@
     "selling": "Selling",
     "my_listings_hint": "Your cars, drafts and renewals",
     "display_name_hint": "Shown on your listings and in messages.",
-    "phone_fixed": "Your number is how you sign in. It cannot be changed."
+    "phone_fixed": "Your number is how you sign in. It cannot be changed.",
+    "blocked": "Blocked people",
+    "blocked_hint": "Hidden from your search and unable to message you",
+    "unblock": "Unblock",
+    "blocked_someone": "Someone",
+    "blocked_empty": "Nobody is blocked",
+    "blocked_empty_body": "Block someone from their listing or from a conversation, and they appear here."
   }
 }

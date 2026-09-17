@@ -4,6 +4,7 @@ export { Badge, type BadgeProps } from './Badge';
 export { Button, type ButtonProps } from './Button';
 export { Card, type CardProps } from './Card';
 export { Chip, type ChipProps } from './Chip';
+export { ConfirmDialog, type ConfirmDialogProps } from './ConfirmDialog';
 export { EmptyState, type EmptyStateProps } from './EmptyState';
 export { Fab, type FabProps } from './Fab';
 export { Input, type InputProps } from './Input';

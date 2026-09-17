@@ -17,8 +17,8 @@ use Illuminate\Support\Facades\Storage;
  *
  * Everything the account owns goes with it: listings including soft-deleted
  * ones, their photo files, conversations on either side, messages, favorites,
- * saved searches, device tokens, the credit ledger, reports filed, and every
- * API token. Nothing is kept for later.
+ * saved searches, device tokens, the credit ledger, reports filed, blocks in
+ * both directions, and every API token. Nothing is kept for later.
  */
 final class AccountDeletionService
 {

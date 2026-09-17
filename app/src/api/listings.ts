@@ -48,11 +48,15 @@ type FavoritePage = {
 };
 
 export const listingsApi = {
+  /**
+   * Searching does not need a token — anyone can look — but it is sent when
+   * there is one, because the API hides listings from accounts this one has
+   * blocked, and it cannot do that without knowing who is asking.
+   */
   search: (filters: SearchFilters, page = 1) =>
-    api.get<ListingPage>(`/listings?${toQuery(filters, page)}`, { anonymous: true }),
+    api.get<ListingPage>(`/listings?${toQuery(filters, page)}`),
 
-  show: (id: string) =>
-    api.get<ApiResource<Listing>>(`/listings/${id}`, { anonymous: true }).then((r) => r.data),
+  show: (id: string) => api.get<ApiResource<Listing>>(`/listings/${id}`).then((r) => r.data),
 
   /**
    * The saved cars.

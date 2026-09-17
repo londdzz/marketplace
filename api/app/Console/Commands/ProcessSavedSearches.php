@@ -54,7 +54,9 @@ class ProcessSavedSearches extends Command
             'published_before' => $now,
         ]);
 
-        $matches = $search->search($filters, 1);
+        // The owner is passed so a saved search never reports a car from
+        // someone they have blocked.
+        $matches = $search->search($filters, 1, $savedSearch->user);
         $count = $matches->total();
 
         // The marker moves whether or not anything matched, so the next run

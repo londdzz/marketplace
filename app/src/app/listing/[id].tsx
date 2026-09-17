@@ -15,10 +15,12 @@ import {
   View,
 } from 'react-native';
 
+import { blocksApi } from '../../api/blocks';
 import { listingsApi } from '../../api/listings';
 import { messagingApi } from '../../api/messaging';
 import { referenceApi } from '../../api/reference';
-import { Button, Chip, Screen, Text } from '../../components';
+import { ApiError } from '../../api/client';
+import { Button, Chip, ConfirmDialog, EmptyState, Screen, Text } from '../../components';
 import { formatEur, formatKm, formatLocal, listingLocation, listingTitle } from '../../format';
 import { useExchangeRates } from '../../hooks/useExchangeRates';
 import { SHOW_LOCAL_CURRENCY } from '../../market';
@@ -33,6 +35,7 @@ export default function ListingDetail() {
 
   const [photoIndex, setPhotoIndex] = useState(0);
   const [contactFailure, setContactFailure] = useState<string | null>(null);
+  const [confirmingBlock, setConfirmingBlock] = useState(false);
   const queryClient = useQueryClient();
 
   const listing = useQuery({
@@ -57,6 +60,16 @@ export default function ListingDetail() {
    * Messaging the seller opens the thread for this listing, or reopens the one
    * that already exists: the API keeps one thread per buyer per listing.
    */
+  const block = useMutation({
+    mutationFn: (sellerId: number) => blocksApi.block(sellerId),
+    onSuccess: () => {
+      // Their listings leave every list this account sees, including this one.
+      void queryClient.invalidateQueries();
+      router.replace('/(tabs)/home');
+    },
+    onError: (error) => setContactFailure(error instanceof Error ? error.message : String(error)),
+  });
+
   const contact = useMutation({
     mutationFn: () => messagingApi.start(id),
     onSuccess: (conversation) => {
@@ -66,11 +79,36 @@ export default function ListingDetail() {
     onError: (error) => setContactFailure(error instanceof Error ? error.message : String(error)),
   });
 
-  if (listing.isLoading || !listing.data) {
+  if (listing.isLoading) {
     return (
       <Screen>
         <Stack.Screen options={{ headerShown: false }} />
         <ActivityIndicator color={theme.colors.accent} style={{ marginTop: theme.spacing.huge }} />
+      </Screen>
+    );
+  }
+
+  // A listing can be gone, sold, or from someone this account has blocked.
+  // Without this the screen spins forever on a 403 or a 404.
+  if (!listing.data) {
+    const gone =
+      listing.error instanceof ApiError &&
+      (listing.error.status === 403 || listing.error.status === 404);
+
+    return (
+      <Screen>
+        <Stack.Screen options={{ headerShown: false }} />
+        <View style={{ flex: 1, justifyContent: 'center' }}>
+          <EmptyState
+            glyph={gone ? '🚗' : '⚠️'}
+            title={gone ? t('listing:unavailable') : t('common:error_loading')}
+            description={gone ? t('listing:unavailable_body') : undefined}
+            actionLabel={gone ? t('listing:back_to_search') : t('common:retry')}
+            onAction={() =>
+              gone ? router.replace('/(tabs)/search') : void listing.refetch()
+            }
+          />
+        </View>
       </Screen>
     );
   }
@@ -273,15 +311,32 @@ export default function ListingDetail() {
             </Text>
           </View>
 
-          <Pressable
-            accessibilityRole="button"
-            onPress={() => router.push(`/report/${car.id}`)}
-            style={{ marginTop: theme.spacing.xl, alignSelf: 'flex-start' }}
-          >
-            <Text variant="meta" tone="muted">
-              {t('listing:report')}
-            </Text>
-          </Pressable>
+          {/* Reporting tells us; blocking is what the buyer can do on their
+              own, right now, without waiting for us. */}
+          <View style={{ flexDirection: 'row', gap: theme.spacing.xl, marginTop: theme.spacing.xl }}>
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => router.push(`/report/${car.id}`)}
+              testID="report-listing"
+            >
+              <Text variant="meta" tone="muted">
+                {t('listing:report')}
+              </Text>
+            </Pressable>
+
+            {car.seller ? (
+              <Pressable
+                accessibilityRole="button"
+                onPress={() => setConfirmingBlock(true)}
+                testID="block-seller"
+              >
+                <Text variant="meta" tone="muted">
+                  {t('listing:block_seller')}
+                </Text>
+              </Pressable>
+            ) : null}
+          </View>
+
         </View>
       </ScrollView>
 
@@ -294,6 +349,19 @@ export default function ListingDetail() {
           {contactFailure}
         </Text>
       ) : null}
+
+      <ConfirmDialog
+        open={confirmingBlock}
+        title={t('listing:block_title')}
+        body={t('listing:block_body')}
+        confirmLabel={t('listing:block_confirm')}
+        cancelLabel={t('common:cancel')}
+        destructive
+        loading={block.isPending}
+        onCancel={() => setConfirmingBlock(false)}
+        onConfirm={() => car.seller && block.mutate(car.seller.id)}
+        testID="block-confirm"
+      />
 
       <View
         style={[

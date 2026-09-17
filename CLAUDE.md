@@ -189,9 +189,10 @@ deleted — all of it is closed rather than removed:
 - Phase 11: complete (conversations, thread, profile, language switcher, account deletion).
 - Phase 12: complete (app.json, EAS, icons, push registration, /docs, store copy, screenshots,
   privacy and data-safety answers, pre-submission checklist). **All twelve phases are done.**
-- Before submitting anything, read `docs/store/pre-submission-checklist.md`. Three things block
-  a release: user-to-user blocking is not built (Apple 1.2), every credential in
-  `PLACEHOLDERS.md` is still a placeholder, and nothing has run on a real phone.
+- Blocking another user is built (Apple 1.2 / Play UGC), after phase 12.
+- Before submitting anything, read `docs/store/pre-submission-checklist.md`. Two things still
+  block a release: every credential in `PLACEHOLDERS.md` is a placeholder, and nothing has run
+  on a real phone.
 - The web build is previewed by a headless browser in `tour.js`, which signs up and walks
   every screen. It is not a substitute for running on a device: native fonts, safe areas
   and the keychain only behave properly there.
@@ -313,6 +314,15 @@ release, and update it whenever a placeholder is added or replaced.
 - **The icon set is generated** by `app/scripts/make-brand-assets.js`: one chevron mark drawn as
   SVG, rendered to the icon, the Android adaptive and monochrome layers, the splash and the
   notification silhouette. No font has to be installed for it to build.
+- **Blocking hides, it never deletes.** `user_blocks` is one row per direction, and everything
+  asks `BlockService::eitherWay()`: search, the listing policy, the conversation policy, the
+  conversations list, saved cars and the saved-search job. Unblocking gives all of it back,
+  including the thread, exactly where it was. It cuts both ways on purpose — a block that only
+  worked in one direction would be an invitation to carry on from the other side.
+- **A bearer token counts even where none is required.** `ResolveOptionalUser` runs before
+  everything else on the API routes, because search and reading a listing carry no auth
+  middleware and `$request->user()` would otherwise answer from the default guard and ignore the
+  token. Blocking silently did nothing on exactly those two screens until this existed.
 - **Messaging is polled, not pushed.** The thread asks every five seconds while
   it is open, the list every fifteen while it is on screen, and neither costs
   anything when it is not. Opening a thread marks it read once rather than on

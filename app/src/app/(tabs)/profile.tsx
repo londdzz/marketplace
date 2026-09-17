@@ -205,6 +205,13 @@ export default function ProfileTab() {
         </Text>
         <ListGroup inset={58}>
           <SettingRow
+            icon="person-remove-outline"
+            label={t('profile:blocked')}
+            hint={t('profile:blocked_hint')}
+            onPress={() => router.push('/profile/blocked')}
+            testID="profile-blocked"
+          />
+          <SettingRow
             icon="log-out-outline"
             label={t('profile:sign_out')}
             chevron={false}

@@ -7,6 +7,7 @@ namespace App\Services;
 use App\Enums\ListingStatus;
 use App\Models\City;
 use App\Models\Listing;
+use App\Models\User;
 use App\Support\TextNormalizer;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
@@ -20,11 +21,15 @@ use Illuminate\Database\Eloquent\Builder;
  */
 final class ListingSearchService
 {
+    public function __construct(private readonly BlockService $blocks) {}
+
     /**
      * @param  array<string, mixed>  $filters
+     * @param  User|null  $viewer  whoever is searching, when they are signed in:
+     *                             blocking hides listings in both directions
      * @return LengthAwarePaginator<int, Listing>
      */
-    public function search(array $filters, int $perPage = 20): LengthAwarePaginator
+    public function search(array $filters, int $perPage = 20, ?User $viewer = null): LengthAwarePaginator
     {
         $query = Listing::query()
             ->where('status', ListingStatus::Active)
@@ -44,6 +49,14 @@ final class ListingSearchService
 
         if (isset($filters['published_before'])) {
             $query->where('published_at', '<', $filters['published_before']);
+        }
+
+        // Someone I blocked, and anyone who blocked me, drops out of every
+        // search. Nothing is deleted; unblocking brings it all back.
+        $hidden = $this->blocks->hiddenFrom($viewer);
+
+        if ($hidden !== []) {
+            $query->whereNotIn('user_id', $hidden);
         }
 
         $this->applyText($query, $filters['q'] ?? null);

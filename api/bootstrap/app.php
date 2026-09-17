@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Middleware\EnsureUserIsNotBlocked;
+use App\Http\Middleware\ResolveOptionalUser;
 use App\Http\Middleware\SetLocale;
 use App\Http\Middleware\VerifyRevenueCatWebhook;
 use Illuminate\Auth\AuthenticationException;
@@ -22,6 +23,9 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->api(prepend: [
+            // Before SetLocale, which also wants to know whose language to
+            // answer in.
+            ResolveOptionalUser::class,
             SetLocale::class,
         ]);
 
