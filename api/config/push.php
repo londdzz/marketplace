@@ -50,7 +50,7 @@ return [
         'key_id' => env('APNS_KEY_ID'),
         'team_id' => env('APNS_TEAM_ID'),
         'key_path' => env('APNS_KEY_PATH', storage_path('app/apns.p8')),
-        'bundle_id' => env('APNS_BUNDLE_ID', 'com.carmarketplace.app'),
+        'bundle_id' => env('APNS_BUNDLE_ID', 'mk.vetura.app'),
         'production' => (bool) env('APNS_PRODUCTION', false),
         'endpoints' => [
             'production' => 'https://api.push.apple.com/3/device/',

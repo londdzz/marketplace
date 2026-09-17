@@ -31,6 +31,9 @@ yarn-error.*
 *.pem
 
 # local env files
+# .env itself carries the RevenueCat keys and the API url for a build, so it
+# never goes into the repository. .env.example is the one that is tracked.
+.env
 .env*.local
 
 # typescript

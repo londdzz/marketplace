@@ -12,7 +12,8 @@ Everything the stores ask for, and the two documents that have to be public befo
 | `store/data-safety.md` | Play's Data safety form, answered from the code. |
 | `store/screenshots.md` | Sizes, the six frames, and the script that captures them. |
 | `store/screenshots/` | The captured sets: `ios-en`, `ios-mk`, `android-en`, `android-mk`, and the Play feature graphic. |
-| `store/pre-submission-checklist.md` | **Read this first.** Three blockers, then everything else. |
+| `store/pre-submission-checklist.md` | **Read this first.** The blockers, then everything else. |
+| `credentials.md` | Where every value in `PLACEHOLDERS.md` comes from, in the order to collect them. |
 
 The policy and the terms carry `[COMPANY LEGAL NAME]` and `[REGISTERED ADDRESS]` placeholders,
 and both name `vetura.mk` addresses that do not exist yet. Neither can be published as is.

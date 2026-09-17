@@ -1,0 +1,4 @@
+# Credentials that must never be committed, wherever they land.
+api/storage/app/firebase.json
+api/storage/app/apns.p8
+app/google-play-service-account.json
