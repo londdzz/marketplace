@@ -1,0 +1,6 @@
+{
+  "NSCameraUsageDescription": "vetura ја користи камерата за да го фотографираш автомобилот што го продаваш.",
+  "NSPhotoLibraryUsageDescription": "vetura има потреба од твојата галерија за да избереш фотографии од автомобилот што го продаваш.",
+  "NSMicrophoneUsageDescription": "vetura не снима аудио.",
+  "NSUserNotificationsUsageDescription": "vetura те известува кога купувач ќе одговори, кога зачувано барање ќе најде автомобил и пред огласот да истече."
+}

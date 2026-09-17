@@ -10,6 +10,7 @@ import { referenceApi } from '../api/reference';
 import type { Listing } from '../api/types';
 import { Button, EmptyState, ListingCard, ListingRow, Screen, Text } from '../components';
 import { formatEur, formatKm, formatLocal, listingLocation, listingTitle } from '../format';
+import { SHOW_LOCAL_CURRENCY } from '../market';
 import { useExchangeRates } from '../hooks/useExchangeRates';
 import { useListingCardMapper } from '../hooks/useListingCard';
 import { useListingSearch } from '../hooks/useListingSearch';
@@ -181,7 +182,9 @@ export default function ResultsScreen() {
                   title: listingTitle(item),
                   variant: item.variant,
                   priceEur: formatEur(item.price_eur),
-                  priceNote: formatLocal(item.price_eur, currency, byCurrency[currency]),
+                  priceNote: SHOW_LOCAL_CURRENCY
+                    ? formatLocal(item.price_eur, currency, byCurrency[currency])
+                    : undefined,
                   facts: facts(item),
                   sellerName: item.seller?.dealer_name ?? item.seller?.display_name ?? '',
                   sellerKind:

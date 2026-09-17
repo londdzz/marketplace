@@ -5,6 +5,7 @@ import { ApiError } from '../api/client';
 import { tokenStorage } from '../api/storage';
 import type { AuthSession, User } from '../api/types';
 import i18n, { SUPPORTED_LANGUAGES, type Language } from '../i18n';
+import { registerForPush, unregisterFromPush } from '../push';
 
 /**
  * The account's chosen language wins over the device's, so signing in on a new
@@ -46,9 +47,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await tokenStorage.save(session.token);
     setUser(session.user);
     followAccountLanguage(session.user);
+
+    // Asked for once the account exists, so the prompt arrives with something
+    // to explain it rather than on a cold first launch.
+    void registerForPush().catch(() => undefined);
   }, []);
 
   const signOut = useCallback(async () => {
+    // Before the token goes, so the API knows which device to stop sending to.
+    await unregisterFromPush();
+
     try {
       await authApi.logout();
     } catch {
@@ -65,6 +73,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const deleteAccount = useCallback(async () => {
+    await unregisterFromPush();
     await authApi.deleteAccount();
     await tokenStorage.clear();
     setUser(null);

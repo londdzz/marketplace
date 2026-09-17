@@ -187,7 +187,11 @@ deleted — all of it is closed rather than removed:
 - Phase 9: complete (search, filter sheet, listing detail, favorites).
 - Phase 10: complete (sell flow, photos, credits sheet, My Listings).
 - Phase 11: complete (conversations, thread, profile, language switcher, account deletion).
-- Next: Phase 12 (Store readiness), scoped to North Macedonia.
+- Phase 12: complete (app.json, EAS, icons, push registration, /docs, store copy, screenshots,
+  privacy and data-safety answers, pre-submission checklist). **All twelve phases are done.**
+- Before submitting anything, read `docs/store/pre-submission-checklist.md`. Three things block
+  a release: user-to-user blocking is not built (Apple 1.2), every credential in
+  `PLACEHOLDERS.md` is still a placeholder, and nothing has run on a real phone.
 - The web build is previewed by a headless browser in `tour.js`, which signs up and walks
   every screen. It is not a substitute for running on a device: native fonts, safe areas
   and the keychain only behave properly there.
@@ -298,6 +302,17 @@ release, and update it whenever a placeholder is added or replaced.
   from Simple Icons, whose files are CC0, and renders flat PNGs that the app
   tints to the text colour, so one file works in light and dark. Run it, then
   `php artisan makes:logos`. A make with no mark still falls back to a monogram.
+- **Push registration belongs to sign-in, not to first launch.** The permission prompt arrives
+  once an account exists, so it has something to explain it, and the native device token — not
+  an Expo push token, because the API talks to FCM and APNs directly — is sent to
+  `POST /device-tokens`. Signing out and deleting an account both forget the token first.
+- **Store screenshots are captured from the running app** by
+  `app/scripts/store-screenshots.js`, at both store sizes and in both languages. They are never
+  mock-ups, so a screenshot that looks wrong is a bug: the first run of it caught euro prices
+  still carrying a denar line in the results list.
+- **The icon set is generated** by `app/scripts/make-brand-assets.js`: one chevron mark drawn as
+  SVG, rendered to the icon, the Android adaptive and monochrome layers, the splash and the
+  notification silhouette. No font has to be installed for it to build.
 - **Messaging is polled, not pushed.** The thread asks every five seconds while
   it is open, the list every fifteen while it is on screen, and neither costs
   anything when it is not. Opening a thread marks it read once rather than on

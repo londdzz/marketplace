@@ -1,0 +1,6 @@
+{
+  "NSCameraUsageDescription": "vetura uses the camera so you can photograph the car you are selling.",
+  "NSPhotoLibraryUsageDescription": "vetura needs your photo library so you can choose pictures of the car you are selling.",
+  "NSMicrophoneUsageDescription": "vetura does not record audio.",
+  "NSUserNotificationsUsageDescription": "vetura notifies you when a buyer replies, when a saved search finds a car, and before a listing expires."
+}
