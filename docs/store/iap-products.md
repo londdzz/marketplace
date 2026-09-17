@@ -43,7 +43,7 @@ must match exactly, in all three places.
 1. One project, two apps (App Store, Play Store).
 2. Import the three products; put all three into one **offering** with three packages. The app
    reads `offerings.current.availablePackages` and matches on `product.identifier`.
-3. Webhook → our API: `POST https://api.vetura.mk/api/v1/webhooks/revenuecat`, with the shared
+3. Webhook → our API: `POST https://api.autevo.mk/api/v1/webhooks/revenuecat`, with the shared
    secret in the Authorization header. The same value goes in `REVENUECAT_WEBHOOK_SECRET`.
    Without it the webhook rejects every delivery, which is deliberate.
 4. Public SDK keys go into `EXPO_PUBLIC_REVENUECAT_IOS_KEY` and

@@ -1,4 +1,4 @@
-import { amber, blue, green, grey, red } from './palette';
+import { amber, azure, green, neutral, paper, petrol, red } from './palette';
 
 /**
  * Every colour a screen is allowed to use, named by what it is for rather than
@@ -13,7 +13,7 @@ export type ThemeColors = {
   surfaceMuted: string;
   /** A surface that needs to come forward, such as a pressed row. */
   surfaceRaised: string;
-  /** Hairlines and card outlines. */
+  /** Hairlines and card outlines. Cards are flat, so this does the work. */
   border: string;
   borderStrong: string;
 
@@ -26,7 +26,7 @@ export type ThemeColors = {
   /** Text drawn on top of the accent. */
   textOnAccent: string;
 
-  /** Primary actions, links, selected states. Used sparingly. */
+  /** Primary actions, links, selected states. If it is azure, it is tappable. */
   accent: string;
   accentPressed: string;
   /** The tint behind a selected row or a soft accent button. */
@@ -34,7 +34,10 @@ export type ThemeColors = {
   accentBorder: string;
   /** Accent text on an accent-muted surface, kept legible in both schemes. */
   accentText: string;
+  /** The focus ring, two pixels with two of offset. */
+  focus: string;
 
+  /** Trust signals only — never an action. */
   success: string;
   successMuted: string;
   warning: string;
@@ -43,85 +46,85 @@ export type ThemeColors = {
   dangerPressed: string;
   dangerMuted: string;
 
-  /** The wide promotional card under the search bar. */
+  /** The wide promotional card under the search bar: petrol, never azure. */
   banner: string;
   bannerText: string;
 
   /** Behind a modal or bottom sheet. */
   scrim: string;
-  /** Skeletons while a list loads. */
+  /** Skeletons while a list loads, and the grey behind a photo. */
   skeleton: string;
 };
 
 export const lightColors: ThemeColors = {
-  background: grey[50],
-  surface: grey[0],
-  surfaceMuted: grey[100],
-  surfaceRaised: grey[0],
-  border: grey[200],
-  borderStrong: grey[300],
+  background: neutral[25],
+  surface: neutral[0],
+  surfaceMuted: neutral[50],
+  surfaceRaised: neutral[0],
+  border: neutral[200],
+  borderStrong: neutral[300],
 
-  text: grey[900],
-  textMuted: grey[500],
-  textSubtle: grey[400],
-  textOnAccent: grey[0],
+  text: neutral.ink,
+  textMuted: neutral[500],
+  textSubtle: neutral[400],
+  textOnAccent: neutral[0],
 
-  accent: blue[600],
-  accentPressed: blue[700],
-  accentMuted: blue[50],
-  accentBorder: blue[200],
-  accentText: blue[700],
+  accent: azure[600],
+  accentPressed: azure[700],
+  accentMuted: 'rgba(30, 111, 217, 0.10)',
+  accentBorder: 'rgba(30, 111, 217, 0.32)',
+  accentText: azure[600],
+  focus: azure[500],
 
-  success: green[600],
-  successMuted: green[50],
-  warning: amber[600],
-  warningMuted: amber[50],
-  danger: red[500],
-  dangerPressed: red[600],
-  dangerMuted: red[50],
+  success: green.light,
+  successMuted: green.tintLight,
+  warning: amber.light,
+  warningMuted: amber.tintLight,
+  danger: red.light,
+  dangerPressed: '#A72C25',
+  dangerMuted: red.tintLight,
 
-  banner: blue[700],
-  bannerText: grey[0],
+  banner: petrol[800],
+  bannerText: paper,
 
-  scrim: 'rgba(11, 15, 21, 0.45)',
-  skeleton: grey[150],
+  scrim: 'rgba(10, 22, 20, 0.45)',
+  skeleton: neutral[50],
 };
 
 export const darkColors: ThemeColors = {
-  // Not pure black. A very dark blue-grey keeps photographs from floating in a
-  // void and gives the surfaces above it somewhere to sit.
-  background: grey[950],
-  surface: grey[900],
-  surfaceMuted: grey[850],
-  surfaceRaised: grey[800],
-  border: '#242C36',
-  borderStrong: '#323B47',
+  background: neutral[950],
+  surface: neutral[900],
+  surfaceMuted: neutral[800],
+  surfaceRaised: petrol[700],
+  border: neutral[700],
+  borderStrong: '#2F4F47',
 
-  text: grey[25],
-  textMuted: grey[400],
-  textSubtle: grey[500],
-  // On a light blue, dark text is what stays readable.
-  textOnAccent: grey[950],
+  text: neutral.inkLight,
+  textMuted: neutral[400],
+  textSubtle: '#6F8380',
+  // On a light azure, a near-black petrol is what stays readable.
+  textOnAccent: '#08131B',
 
-  accent: blue[300],
-  accentPressed: blue[200],
-  accentMuted: 'rgba(143, 176, 255, 0.14)',
-  accentBorder: 'rgba(143, 176, 255, 0.34)',
-  accentText: blue[200],
+  accent: '#4D94F0',
+  accentPressed: azure[400],
+  accentMuted: 'rgba(77, 148, 240, 0.16)',
+  accentBorder: 'rgba(77, 148, 240, 0.36)',
+  accentText: azure[400],
+  focus: azure[400],
 
-  success: green[400],
-  successMuted: 'rgba(63, 201, 140, 0.14)',
-  warning: amber[400],
-  warningMuted: 'rgba(242, 180, 87, 0.14)',
-  danger: red[400],
-  dangerPressed: red[500],
-  dangerMuted: 'rgba(255, 107, 107, 0.14)',
+  success: green.dark,
+  successMuted: green.tintDark,
+  warning: amber.dark,
+  warningMuted: amber.tintDark,
+  danger: red.dark,
+  dangerPressed: red.light,
+  dangerMuted: red.tintDark,
 
-  // A deep blue rather than the light accent: a full-width block of the accent
-  // is glaring against a near-black page.
-  banner: blue[900],
-  bannerText: grey[0],
+  // A step lighter than the surfaces rather than deeper: at this end of the
+  // scale, deeper disappears into the page.
+  banner: petrol[700],
+  bannerText: paper,
 
   scrim: 'rgba(0, 0, 0, 0.62)',
-  skeleton: grey[850],
+  skeleton: neutral[800],
 };

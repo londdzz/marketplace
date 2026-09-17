@@ -6,7 +6,7 @@ the API has open.
 
 ## Names
 
-- **App name (both stores):** `vetura`
+- **App name (both stores):** `Autevo`
 - **iOS subtitle** (30 chars max): `Used cars in North Macedonia` (28)
 - **Play short description** (80 chars max): `Buy and sell used cars in North Macedonia. Photos, prices and the seller direct.` (79)
 
@@ -17,7 +17,7 @@ the API has open.
 ## Description (Play long description, iOS description)
 
 ```
-vetura is where used cars are bought and sold in North Macedonia.
+Autevo is where used cars are bought and sold in North Macedonia.
 
 Search the way you actually think about a car: make and model, year, kilometres, price,
 fuel, gearbox and town. The button tells you how many cars match before you run the search,
@@ -49,14 +49,14 @@ In Macedonian and English. Prices in euro.
 
 ## What's new (first release)
 
-`First release of vetura. Search used cars across North Macedonia, save what you like, message sellers, and list your own car in a few minutes.`
+`First release of Autevo. Search used cars across North Macedonia, save what you like, message sellers, and list your own car in a few minutes.`
 
 ## Support and marketing URLs
 
-- Support: `https://vetura.mk/support`
-- Marketing: `https://vetura.mk`
-- Privacy policy: `https://vetura.mk/privacy` (must be reachable without signing in)
-- Terms of use: `https://vetura.mk/terms`
+- Support: `https://autevo.mk/support`
+- Marketing: `https://autevo.mk`
+- Privacy policy: `https://autevo.mk/privacy` (must be reachable without signing in)
+- Terms of use: `https://autevo.mk/terms`
 
 ## Category and rating
 

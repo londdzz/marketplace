@@ -129,7 +129,6 @@ export default function MyListingsTab() {
             backgroundColor: theme.colors.surface,
             borderColor: theme.colors.border,
             gap: theme.spacing.md,
-            ...theme.elevation.sm,
           },
         ]}
         testID={`my-listing-${listing.id}`}
@@ -370,7 +369,7 @@ export default function MyListingsTab() {
               borderTopColor: theme.colors.border,
               backgroundColor: theme.colors.surface,
             },
-            theme.elevation.md,
+            theme.elevation.sheet,
           ]}
         >
           <Button

@@ -63,7 +63,7 @@ export function ConfirmDialog({
               backgroundColor: theme.colors.surface,
               borderColor: theme.colors.border,
             },
-            theme.elevation.lg,
+            theme.elevation.sheet,
           ]}
         >
           <Text variant="title">{title}</Text>

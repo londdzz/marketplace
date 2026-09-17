@@ -156,7 +156,7 @@ export function SellStep({
             borderTopColor: theme.colors.border,
             backgroundColor: theme.colors.surface,
           },
-          theme.elevation.md,
+          theme.elevation.sheet,
         ]}
       >
         {footerNote}

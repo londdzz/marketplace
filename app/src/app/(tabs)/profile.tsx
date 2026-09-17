@@ -88,7 +88,6 @@ export default function ProfileTab() {
               borderColor: theme.colors.border,
               backgroundColor: pressed ? theme.colors.surfaceMuted : theme.colors.surface,
             },
-            theme.elevation.sm,
           ]}
         >
           <View
@@ -283,7 +282,7 @@ export default function ProfileTab() {
         ) : null}
 
         <Text variant="caption" tone="subtle" style={{ marginTop: theme.spacing.xxl, textAlign: 'center' }}>
-          vetura {Constants.expoConfig?.version ?? ''}
+          Autevo {Constants.expoConfig?.version ?? ''}
         </Text>
       </ScrollView>
 

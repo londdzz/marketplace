@@ -1,14 +1,14 @@
-# vetura — Terms of Use
+# Autevo — Terms of Use
 
 **Last updated:** 17 September 2026
 **Provider:** [COMPANY LEGAL NAME], [REGISTERED ADDRESS], North Macedonia
-**Contact:** support@vetura.mk
+**Contact:** support@autevo.mk
 
-By using vetura you accept these terms. If you do not accept them, do not use the app.
+By using Autevo you accept these terms. If you do not accept them, do not use the app.
 
-## 1. What vetura is
+## 1. What Autevo is
 
-vetura is a place to advertise a used car and to find one. We are not a party to any sale.
+Autevo is a place to advertise a used car and to find one. We are not a party to any sale.
 **We never take possession of a car, never hold the money paid for one, and never handle
 registration, customs or any other paperwork.** Whatever you agree with the other person is
 between the two of you, including the price, the inspection, the payment and the transfer.
@@ -36,7 +36,7 @@ while your account exists. Deleting your account destroys any credits it holds.
 A credit is spent the moment a listing goes live. By buying credits you ask for immediate
 delivery of digital content and accept that once a credit is spent the 14-day right of
 withdrawal no longer applies to it. Unspent credits can be refunded within 14 days of purchase
-by writing to support@vetura.mk. Refunds for a purchase itself are handled by Apple or Google
+by writing to support@autevo.mk. Refunds for a purchase itself are handled by Apple or Google
 under their own terms, since they took the payment.
 
 If a listing is removed by us for breaking these terms, the credit is not returned.
@@ -63,7 +63,7 @@ and can remove listings, refuse service, and block accounts.
 ## 6. Your content
 
 What you upload stays yours. You give us permission to store it, resize it and show it inside
-vetura and in the search results pages of our website, for as long as the listing exists. That
+Autevo and in the search results pages of our website, for as long as the listing exists. That
 permission ends when you delete the listing or the account, except for copies already cached by
 third parties outside our control.
 
@@ -71,7 +71,7 @@ You confirm that you have the right to the photographs you upload.
 
 ## 7. Our side
 
-We try to keep vetura available and correct, but we provide it as it is. We do not promise that
+We try to keep Autevo available and correct, but we provide it as it is. We do not promise that
 a car will sell, that a buyer will appear, or that the service will never be interrupted. To
 the extent the law allows, we are not liable for what happens between a buyer and a seller, for
 a car that turns out to be other than described, or for money lost outside the app.
@@ -92,4 +92,4 @@ competent court in Skopje, unless consumer law gives you the right to your own l
 ## 10. Changes
 
 We may change these terms. Material changes will be shown in the app before they take effect;
-continuing to use vetura after that means you accept them.
+continuing to use Autevo after that means you accept them.

@@ -181,7 +181,6 @@ export function ListingCard({
             left: photoWidth - favoriteSize - theme.spacing.sm,
             backgroundColor: theme.colors.surface,
           },
-          theme.elevation.sm,
         ]}
       >
         <Ionicons

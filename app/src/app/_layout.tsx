@@ -1,16 +1,22 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Slot, useRouter, useSegments } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { AuthProvider, useAuth } from '../auth/AuthProvider';
+import { useAppFonts } from '../theme/fonts';
 import { FiltersProvider } from '../search/FiltersProvider';
 import { SellProvider } from '../sell/SellProvider';
 import '../i18n';
 import { ThemeProvider } from '../theme/ThemeProvider';
 import { useTheme } from '../theme';
+
+// The splash stays up until the typeface has loaded and the stored token has
+// been checked, so the first painted frame is the real thing.
+void SplashScreen.preventAutoHideAsync();
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -69,6 +75,18 @@ function AuthGate() {
 }
 
 export default function RootLayout() {
+  const fontsReady = useAppFonts();
+
+  useEffect(() => {
+    if (fontsReady) {
+      void SplashScreen.hideAsync();
+    }
+  }, [fontsReady]);
+
+  if (!fontsReady) {
+    return null;
+  }
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>

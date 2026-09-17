@@ -32,8 +32,8 @@ Nothing else can be finished without them, and both stores check the name matche
 | What | Where | Notes |
 |---|---|---|
 | Legal entity | Central Register of North Macedonia (crm.com.mk), or through an accountant | A DOOEL is the usual form. You need the registered name and address for the policies, and a bank account for payouts. |
-| `vetura.mk` domain | Any MARnet-accredited registrar (list at marnet.mk) | .mk registration asks for a local entity or a trademark. If that is slow, `vetura.com.mk` or a `.com` works — but the bundle id `mk.vetura.app` is easier to justify with the domain. |
-| privacy@vetura.mk, support@vetura.mk | Google Workspace, Zoho Mail (free tier), Fastmail | Real mailboxes a person reads. They are printed in the policies. |
+| `autevo.mk` domain | Any MARnet-accredited registrar (list at marnet.mk) | .mk registration asks for a local entity or a trademark. If that is slow, `Autevo.com.mk` or a `.com` works — but the bundle id `mk.autevo.app` is easier to justify with the domain. |
+| privacy@autevo.mk, support@autevo.mk | Google Workspace, Zoho Mail (free tier), Fastmail | Real mailboxes a person reads. They are printed in the policies. |
 
 Goes in: `docs/privacy-policy.*.md`, `docs/terms.*.md` (the `[COMPANY LEGAL NAME]` and
 `[REGISTERED ADDRESS]` placeholders), and the store listings.
@@ -50,18 +50,18 @@ Once in, collect:
 |---|---|---|---|
 | Apple ID | The email you sign in with | `you@example.com` | `app/eas.json` → `submit.production.ios.appleId` |
 | Team ID | developer.apple.com → Account → Membership details | `A1B2C3D4E5` | `app/eas.json` → `appleTeamId`, and `APNS_TEAM_ID` in `api/.env` |
-| App Store Connect App ID | appstoreconnect.apple.com → My Apps → vetura → App Information → "Apple ID" | ten digits, `6478123456` | `app/eas.json` → `ascAppId` |
+| App Store Connect App ID | appstoreconnect.apple.com → My Apps → Autevo → App Information → "Apple ID" | ten digits, `6478123456` | `app/eas.json` → `ascAppId` |
 | APNs key (`.p8`) | developer.apple.com → Certificates, Identifiers & Profiles → **Keys** → + → tick "Apple Push Notifications service (APNs)" | one file, downloadable **once** | `api/storage/app/apns.p8` — **do not paste**, upload to the server |
 | Key ID | shown next to that key | `ABC1234DEF` | `APNS_KEY_ID` in `api/.env` |
 
-Create the app itself in App Store Connect with bundle id `mk.vetura.app`, then enrol in the
+Create the app itself in App Store Connect with bundle id `mk.autevo.app`, then enrol in the
 **Apple Small Business Program** (App Store Connect → Agreements, Tax and Banking) before the
 first sale: 15% instead of 30%, and it is not applied retroactively.
 
 ## 3. Google Play — $25 once
 
 play.google.com/console → create a developer account. Identity verification takes a few days;
-organisations also need a D-U-N-S number. Create the app with package `mk.vetura.app`.
+organisations also need a D-U-N-S number. Create the app with package `mk.autevo.app`.
 
 The service account, for `eas submit`:
 
@@ -81,7 +81,7 @@ three in-app products from `store/iap-products.md`.
 ## 4. Firebase, for Android push
 
 console.firebase.google.com → Add project (reuse the Google Cloud project from step 3 if you
-like) → Add app → **Android** → package `mk.vetura.app`.
+like) → Add app → **Android** → package `mk.autevo.app`.
 
 | Value | Where | Goes in |
 |---|---|---|
@@ -125,7 +125,7 @@ app.revenuecat.com — free until roughly $2,500 a month in tracked revenue.
    - **Play Store**: needs a service account JSON with financial-data permission — the same one
      from step 3 works if you grant it "View financial data" in Play Console.
 2. Import `credits_1`, `credits_8`, `credits_25` and put all three in one **offering**.
-3. Integrations → Webhooks → URL `https://api.vetura.mk/api/v1/webhooks/revenuecat`, and an
+3. Integrations → Webhooks → URL `https://api.autevo.mk/api/v1/webhooks/revenuecat`, and an
    Authorization header value you invent: `openssl rand -hex 32` gives a good one.
 
 | Value | Where | Looks like | Goes in |
@@ -154,8 +154,8 @@ R2, AWS S3:
 | Bucket | `AWS_BUCKET` |
 | Endpoint (anything that is not AWS) | `AWS_ENDPOINT` |
 
-Then `FILESYSTEM_DISK=s3`, and point `api.vetura.mk` at the server. The app's production
-builds already expect `https://api.vetura.mk/api/v1` (`app/eas.json`).
+Then `FILESYSTEM_DISK=s3`, and point `api.autevo.mk` at the server. The app's production
+builds already expect `https://api.autevo.mk/api/v1` (`app/eas.json`).
 
 ## 8. Exchange rates — not needed yet
 

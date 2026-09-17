@@ -40,7 +40,7 @@ async function capture(browser, device, language) {
     viewport: { width, height },
     deviceScaleFactor: scale,
     locale: LANGUAGES[language],
-    colorScheme: 'light',
+    colorScheme: 'dark',
     isMobile: true,
     hasTouch: true,
   });
@@ -108,7 +108,7 @@ async function featureGraphic(browser) {
               stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
       <div>
-        <div style="color:#fff;font-size:84px;font-weight:700;letter-spacing:-3px">vetura</div>
+        <div style="color:#fff;font-size:84px;font-weight:700;letter-spacing:-3px">Autevo</div>
         <div style="color:#D6E3FF;font-size:30px;margin-top:6px">Половни автомобили · Used cars</div>
       </div>
     </body></html>`);

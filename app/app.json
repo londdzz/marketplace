@@ -1,39 +1,44 @@
 {
   "expo": {
-    "name": "vetura",
-    "slug": "vetura",
-    "scheme": "vetura",
+    "name": "Autevo",
+    "slug": "autevo",
+    "scheme": "autevo",
     "version": "1.0.0",
     "orientation": "portrait",
-    "userInterfaceStyle": "automatic",
-    "primaryColor": "#1E4FD8",
+    "userInterfaceStyle": "dark",
+    "primaryColor": "#1E6FD9",
     "icon": "./assets/icon.png",
-    "backgroundColor": "#F6F8FA",
+    "backgroundColor": "#0A1614",
     "locales": {
       "en": "./locales/en.json",
       "mk": "./locales/mk.json"
     },
     "ios": {
-      "bundleIdentifier": "mk.vetura.app",
+      "bundleIdentifier": "mk.autevo.app",
       "buildNumber": "1",
       "supportsTablet": false,
       "config": {
         "usesNonExemptEncryption": false
       },
       "infoPlist": {
-        "CFBundleLocalizations": ["mk", "en"],
+        "CFBundleLocalizations": [
+          "mk",
+          "en"
+        ],
         "CFBundleDevelopmentRegion": "mk",
         "ITSAppUsesNonExemptEncryption": false,
-        "UIBackgroundModes": ["remote-notification"]
+        "UIBackgroundModes": [
+          "remote-notification"
+        ]
       }
     },
     "android": {
-      "package": "mk.vetura.app",
+      "package": "mk.autevo.app",
       "versionCode": 1,
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
       "adaptiveIcon": {
-        "backgroundColor": "#1E4FD8",
+        "backgroundColor": "#F7F6F3",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
@@ -57,7 +62,12 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      ["expo-router", { "root": "./src/app" }],
+      [
+        "expo-router",
+        {
+          "root": "./src/app"
+        }
+      ],
       "expo-image",
       [
         "expo-splash-screen",
@@ -65,24 +75,24 @@
           "image": "./assets/splash-icon.png",
           "imageWidth": 180,
           "resizeMode": "contain",
-          "backgroundColor": "#1E4FD8",
-          "dark": { "backgroundColor": "#0B0F15" }
+          "backgroundColor": "#0A1614"
         }
       ],
       [
         "expo-notifications",
         {
           "icon": "./assets/notification-icon.png",
-          "color": "#1E4FD8"
+          "color": "#1E6FD9"
         }
       ],
       [
         "expo-image-picker",
         {
-          "photosPermission": "vetura needs your photo library so you can choose pictures of the car you are selling.",
-          "cameraPermission": "vetura uses the camera so you can photograph the car you are selling."
+          "photosPermission": "Autevo needs your photo library so you can choose pictures of the car you are selling.",
+          "cameraPermission": "Autevo uses the camera so you can photograph the car you are selling."
         }
-      ]
+      ],
+      "expo-font"
     ],
     "extra": {
       "router": {},
@@ -90,6 +100,6 @@
         "projectId": "00000000-0000-0000-0000-000000000000"
       }
     },
-    "owner": "vetura"
+    "owner": "autevo"
   }
 }

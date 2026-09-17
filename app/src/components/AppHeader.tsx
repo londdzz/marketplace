@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { useTheme } from '../theme';
-import { Text } from './Text';
+import { Wordmark } from './Wordmark';
 
 export type AppHeaderProps = {
   /** A dot on the account icon, for anything waiting on the person. */
@@ -51,18 +51,7 @@ export function AppHeader({
       </Pressable>
 
       <View style={styles.brand}>
-        <View
-          style={{
-            width: 14,
-            height: 22,
-            borderRadius: theme.radius.sm,
-            backgroundColor: theme.colors.accent,
-            marginRight: theme.spacing.xs,
-          }}
-        />
-        <Text variant="title" style={{ letterSpacing: -0.5 }}>
-          vetura
-        </Text>
+        <Wordmark size={26} />
       </View>
 
       <View style={[styles.actions, { gap: theme.spacing.lg }]}>

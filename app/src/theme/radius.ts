@@ -1,21 +1,17 @@
 /**
- * Corner radii.
- *
- * Taken from the mobile.de app rather than their website: cards, sheets and the
- * search bar are generously rounded. Everything here is one of five steps, so
- * nothing on screen has a corner that belongs to no scale.
+ * Corner radii. Four steps and a pill, nothing between.
  */
 export const radius = {
   none: 0,
-  /** Small tags and photo thumbnails. */
-  sm: 8,
-  /** Buttons, inputs, rows. */
-  md: 12,
-  /** Cards, sheets, tiles. */
+  /** Chips, inputs and small tags. */
+  sm: 6,
+  /** Buttons and rows. */
+  md: 10,
+  /** Cards, sheets, tiles, photographs. */
   lg: 16,
   /** The panel a sheet rises into. */
-  xl: 22,
-  /** Chips, avatars, the favourite button: anything a pill or a circle. */
+  xl: 20,
+  /** Pills, avatars, the favourite button. */
   full: 999,
 } as const;
 

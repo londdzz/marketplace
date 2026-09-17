@@ -19,7 +19,7 @@ contact details for the developer. All four are now in place:
   their cars leave your search and yours leave theirs, the thread closes for both of you, and
   neither can start a new one. Nothing is deleted, so unblocking restores all of it.
 - **Unblock** — Profile → Blocked people.
-- **Contact** — support@vetura.mk on the listing and in the terms.
+- **Contact** — support@autevo.mk on the listing and in the terms.
 - **Removal** — we can take down a listing and block an account from our side
   (`users.blocked_at`), which is what a report leads to.
 
@@ -54,14 +54,14 @@ and an Android phone, and walk the whole app before anything is submitted.
 
 ## Store setup
 
-- [ ] Bundle identifier `mk.vetura.app` and Play package `mk.vetura.app` created. **Neither can
+- [ ] Bundle identifier `mk.autevo.app` and Play package `mk.autevo.app` created. **Neither can
       ever be changed.**
 - [ ] Availability: **North Macedonia only**, both stores.
 - [ ] Listing copy from `listing.mk.md` and `listing.en.md`, Macedonian as the default language.
 - [ ] Screenshots from `screenshots/` uploaded per language; Play feature graphic uploaded.
-- [ ] Privacy policy URL live and reachable **without signing in**: `https://vetura.mk/privacy`.
-- [ ] Terms URL live: `https://vetura.mk/terms`.
-- [ ] Play account-deletion URL live: `https://vetura.mk/delete-account`.
+- [ ] Privacy policy URL live and reachable **without signing in**: `https://autevo.mk/privacy`.
+- [ ] Terms URL live: `https://autevo.mk/terms`.
+- [ ] Play account-deletion URL live: `https://autevo.mk/delete-account`.
 - [ ] Support URL and support email working, and monitored by a person.
 - [ ] App Privacy questionnaire filled from `app-privacy.md`.
 - [ ] Play Data safety form filled from `data-safety.md`.

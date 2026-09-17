@@ -101,8 +101,6 @@ export function Button({
           opacity: inert ? 0.45 : 1,
           alignSelf: block ? 'stretch' : 'flex-start',
         },
-        // Only the primary lifts off the page, and only when it can be pressed.
-        variant === 'primary' && !inert ? theme.elevation.sm : null,
         style,
       ]}
     >

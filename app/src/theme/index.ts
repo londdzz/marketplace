@@ -1,5 +1,4 @@
 import { createContext, useContext } from 'react';
-import { useColorScheme } from 'react-native';
 
 import { darkColors, lightColors, type ThemeColors } from './colors';
 import { darkElevation, lightElevation, type Elevation } from './elevation';
@@ -38,7 +37,15 @@ export const darkTheme: Theme = {
   isDark: true,
 };
 
-export const ThemeContext = createContext<Theme>(lightTheme);
+/**
+ * Autevo is a dark product. Petrol carries every surface, on every device,
+ * whatever the phone is set to — the identity is built on it and a light
+ * version of the same screens is a different app.
+ *
+ * The light tokens are still here and still correct, because the store icon and
+ * the splash tile are drawn on paper, and because switching back is one line.
+ */
+export const ThemeContext = createContext<Theme>(darkTheme);
 
 /**
  * The only way a screen reads a colour, a gap or a text style. No screen
@@ -49,13 +56,14 @@ export function useTheme(): Theme {
 }
 
 /**
- * Follows the device between light and dark.
+ * The app's theme. Dark, always: the device's setting is deliberately not read.
  */
-export function useSystemTheme(): Theme {
-  return useColorScheme() === 'dark' ? darkTheme : lightTheme;
+export function useAppTheme(): Theme {
+  return darkTheme;
 }
 
 export * from './colors';
+export * from './fonts';
 export * from './elevation';
 export * from './palette';
 export * from './radius';

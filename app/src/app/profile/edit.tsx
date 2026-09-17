@@ -155,7 +155,7 @@ export default function ProfileEditScreen() {
             borderTopColor: theme.colors.border,
             backgroundColor: theme.colors.surface,
           },
-          theme.elevation.md,
+          theme.elevation.sheet,
         ]}
       >
         <Button

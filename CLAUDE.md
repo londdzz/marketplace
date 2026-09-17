@@ -261,7 +261,7 @@ release, and update it whenever a placeholder is added or replaced.
   repository carries no image files.
 - **Development stores photos on the `public` disk**, since the `local` disk is private in
   Laravel 11 and its files are not servable. Production uses S3.
-- **The product is called vetura**, Albanian for "the car". It is the app name, the slug
+- **The product is called Autevo**, Albanian for "the car". It is the app name, the slug
   and the wordmark in the header, and the store listings, bundle identifier and domain
   should all be built on it.
 - **Saved vehicles are a two-column grid.** A compact card variant shrinks the type and
@@ -290,6 +290,15 @@ release, and update it whenever a placeholder is added or replaced.
   small thumbnail on the left rather than a full-width photo. The banner carries a deep
   brand blue in both schemes, because a full-width block of the light accent is glaring
   against a near-black page.
+- **The identity is Autevo: petrol and azure, Sora, dark only.** The mark is two
+  mirrored chevrons woven into an A and a V. Petrol `#0E2E2A` carries every surface;
+  azure `#1E6FD9` is the only action colour, so anything azure has to be tappable.
+  Cards are flat with a one-pixel border — there are exactly two elevations, flat and
+  the sheet shadow. Radii are 6 for chips and inputs, 10 for buttons, 16 for cards.
+  Spacing is 4/8/12/16/20/24/32/40/56 and nothing between.
+- **The app is dark whatever the phone is set to.** `useAppTheme()` returns the dark
+  theme and never reads the device. The light tokens stay correct because the store
+  icon and the splash tile are drawn on paper, and because switching back is one line.
 - **The design system was rebuilt once, in phase 10, after the first pass read
   as a wireframe.** The rules that came out of it: one button language, where
   only the primary is filled and secondary actions take a soft neutral fill

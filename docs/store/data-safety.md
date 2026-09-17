@@ -41,8 +41,8 @@ part of app functionality and is declared under "Other info".
 ## Security practices
 
 - **Data is encrypted in transit.** Yes — the API is HTTPS only.
-- **You can ask for data to be deleted.** Yes — in the app, and by writing to privacy@vetura.mk.
-  Provide the deletion URL Play now requires: `https://vetura.mk/delete-account`, a page that
+- **You can ask for data to be deleted.** Yes — in the app, and by writing to privacy@autevo.mk.
+  Provide the deletion URL Play now requires: `https://autevo.mk/delete-account`, a page that
   explains the two taps in the app and offers the email route for someone who has uninstalled it.
 - **Committed to Play Families policy:** not applicable, the app is not for children.
 - **Independent security review:** no.

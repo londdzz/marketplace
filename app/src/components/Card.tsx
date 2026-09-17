@@ -32,7 +32,7 @@ export function Card({ children, onPress, flush = false, raised = false, style, 
 
   if (!onPress) {
     return (
-      <View testID={testID} style={[styles.base, base, raised ? theme.elevation.sm : null, style]}>
+      <View testID={testID} style={[styles.base, base, style]}>
         {children}
       </View>
     );
@@ -46,7 +46,6 @@ export function Card({ children, onPress, flush = false, raised = false, style, 
       style={({ pressed }) => [
         styles.base,
         base,
-        raised ? theme.elevation.sm : null,
         pressed && { backgroundColor: theme.colors.surfaceMuted },
         style,
       ]}

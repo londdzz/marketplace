@@ -38,7 +38,7 @@ export async function registerForPush(): Promise<boolean> {
   if (Platform.OS === 'android') {
     // Android delivers into a channel, so there has to be one first.
     await Notifications.setNotificationChannelAsync('default', {
-      name: 'vetura',
+      name: 'Autevo',
       importance: Notifications.AndroidImportance.DEFAULT,
       lightColor: '#1E4FD8',
     });

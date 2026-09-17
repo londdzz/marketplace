@@ -18,7 +18,7 @@
       "distribution": "internal",
       "channel": "preview",
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://api.vetura.mk/api/v1"
+        "EXPO_PUBLIC_API_URL": "https://api.autevo.mk/api/v1"
       },
       "android": { "buildType": "apk" }
     },
@@ -26,7 +26,7 @@
       "channel": "production",
       "autoIncrement": true,
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://api.vetura.mk/api/v1"
+        "EXPO_PUBLIC_API_URL": "https://api.autevo.mk/api/v1"
       },
       "android": { "buildType": "app-bundle" }
     }

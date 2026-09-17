@@ -373,7 +373,7 @@ export default function ListingDetail() {
             borderTopColor: theme.colors.border,
             gap: theme.spacing.md,
           },
-          theme.elevation.md,
+          theme.elevation.sheet,
         ]}
       >
         <Button

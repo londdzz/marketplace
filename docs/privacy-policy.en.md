@@ -1,10 +1,10 @@
-# vetura — Privacy Policy
+# Autevo — Privacy Policy
 
 **Last updated:** 17 September 2026
 **Controller:** [COMPANY LEGAL NAME], [REGISTERED ADDRESS], North Macedonia
-**Contact:** privacy@vetura.mk
+**Contact:** privacy@autevo.mk
 
-vetura is a marketplace for used cars in North Macedonia. Sellers pay per listing; buyers
+Autevo is a marketplace for used cars in North Macedonia. Sellers pay per listing; buyers
 search and message sellers. We never handle the car, the money paid for a car, or any
 paperwork — we connect the two people and stop there.
 
@@ -76,20 +76,20 @@ your saved cars and searches, your device tokens, and your credit balance — in
 credits you have not spent, which are not refunded. Only the purchase records the law makes
 us keep survive it.
 
-You can also write to privacy@vetura.mk from the number on the account.
+You can also write to privacy@autevo.mk from the number on the account.
 
 ## Your rights
 
 Under the Macedonian Law on Personal Data Protection and, where it applies, the GDPR, you can
 ask for a copy of your data, correct it, delete it, restrict or object to how it is used, and
-receive it in a portable form. Write to privacy@vetura.mk. We answer within 30 days. If you
+receive it in a portable form. Write to privacy@autevo.mk. We answer within 30 days. If you
 are not satisfied you can complain to the Agency for Personal Data Protection of the Republic
 of North Macedonia (dzlp.mk).
 
 ## Children
 
-vetura is not for anyone under 18. We do not knowingly hold data about children. If you
-believe a child has an account, write to privacy@vetura.mk and we will remove it.
+Autevo is not for anyone under 18. We do not knowingly hold data about children. If you
+believe a child has an account, write to privacy@autevo.mk and we will remove it.
 
 ## Changes
 

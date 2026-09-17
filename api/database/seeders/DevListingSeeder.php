@@ -153,7 +153,7 @@ class DevListingSeeder extends Seeder
         imagestring($image, 5, 60, $height - 120, strtoupper($car['make'].' '.$car['model']), $ink);
         imagestring($image, 4, 60, $height - 90, 'photo '.$position.' of 4', $ink);
 
-        $path = tempnam(sys_get_temp_dir(), 'vetura').'.jpg';
+        $path = tempnam(sys_get_temp_dir(), 'Autevo').'.jpg';
         imagejpeg($image, $path, 88);
         imagedestroy($image);
 

@@ -20,3 +20,4 @@ export { SearchField, type SearchFieldProps } from './SearchField';
 export { SettingRow, type SettingRowProps } from './SettingRow';
 export { Text, type TextProps } from './Text';
 export { ToggleRow, type ToggleRowProps } from './ToggleRow';
+export { Wordmark, type WordmarkProps } from './Wordmark';
