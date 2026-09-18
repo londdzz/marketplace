@@ -197,6 +197,18 @@ deleted — all of it is closed rather than removed:
   every screen. It is not a substitute for running on a device: native fonts, safe areas
   and the keychain only behave properly there.
 
+## Running on a device
+
+Development happens on Windows, where no iOS code can be compiled and the simulator does
+not exist. `docs/device-testing.md` is the way round it: `.github/workflows/ios-unsigned-ipa.yml`
+builds an unsigned `.ipa` on a GitHub macOS runner, and Sideloadly or AltStore signs it
+with a free Apple ID on the way onto the phone. That build cannot do push or in-app
+purchases — both entitlements need the paid Apple Developer Program — and it expires after
+seven days, but everything else is real. The app already degrades for both: push
+registration failures are swallowed at sign-in, and the credits sheet says purchases are
+unavailable rather than pretending. Once the paid account exists, `eas build` signs and
+installs over the air and none of this applies.
+
 ## Placeholders
 
 `PLACEHOLDERS.md` in the repository root lists every stand-in value that still needs a

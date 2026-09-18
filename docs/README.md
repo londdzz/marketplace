@@ -14,6 +14,7 @@ Everything the stores ask for, and the two documents that have to be public befo
 | `store/screenshots/` | The captured sets: `ios-en`, `ios-mk`, `android-en`, `android-mk`, and the Play feature graphic. |
 | `store/pre-submission-checklist.md` | **Read this first.** The blockers, then everything else. |
 | `credentials.md` | Where every value in `PLACEHOLDERS.md` comes from, in the order to collect them. |
+| `device-testing.md` | Getting the app onto a real iPhone from Windows, with no Mac and no paid Apple account. |
 
 The policy and the terms carry `[COMPANY LEGAL NAME]` and `[REGISTERED ADDRESS]` placeholders,
 and both name `autevo.mk` addresses that do not exist yet. Neither can be published as is.

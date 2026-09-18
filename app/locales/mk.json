@@ -2,5 +2,6 @@
   "NSCameraUsageDescription": "Autevo ја користи камерата за да го фотографираш автомобилот што го продаваш.",
   "NSPhotoLibraryUsageDescription": "Autevo има потреба од твојата галерија за да избереш фотографии од автомобилот што го продаваш.",
   "NSMicrophoneUsageDescription": "Autevo не снима аудио.",
-  "NSUserNotificationsUsageDescription": "Autevo те известува кога купувач ќе одговори, кога зачувано барање ќе најде автомобил и пред огласот да истече."
+  "NSUserNotificationsUsageDescription": "Autevo те известува кога купувач ќе одговори, кога зачувано барање ќе најде автомобил и пред огласот да истече.",
+  "NSLocalNetworkUsageDescription": "Autevo се поврзува со развоен сервер на вашата мрежа кога е изградена за тестирање."
 }

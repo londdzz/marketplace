@@ -1,0 +1,96 @@
+# Builds an unsigned iOS app and packages it as an .ipa, for sideloading onto
+# your own iPhone with Sideloadly or AltStore and a free Apple ID.
+#
+# It exists because iOS code cannot be compiled anywhere but macOS, and the
+# machine this project is developed on runs Windows. GitHub's macOS runners do
+# the compiling; the signing happens on your own machine, with your own Apple
+# ID, when the sideloader installs it.
+#
+# What a free Apple ID cannot do: push notifications and in-app purchases.
+# Both entitlements need a paid Apple Developer account. The app already
+# handles their absence — registration failures are swallowed at sign-in, and
+# the credits sheet says purchases are unavailable rather than pretending —
+# so everything else can be exercised normally.
+#
+# The app also expires seven days after signing. Re-run this, or just re-sign
+# the same .ipa.
+name: iOS unsigned IPA
+
+on:
+  workflow_dispatch:
+    inputs:
+      api_url:
+        description: 'API the build talks to, e.g. http://192.168.1.20:8000/api/v1'
+        required: true
+        default: 'https://api.autevo.mk/api/v1'
+
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 60
+
+    defaults:
+      run:
+        working-directory: app
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Generates the ios/ project from app.json. It is not in the repository:
+      # the config plugins own it, and hand edits would be overwritten here.
+      - name: Generate the native project
+        env:
+          EXPO_PUBLIC_API_URL: ${{ inputs.api_url }}
+        run: npx expo prebuild --platform ios --clean
+
+      - name: Install pods
+        run: cd ios && pod install
+
+      # CODE_SIGNING_ALLOWED=NO is what makes this possible without an Apple
+      # Developer account: the binary comes out unsigned, and the sideloader
+      # signs it on the way onto the phone.
+      - name: Build unsigned
+        env:
+          EXPO_PUBLIC_API_URL: ${{ inputs.api_url }}
+        run: |
+          set -euo pipefail
+          WORKSPACE=$(ls -d ios/*.xcworkspace | head -1)
+          SCHEME=$(basename "$WORKSPACE" .xcworkspace)
+          echo "Building $SCHEME from $WORKSPACE"
+          xcodebuild \
+            -workspace "$WORKSPACE" \
+            -scheme "$SCHEME" \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGN_ENTITLEMENTS="" \
+            build
+
+      # An .ipa is a zip with the .app inside a folder called Payload. That is
+      # the whole format.
+      - name: Package as .ipa
+        run: |
+          set -euo pipefail
+          APP=$(ls -d build/Build/Products/Release-iphoneos/*.app | head -1)
+          mkdir -p payload/Payload
+          cp -R "$APP" payload/Payload/
+          cd payload && zip -qry ../autevo-unsigned.ipa Payload
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: autevo-unsigned-ipa
+          path: app/autevo-unsigned.ipa
+          retention-days: 14
+          if-no-files-found: error
