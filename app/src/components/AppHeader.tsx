@@ -43,7 +43,7 @@ export function AppHeader({
     >
       <Pressable accessibilityRole="button" onPress={onAccount} testID="header-account">
         <View>
-          <Ionicons name="person-circle-outline" size={30} color={theme.colors.text} />
+          <Ionicons name="person-circle-outline" size={26} color={theme.colors.text} />
           {accountBadge ? (
             <View style={[styles.dot, { backgroundColor: theme.colors.danger }]} />
           ) : null}
@@ -51,13 +51,13 @@ export function AppHeader({
       </Pressable>
 
       <View style={styles.brand}>
-        <Wordmark size={26} />
+        <Wordmark size={22} />
       </View>
 
-      <View style={[styles.actions, { gap: theme.spacing.lg }]}>
+      <View style={[styles.actions, { gap: theme.spacing.md }]}>
         <Pressable accessibilityRole="button" onPress={onMessages} testID="header-messages">
           <View>
-            <Ionicons name="chatbox-outline" size={26} color={theme.colors.text} />
+            <Ionicons name="chatbox-outline" size={22} color={theme.colors.text} />
             {unreadMessages ? (
               <View style={[styles.dot, { backgroundColor: theme.colors.accent }]} />
             ) : null}
@@ -65,7 +65,7 @@ export function AppHeader({
         </Pressable>
 
         <Pressable accessibilityRole="button" onPress={onNotifications} testID="header-bell">
-          <Ionicons name="notifications-outline" size={26} color={theme.colors.text} />
+          <Ionicons name="notifications-outline" size={22} color={theme.colors.text} />
         </Pressable>
       </View>
     </View>

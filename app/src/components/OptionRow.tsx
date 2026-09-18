@@ -56,7 +56,7 @@ export function OptionRow({
         {
           paddingHorizontal: theme.spacing.lg,
           paddingVertical: flat ? theme.spacing.sm : theme.spacing.md,
-          minHeight: flat ? 50 : 56,
+          minHeight: flat ? 44 : 50,
           borderRadius: flat ? 0 : theme.radius.md,
           gap: theme.spacing.md,
           backgroundColor: selected
@@ -73,7 +73,7 @@ export function OptionRow({
       {logoUrl ? (
         <Image
           source={{ uri: logoUrl }}
-          style={{ width: 22, height: 22 }}
+          style={{ width: 20, height: 20 }}
           contentFit="contain"
           tintColor={selected ? theme.colors.accent : theme.colors.text}
           transition={120}
@@ -110,9 +110,9 @@ export function OptionRow({
       </View>
 
       {chevron ? (
-        <Ionicons name="chevron-forward" size={18} color={theme.colors.textSubtle} />
+        <Ionicons name="chevron-forward" size={16} color={theme.colors.textSubtle} />
       ) : selected ? (
-        <Ionicons name="checkmark-circle" size={22} color={theme.colors.accent} />
+        <Ionicons name="checkmark-circle" size={20} color={theme.colors.accent} />
       ) : null}
     </Pressable>
   );
@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
   },
   icon: {
     width: 34,
-    height: 34,
+    height: 30,
     alignItems: 'center',
     justifyContent: 'center',
   },

@@ -47,7 +47,7 @@ export default function ProfileTab() {
   };
 
   const sectionLabel = {
-    marginTop: theme.spacing.xxl,
+    marginTop: theme.spacing.xl,
     marginBottom: theme.spacing.sm,
     marginLeft: theme.spacing.xs,
   };
@@ -61,7 +61,7 @@ export default function ProfileTab() {
           hitSlop={8}
           testID="profile-back"
         >
-          <Ionicons name="chevron-back" size={26} color={theme.colors.text} />
+          <Ionicons name="chevron-back" size={22} color={theme.colors.text} />
         </Pressable>
         <Text variant="title">{t('profile:title')}</Text>
       </View>
@@ -92,8 +92,8 @@ export default function ProfileTab() {
         >
           <View
             style={{
-              width: 58,
-              height: 58,
+              width: 46,
+              height: 46,
               borderRadius: theme.radius.full,
               alignItems: 'center',
               justifyContent: 'center',
@@ -101,16 +101,16 @@ export default function ProfileTab() {
             }}
           >
             {user?.display_name?.trim() ? (
-              <Text variant="title" tone="accent">
+              <Text variant="bodyStrong" tone="accent">
                 {user.display_name.trim().charAt(0).toUpperCase()}
               </Text>
             ) : (
-              <Ionicons name="person" size={26} color={theme.colors.accent} />
+              <Ionicons name="person" size={22} color={theme.colors.accent} />
             )}
           </View>
 
           <View style={{ flex: 1, gap: 2 }}>
-            <Text variant="title" numberOfLines={1}>
+            <Text variant="bodyStrong" numberOfLines={1}>
               {user?.display_name || t('profile:no_name')}
             </Text>
             <Text variant="meta" tone="muted">
@@ -123,7 +123,7 @@ export default function ProfileTab() {
             ) : null}
           </View>
 
-          <Ionicons name="chevron-forward" size={18} color={theme.colors.textSubtle} />
+          <Ionicons name="chevron-forward" size={16} color={theme.colors.textSubtle} />
         </Pressable>
 
         {/* Credits, because this is where a seller comes looking for them. */}
@@ -141,7 +141,7 @@ export default function ProfileTab() {
             },
           ]}
         >
-          <Ionicons name="pricetag" size={22} color={theme.colors.accent} />
+          <Ionicons name="pricetag" size={19} color={theme.colors.accent} />
 
           <View style={{ flex: 1 }}>
             <Text variant="priceSmall" tone="accent">
@@ -163,7 +163,7 @@ export default function ProfileTab() {
         <Text variant="overline" tone="muted" style={sectionLabel}>
           {t('profile:selling')}
         </Text>
-        <ListGroup inset={58}>
+        <ListGroup inset={56}>
           <SettingRow
             icon="pricetag-outline"
             label={t('sell:my_listings')}
@@ -190,7 +190,7 @@ export default function ProfileTab() {
               chevron={false}
               accessory={
                 i18n.language === language ? (
-                  <Ionicons name="checkmark" size={20} color={theme.colors.accent} />
+                  <Ionicons name="checkmark" size={18} color={theme.colors.accent} />
                 ) : undefined
               }
               onPress={() => void chooseLanguage(language)}
@@ -202,7 +202,7 @@ export default function ProfileTab() {
         <Text variant="overline" tone="muted" style={sectionLabel}>
           {t('profile:account')}
         </Text>
-        <ListGroup inset={58}>
+        <ListGroup inset={56}>
           <SettingRow
             icon="person-remove-outline"
             label={t('profile:blocked')}

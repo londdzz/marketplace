@@ -153,6 +153,15 @@ export type ListingPage = {
 export type SortOption = 'relevance' | 'price_asc' | 'price_desc' | 'newest' | 'mileage_asc';
 
 /** What the filter sheet holds. Everything optional; absent means no filter. */
+/** A search a buyer kept, as GET /saved-searches returns it. */
+export type SavedSearch = {
+  id: string;
+  name: string | null;
+  filters: SearchFilters;
+  notify: boolean;
+  createdAt: string | null;
+};
+
 export type SearchFilters = {
   q?: string;
   makeId?: number;

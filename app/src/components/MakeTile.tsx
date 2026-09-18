@@ -32,7 +32,7 @@ export function MakeTile({ name, logoUrl, selected = false, width, onPress, test
     .join('')
     .toUpperCase();
 
-  const mark = Math.round(width * 0.42);
+  const mark = Math.round(width * 0.38);
 
   return (
     <Pressable
@@ -44,12 +44,14 @@ export function MakeTile({ name, logoUrl, selected = false, width, onPress, test
         styles.tile,
         {
           width,
-          height: width,
+          height: Math.round(width * 0.88),
           paddingHorizontal: 4,
-          borderRadius: theme.radius.lg,
-          backgroundColor: selected ? theme.colors.accentMuted : theme.colors.surface,
-          borderColor: selected ? theme.colors.accent : theme.colors.border,
-          borderWidth: selected ? 1.5 : 1,
+          borderRadius: theme.radius.md,
+          // A filled tile rather than an outlined one: the grid sits on a
+          // surface of its own, where a border only draws a box around a box.
+          backgroundColor: selected ? theme.colors.accentMuted : theme.colors.surfaceMuted,
+          borderColor: selected ? theme.colors.accent : 'transparent',
+          borderWidth: 1,
           opacity: pressed ? 0.75 : 1,
         },
       ]}
@@ -77,7 +79,7 @@ export function MakeTile({ name, logoUrl, selected = false, width, onPress, test
         variant="caption"
         numberOfLines={1}
         style={{
-          marginTop: 7,
+          marginTop: 6,
           maxWidth: width - 10,
           textAlign: 'center',
           color: selected ? theme.colors.accentText : theme.colors.text,

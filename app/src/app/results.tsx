@@ -47,7 +47,12 @@ export default function ResultsScreen() {
 
   const saveSearch = useMutation({
     mutationFn: () => listingsApi.saveSearch(filters),
-    onSuccess: () => setSaved(true),
+    onSuccess: async () => {
+      setSaved(true);
+      // The Searches tab stays mounted behind this screen, so it only learns
+      // about the new search if its query is put out of date here.
+      await queryClient.invalidateQueries({ queryKey: ['saved-searches'] });
+    },
   });
 
   const listings = search.data?.pages.flatMap((page) => page.data) ?? [];
@@ -95,7 +100,7 @@ export default function ResultsScreen() {
         ]}
       >
         <Pressable accessibilityRole="button" onPress={() => router.back()} testID="results-back">
-          <Ionicons name="chevron-back" size={26} color={theme.colors.text} />
+          <Ionicons name="chevron-back" size={22} color={theme.colors.text} />
         </Pressable>
 
         <Text variant="bodyStrong" style={{ flex: 1, textAlign: 'center' }}>
@@ -103,7 +108,7 @@ export default function ResultsScreen() {
         </Text>
 
         <Pressable accessibilityRole="button" onPress={cycleSort} testID="results-sort">
-          <Ionicons name="swap-vertical" size={24} color={theme.colors.text} />
+          <Ionicons name="swap-vertical" size={21} color={theme.colors.text} />
         </Pressable>
 
         <Pressable
@@ -113,7 +118,7 @@ export default function ResultsScreen() {
         >
           <Ionicons
             name={grid ? 'list-outline' : 'grid-outline'}
-            size={22}
+            size={21}
             color={theme.colors.text}
           />
         </Pressable>

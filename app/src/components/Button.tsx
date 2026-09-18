@@ -50,7 +50,7 @@ export function Button({
   const theme = useTheme();
   const inert = disabled || loading;
 
-  const height = { sm: 36, md: 46, lg: 52 }[size];
+  const height = { sm: 34, md: 42, lg: 48 }[size];
   const paddingHorizontal = { sm: theme.spacing.md, md: theme.spacing.lg, lg: theme.spacing.xl }[size];
   const textVariant = size === 'sm' ? 'label' : 'bodyStrong';
 
@@ -108,7 +108,7 @@ export function Button({
         <ActivityIndicator size="small" color={contentColor} />
       ) : (
         <View style={[styles.label, { gap: theme.spacing.sm }]}>
-          {icon ? <Ionicons name={icon} size={size === 'sm' ? 16 : 18} color={contentColor} /> : null}
+          {icon ? <Ionicons name={icon} size={size === 'sm' ? 15 : 17} color={contentColor} /> : null}
           <Text variant={textVariant} style={{ color: contentColor }} numberOfLines={1}>
             {label}
           </Text>

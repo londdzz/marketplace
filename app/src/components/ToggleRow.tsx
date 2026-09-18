@@ -27,7 +27,7 @@ export function ToggleRow({ label, hint, value, onValueChange, testID }: ToggleR
           paddingHorizontal: theme.spacing.lg,
           paddingVertical: theme.spacing.md,
           borderRadius: theme.radius.md,
-          minHeight: 60,
+          minHeight: 52,
           gap: theme.spacing.md,
           backgroundColor: theme.colors.surface,
           borderColor: theme.colors.border,

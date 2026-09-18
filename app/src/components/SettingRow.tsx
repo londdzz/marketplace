@@ -71,7 +71,7 @@ export function SettingRow({
             },
           ]}
         >
-          <Ionicons name={icon} size={17} color={tint} />
+          <Ionicons name={icon} size={16} color={tint} />
         </View>
       ) : null}
 
@@ -95,7 +95,7 @@ export function SettingRow({
       {accessory}
 
       {chevron && onPress && !accessory ? (
-        <Ionicons name="chevron-forward" size={17} color={theme.colors.textSubtle} />
+        <Ionicons name="chevron-forward" size={16} color={theme.colors.textSubtle} />
       ) : null}
     </Pressable>
   );
@@ -105,11 +105,11 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    minHeight: 54,
+    minHeight: 48,
   },
   icon: {
     width: 30,
-    height: 30,
+    height: 28,
     alignItems: 'center',
     justifyContent: 'center',
   },

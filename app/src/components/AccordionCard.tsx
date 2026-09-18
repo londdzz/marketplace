@@ -11,6 +11,11 @@ export type AccordionCardProps = {
   subtitle?: string;
   icon: keyof typeof Ionicons.glyphMap;
   defaultOpen?: boolean;
+  /**
+   * Drops the card's own border and corners, for a section that sits inside a
+   * `ListGroup` beside its neighbours rather than floating on its own.
+   */
+  bare?: boolean;
   children: ReactNode;
   testID?: string;
 };
@@ -27,6 +32,7 @@ export function AccordionCard({
   subtitle,
   icon,
   defaultOpen = false,
+  bare = false,
   children,
   testID,
 }: AccordionCardProps) {
@@ -35,13 +41,17 @@ export function AccordionCard({
 
   return (
     <View
-      style={{
-        backgroundColor: theme.colors.surface,
-        borderRadius: theme.radius.lg,
-        borderWidth: 1,
-        borderColor: theme.colors.border,
-        overflow: 'hidden',
-      }}
+      style={
+        bare
+          ? { backgroundColor: theme.colors.surface }
+          : {
+              backgroundColor: theme.colors.surface,
+              borderRadius: theme.radius.lg,
+              borderWidth: 1,
+              borderColor: theme.colors.border,
+              overflow: 'hidden',
+            }
+      }
     >
       <Pressable
         accessibilityRole="button"
@@ -50,23 +60,27 @@ export function AccordionCard({
         onPress={() => setOpen((value) => !value)}
         style={({ pressed }) => [
           styles.header,
-          { padding: theme.spacing.lg, gap: theme.spacing.md },
+          {
+            paddingHorizontal: theme.spacing.lg,
+            paddingVertical: theme.spacing.md,
+            gap: theme.spacing.md,
+          },
           pressed && { backgroundColor: theme.colors.surfaceMuted },
         ]}
       >
         <View
           style={[
             styles.iconBox,
-            { backgroundColor: theme.colors.surfaceMuted, borderRadius: theme.radius.md },
+            { backgroundColor: theme.colors.surfaceMuted, borderRadius: theme.radius.sm },
           ]}
         >
-          <Ionicons name={icon} size={22} color={theme.colors.text} />
+          <Ionicons name={icon} size={16} color={theme.colors.textMuted} />
         </View>
 
         <View style={{ flex: 1 }}>
-          <Text variant="title">{title}</Text>
+          <Text variant="heading">{title}</Text>
           {subtitle && !open ? (
-            <Text variant="meta" tone="muted" numberOfLines={1} style={{ marginTop: 1 }}>
+            <Text variant="caption" tone="muted" numberOfLines={1} style={{ marginTop: 1 }}>
               {subtitle}
             </Text>
           ) : null}
@@ -74,13 +88,23 @@ export function AccordionCard({
 
         <Ionicons
           name={open ? 'chevron-up' : 'chevron-down'}
-          size={22}
+          size={16}
           color={theme.colors.textMuted}
         />
       </Pressable>
 
+      {/* A rule under the header, so the controls read as the section's own
+          rather than as more of its title. */}
       {open ? (
-        <View style={{ paddingHorizontal: theme.spacing.lg, paddingBottom: theme.spacing.lg }}>
+        <View
+          style={{
+            paddingHorizontal: theme.spacing.lg,
+            paddingTop: theme.spacing.lg,
+            paddingBottom: theme.spacing.lg,
+            borderTopWidth: 1,
+            borderTopColor: theme.colors.border,
+          }}
+        >
           {children}
         </View>
       ) : null}
@@ -94,8 +118,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   iconBox: {
-    width: 44,
-    height: 44,
+    width: 30,
+    height: 30,
     alignItems: 'center',
     justifyContent: 'center',
   },

@@ -261,9 +261,10 @@ release, and update it whenever a placeholder is added or replaced.
   repository carries no image files.
 - **Development stores photos on the `public` disk**, since the `local` disk is private in
   Laravel 11 and its files are not servable. Production uses S3.
-- **The product is called Autevo**, Albanian for "the car". It is the app name, the slug
-  and the wordmark in the header, and the store listings, bundle identifier and domain
-  should all be built on it.
+- **The product is called Autevo**, a coined name rather than a word in any of the
+  region's languages, so it reads the same in Macedonian and English and nothing has to
+  be translated. It is the app name, the slug and the wordmark in the header, and the
+  store listings, bundle identifier (`mk.autevo.app`) and domain are all built on it.
 - **Saved vehicles are a two-column grid.** A compact card variant shrinks the type and
   the chips and shows the three specifications that earn their place at half a screen
   wide. The cross-border marker sits on the photo rather than in the text, so two cards
@@ -299,6 +300,18 @@ release, and update it whenever a placeholder is added or replaced.
 - **The app is dark whatever the phone is set to.** `useAppTheme()` returns the dark
   theme and never reads the device. The light tokens stay correct because the store
   icon and the splash tile are drawn on paper, and because switching back is one line.
+- **The type scale sits a notch below the obvious one**: 12 · 13 · 15 · 17 · 22, with body
+  at 15/22. Sora's cap height is most of its em, so it renders larger than a system face
+  at the same point size; set at 16 and 20 the app read as a tablet layout shrunk down.
+  Control heights follow it — 44 for an input, 34/42/48 for the three button sizes, 22 for
+  a bar or header icon — so nothing is a touch target smaller than it looks.
+- **Only one thing on a screen is azure.** Two outlined accent buttons side by side (the
+  results row's Contact and Park, the search builder's More filters beside the offer
+  count) shout equally and nothing leads, so the secondary of a pair takes the quiet
+  neutral fill instead.
+- **The search builder's closed sections are one card with hairlines**, not four cards
+  floating apart, and an open section rules off its header. `AccordionCard`'s `bare` prop
+  is what lets a section sit inside a `ListGroup`.
 - **The design system was rebuilt once, in phase 10, after the first pass read
   as a wireframe.** The rules that came out of it: one button language, where
   only the primary is filled and secondary actions take a soft neutral fill
@@ -352,6 +365,11 @@ release, and update it whenever a placeholder is added or replaced.
   the listing on the first step and updates it on every one after, so closing the app
   halfway leaves a draft on the server rather than losing the work. Resuming jumps to
   the first thing still missing, not back to the beginning.
+- **Saved searches are a real tab.** `GET /saved-searches` fills it; tapping one puts its
+  filters back into the search the whole app shares and opens the results, so it runs
+  exactly as it did the day it was saved. There is no endpoint for editing one, so nothing
+  on the screen pretends there is: a search is run or it is deleted. A tab screen is never
+  unmounted, so the list refetches on focus and saving from the results invalidates it.
 - **`GET /vocabularies`** serves the closed vocabularies (body types, drivetrains,
   colours, feature keys) so the app never keeps its own copy of a list the API
   validates against. Public, like the other reference endpoints.

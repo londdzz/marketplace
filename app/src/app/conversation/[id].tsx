@@ -126,11 +126,11 @@ export default function ConversationScreen() {
               alignSelf: message.is_mine ? 'flex-end' : 'flex-start',
               backgroundColor: message.is_mine ? theme.colors.accent : theme.colors.surface,
               borderColor: message.is_mine ? theme.colors.accent : theme.colors.border,
-              borderRadius: 20,
+              borderRadius: 18,
               borderBottomRightRadius: message.is_mine ? 6 : 20,
               borderBottomLeftRadius: message.is_mine ? 20 : 6,
-              paddingHorizontal: theme.spacing.lg,
-              paddingVertical: theme.spacing.md - 2,
+              paddingHorizontal: theme.spacing.md,
+              paddingVertical: theme.spacing.sm + 2,
             },
           ]}
         >
@@ -186,7 +186,7 @@ export default function ConversationScreen() {
         ]}
       >
         <Pressable accessibilityRole="button" onPress={() => router.back()} testID="thread-back" hitSlop={8}>
-          <Ionicons name="chevron-back" size={26} color={theme.colors.text} />
+          <Ionicons name="chevron-back" size={22} color={theme.colors.text} />
         </Pressable>
 
         <Pressable
@@ -199,8 +199,8 @@ export default function ConversationScreen() {
           {thread?.listing ? (
             <View
               style={{
-                width: 42,
-                height: 42,
+                width: 38,
+                height: 38,
                 borderRadius: theme.radius.md,
                 overflow: 'hidden',
                 backgroundColor: theme.colors.surfaceMuted,
@@ -209,7 +209,7 @@ export default function ConversationScreen() {
               {thread.listing.photos?.[0] ? (
                 <Image
                   source={{ uri: thread.listing.photos[0].thumb_url }}
-                  style={{ width: 42, height: 42 }}
+                  style={{ width: 38, height: 38 }}
                   contentFit="cover"
                 />
               ) : null}
@@ -229,7 +229,7 @@ export default function ConversationScreen() {
           </View>
 
           {thread?.listing ? (
-            <Ionicons name="chevron-forward" size={17} color={theme.colors.textSubtle} />
+            <Ionicons name="chevron-forward" size={16} color={theme.colors.textSubtle} />
           ) : null}
         </Pressable>
 
@@ -241,7 +241,7 @@ export default function ConversationScreen() {
             hitSlop={8}
             testID="thread-block"
           >
-            <Ionicons name="ellipsis-horizontal" size={22} color={theme.colors.textMuted} />
+            <Ionicons name="ellipsis-horizontal" size={20} color={theme.colors.textMuted} />
           </Pressable>
         ) : null}
       </View>
@@ -335,7 +335,7 @@ export default function ConversationScreen() {
                 minHeight: 46,
                 color: theme.colors.text,
                 backgroundColor: theme.colors.surfaceMuted,
-                borderRadius: 23,
+                borderRadius: 21,
                 borderWidth: 1,
                 borderColor: theme.colors.border,
                 paddingHorizontal: theme.spacing.lg,
@@ -352,8 +352,8 @@ export default function ConversationScreen() {
             onPress={() => send.mutate(draft.trim())}
             testID="message-send"
             style={{
-              width: 46,
-              height: 46,
+              width: 42,
+              height: 42,
               borderRadius: theme.radius.full,
               alignItems: 'center',
               justifyContent: 'center',

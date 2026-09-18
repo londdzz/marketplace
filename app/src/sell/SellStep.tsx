@@ -75,7 +75,7 @@ export function SellStep({
           testID="sell-back"
           hitSlop={8}
         >
-          <Ionicons name="chevron-back" size={26} color={theme.colors.text} />
+          <Ionicons name="chevron-back" size={22} color={theme.colors.text} />
         </Pressable>
 
         <View
@@ -98,7 +98,7 @@ export function SellStep({
           testID="sell-close"
           hitSlop={8}
         >
-          <Ionicons name="close" size={26} color={theme.colors.text} />
+          <Ionicons name="close" size={22} color={theme.colors.text} />
         </Pressable>
       </View>
 
@@ -122,7 +122,7 @@ export function SellStep({
         </View>
       </View>
 
-      <View style={{ paddingHorizontal: theme.screenPadding, paddingTop: theme.spacing.xxl }}>
+      <View style={{ paddingHorizontal: theme.screenPadding, paddingTop: theme.spacing.xl }}>
         <Text variant="display">{title}</Text>
         {hint ? (
           <Text variant="body" tone="muted" style={{ marginTop: theme.spacing.xs }}>

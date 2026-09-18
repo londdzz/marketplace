@@ -8,6 +8,8 @@ type FiltersState = {
   set: (patch: Partial<SearchFilters>) => void;
   /** Add or remove one value from a list filter, such as fuel or countries. */
   toggle: <K extends 'fuel' | 'countries'>(key: K, value: string) => void;
+  /** Swap the whole search out, which is what running a saved one does. */
+  replace: (next: SearchFilters) => void;
   reset: () => void;
   /** How many filters are set, for the badge on the More filters button. */
   count: number;
@@ -54,6 +56,8 @@ export function FiltersProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  const replace = useCallback((next: SearchFilters) => setFilters(next), []);
+
   const reset = useCallback(() => setFilters({}), []);
 
   const count = useMemo(
@@ -62,8 +66,8 @@ export function FiltersProvider({ children }: { children: ReactNode }) {
   );
 
   const value = useMemo<FiltersState>(
-    () => ({ filters, set, toggle, reset, count }),
-    [filters, set, toggle, reset, count],
+    () => ({ filters, set, toggle, replace, reset, count }),
+    [filters, set, toggle, replace, reset, count],
   );
 
   return <FiltersContext.Provider value={value}>{children}</FiltersContext.Provider>;

@@ -106,10 +106,10 @@ const styles = StyleSheet.create({
   field: {
     flexDirection: 'row',
     alignItems: 'center',
-    minHeight: 50,
+    minHeight: 44,
   },
   input: {
     flex: 1,
-    paddingVertical: 12,
+    paddingVertical: 10,
   },
 });

@@ -1,5 +1,5 @@
 import { api } from './client';
-import type { ApiResource, Listing, ListingPage, SearchFilters } from './types';
+import type { ApiResource, Listing, ListingPage, SavedSearch, SearchFilters } from './types';
 
 /**
  * Turns the filter object the app holds into the query string the API expects,
@@ -39,6 +39,64 @@ export function toQuery(filters: SearchFilters, page = 1): string {
   append('page', page);
 
   return params.toString();
+}
+
+/** The filter object as the API stores it, in its own snake_case spelling. */
+type ApiFilters = {
+  q?: string;
+  make_id?: number;
+  model_id?: number;
+  year_min?: number;
+  year_max?: number;
+  price_min?: number;
+  price_max?: number;
+  mileage_max?: number;
+  fuel?: string[];
+  transmission?: string;
+  body_type?: string;
+  countries?: string[];
+  city_id?: number;
+  sort?: SearchFilters['sort'];
+};
+
+type SavedSearchRow = {
+  id: string;
+  name: string | null;
+  filters: ApiFilters | null;
+  notify: boolean;
+  created_at: string | null;
+};
+
+/** The reverse of what `saveSearch` sends, so a kept search can be re-run. */
+function fromApiFilters(filters: ApiFilters | null): SearchFilters {
+  if (!filters) {
+    return {};
+  }
+
+  const mapped: SearchFilters = {
+    q: filters.q,
+    makeId: filters.make_id,
+    modelId: filters.model_id,
+    yearMin: filters.year_min,
+    yearMax: filters.year_max,
+    priceMin: filters.price_min,
+    priceMax: filters.price_max,
+    mileageMax: filters.mileage_max,
+    fuel: filters.fuel,
+    transmission: filters.transmission,
+    bodyType: filters.body_type,
+    countries: filters.countries,
+    cityId: filters.city_id,
+    sort: filters.sort,
+  };
+
+  for (const [key, value] of Object.entries(mapped)) {
+    if (value === undefined || value === null || (Array.isArray(value) && value.length === 0)) {
+      delete mapped[key as keyof SearchFilters];
+    }
+  }
+
+  return mapped;
 }
 
 /** What GET /favorites actually returns: bookmarks, each carrying its listing. */
@@ -99,6 +157,20 @@ export const listingsApi = {
         sort: filters.sort,
       },
     }),
+
+  /** Every search this account kept, newest first. */
+  savedSearches: (): Promise<SavedSearch[]> =>
+    api.get<{ data: SavedSearchRow[] }>('/saved-searches').then((page) =>
+      page.data.map((row) => ({
+        id: row.id,
+        name: row.name,
+        filters: fromApiFilters(row.filters),
+        notify: row.notify,
+        createdAt: row.created_at,
+      })),
+    ),
+
+  deleteSavedSearch: (id: string) => api.delete<unknown>(`/saved-searches/${id}`),
 
   startConversation: (listingId: string, body?: string) =>
     api.post<unknown>(`/listings/${listingId}/conversations`, { body }),

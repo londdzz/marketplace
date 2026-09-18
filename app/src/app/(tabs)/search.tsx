@@ -1,4 +1,3 @@
-import { Ionicons } from '@expo/vector-icons';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -6,7 +5,17 @@ import { ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native'
 
 import { listingsApi } from '../../api/listings';
 import { referenceApi } from '../../api/reference';
-import { AccordionCard, Button, Chip, Input, MakeTile, Screen, SearchField, Text } from '../../components';
+import {
+  AccordionCard,
+  Button,
+  Chip,
+  Input,
+  ListGroup,
+  MakeTile,
+  Screen,
+  SearchField,
+  Text,
+} from '../../components';
 import { useFilters } from '../../search/FiltersProvider';
 import { useTheme } from '../../theme';
 
@@ -98,7 +107,8 @@ export default function SearchTab() {
 
           <Button
             label={t('search:all_makes')}
-            variant="outline"
+            variant="secondary"
+            size="sm"
             block
             style={{ marginTop: theme.spacing.md }}
             onPress={() => router.push('/filters')}
@@ -106,135 +116,141 @@ export default function SearchTab() {
           />
         </AccordionCard>
 
-        <AccordionCard
-          title={t('search:condition')}
-          subtitle={t('search:condition_sub')}
-          icon="calendar-outline"
-          testID="section-condition"
-        >
-          <View style={{ flexDirection: 'row', gap: theme.spacing.md, marginTop: theme.spacing.sm }}>
+        <ListGroup>
+          <AccordionCard
+            bare
+            title={t('search:condition')}
+            subtitle={t('search:condition_sub')}
+            icon="calendar-outline"
+            testID="section-condition"
+          >
+            <View style={{ flexDirection: 'row', gap: theme.spacing.md }}>
+              <Input
+                label={t('search:year')}
+                placeholder={t('search:min')}
+                keyboardType="number-pad"
+                containerStyle={{ flex: 1 }}
+                value={filters.yearMin ? String(filters.yearMin) : ''}
+                onChangeText={(value) => set({ yearMin: value ? Number(value) : undefined })}
+              />
+              <Input
+                label=" "
+                placeholder={t('search:max')}
+                keyboardType="number-pad"
+                containerStyle={{ flex: 1 }}
+                value={filters.yearMax ? String(filters.yearMax) : ''}
+                onChangeText={(value) => set({ yearMax: value ? Number(value) : undefined })}
+              />
+            </View>
+
             <Input
-              label={t('search:year')}
-              placeholder={t('search:min')}
-              keyboardType="number-pad"
-              containerStyle={{ flex: 1 }}
-              value={filters.yearMin ? String(filters.yearMin) : ''}
-              onChangeText={(value) => set({ yearMin: value ? Number(value) : undefined })}
-            />
-            <Input
-              label=" "
+              label={t('search:mileage')}
               placeholder={t('search:max')}
               keyboardType="number-pad"
-              containerStyle={{ flex: 1 }}
-              value={filters.yearMax ? String(filters.yearMax) : ''}
-              onChangeText={(value) => set({ yearMax: value ? Number(value) : undefined })}
+              containerStyle={{ marginTop: theme.spacing.md }}
+              value={filters.mileageMax ? String(filters.mileageMax) : ''}
+              onChangeText={(value) => set({ mileageMax: value ? Number(value) : undefined })}
             />
-          </View>
+          </AccordionCard>
 
-          <Input
-            label={t('search:mileage')}
-            placeholder={t('search:max')}
-            keyboardType="number-pad"
-            containerStyle={{ marginTop: theme.spacing.md }}
-            value={filters.mileageMax ? String(filters.mileageMax) : ''}
-            onChangeText={(value) => set({ mileageMax: value ? Number(value) : undefined })}
-          />
-        </AccordionCard>
-
-        <AccordionCard
-          title={t('search:financial')}
-          subtitle={t('search:financial_sub')}
-          icon="pricetag-outline"
-          testID="section-price"
-        >
-          <View style={{ flexDirection: 'row', gap: theme.spacing.md, marginTop: theme.spacing.sm }}>
-            <Input
-              placeholder={t('search:min')}
-              keyboardType="number-pad"
-              containerStyle={{ flex: 1 }}
-              value={filters.priceMin ? String(filters.priceMin) : ''}
-              onChangeText={(value) => set({ priceMin: value ? Number(value) : undefined })}
-            />
-            <Input
-              placeholder={t('search:max')}
-              keyboardType="number-pad"
-              containerStyle={{ flex: 1 }}
-              value={filters.priceMax ? String(filters.priceMax) : ''}
-              onChangeText={(value) => set({ priceMax: value ? Number(value) : undefined })}
-            />
-          </View>
-        </AccordionCard>
-
-        <AccordionCard
-          title={t('search:technical')}
-          subtitle={t('search:technical_sub')}
-          icon="build-outline"
-          testID="section-technical"
-        >
-          <Text variant="label" tone="muted" style={{ marginTop: theme.spacing.sm }}>
-            {t('search:fuel')}
-          </Text>
-          <View style={row}>
-            {FUELS.map((fuel) => (
-              <Chip
-                key={fuel}
-                label={t(`listing:fuel.${fuel}`)}
-                checkable
-                selected={(filters.fuel ?? []).includes(fuel)}
-                onPress={() => toggle('fuel', fuel)}
-                testID={`fuel-${fuel}`}
+          <AccordionCard
+            bare
+            title={t('search:financial')}
+            subtitle={t('search:financial_sub')}
+            icon="pricetag-outline"
+            testID="section-price"
+          >
+            <View style={{ flexDirection: 'row', gap: theme.spacing.md }}>
+              <Input
+                placeholder={t('search:min')}
+                keyboardType="number-pad"
+                containerStyle={{ flex: 1 }}
+                value={filters.priceMin ? String(filters.priceMin) : ''}
+                onChangeText={(value) => set({ priceMin: value ? Number(value) : undefined })}
               />
-            ))}
-          </View>
-
-          <Text variant="label" tone="muted" style={{ marginTop: theme.spacing.lg }}>
-            {t('search:transmission')}
-          </Text>
-          <View style={row}>
-            {GEARBOXES.map((gearbox) => (
-              <Chip
-                key={gearbox}
-                label={t(`listing:transmission.${gearbox}`)}
-                checkable
-                selected={filters.transmission === gearbox}
-                onPress={() =>
-                  set({ transmission: filters.transmission === gearbox ? undefined : gearbox })
-                }
+              <Input
+                placeholder={t('search:max')}
+                keyboardType="number-pad"
+                containerStyle={{ flex: 1 }}
+                value={filters.priceMax ? String(filters.priceMax) : ''}
+                onChangeText={(value) => set({ priceMax: value ? Number(value) : undefined })}
               />
-            ))}
-          </View>
-        </AccordionCard>
+            </View>
+          </AccordionCard>
 
-        {/* One open market means nothing to choose between. The section comes
-            back on its own as soon as the API returns a second country. */}
-        {(countries.data ?? []).length > 1 ? (
-        <AccordionCard
-          title={t('search:location')}
-          subtitle={
-            filters.countries?.length
-              ? filters.countries.map((code) => t(`search:country.${code}`, code)).join(', ')
-              : t('search:location_any')
-          }
-          icon="location-outline"
-          testID="section-location"
-        >
-          <Text variant="label" tone="muted" style={{ marginTop: theme.spacing.sm }}>
-            {t('search:countries')}
-          </Text>
-          <View style={row}>
-            {(countries.data ?? []).map((country) => (
-              <Chip
-                key={country.code}
-                label={t(`search:country.${country.code}`, country.code)}
-                checkable
-                selected={(filters.countries ?? []).includes(country.code)}
-                onPress={() => toggle('countries', country.code)}
-                testID={`country-${country.code}`}
-              />
-            ))}
-          </View>
-        </AccordionCard>
-        ) : null}
+          <AccordionCard
+            bare
+            title={t('search:technical')}
+            subtitle={t('search:technical_sub')}
+            icon="build-outline"
+            testID="section-technical"
+          >
+            <Text variant="label" tone="muted">
+              {t('search:fuel')}
+            </Text>
+            <View style={row}>
+              {FUELS.map((fuel) => (
+                <Chip
+                  key={fuel}
+                  label={t(`listing:fuel.${fuel}`)}
+                  checkable
+                  selected={(filters.fuel ?? []).includes(fuel)}
+                  onPress={() => toggle('fuel', fuel)}
+                  testID={`fuel-${fuel}`}
+                />
+              ))}
+            </View>
+
+            <Text variant="label" tone="muted" style={{ marginTop: theme.spacing.lg }}>
+              {t('search:transmission')}
+            </Text>
+            <View style={row}>
+              {GEARBOXES.map((gearbox) => (
+                <Chip
+                  key={gearbox}
+                  label={t(`listing:transmission.${gearbox}`)}
+                  checkable
+                  selected={filters.transmission === gearbox}
+                  onPress={() =>
+                    set({ transmission: filters.transmission === gearbox ? undefined : gearbox })
+                  }
+                />
+              ))}
+            </View>
+          </AccordionCard>
+
+          {/* One open market means nothing to choose between. The section comes
+              back on its own as soon as the API returns a second country. */}
+          {(countries.data ?? []).length > 1 ? (
+          <AccordionCard
+            bare
+            title={t('search:location')}
+            subtitle={
+              filters.countries?.length
+                ? filters.countries.map((code) => t(`search:country.${code}`, code)).join(', ')
+                : t('search:location_any')
+            }
+            icon="location-outline"
+            testID="section-location"
+          >
+            <Text variant="label" tone="muted">
+              {t('search:countries')}
+            </Text>
+            <View style={row}>
+              {(countries.data ?? []).map((country) => (
+                <Chip
+                  key={country.code}
+                  label={t(`search:country.${country.code}`, country.code)}
+                  checkable
+                  selected={(filters.countries ?? []).includes(country.code)}
+                  onPress={() => toggle('countries', country.code)}
+                  testID={`country-${country.code}`}
+                />
+              ))}
+            </View>
+          </AccordionCard>
+          ) : null}
+        </ListGroup>
       </ScrollView>
 
       <View
@@ -251,8 +267,7 @@ export default function SearchTab() {
       >
         <Button
           label={count > 0 ? `${t('search:more_filters')} (${count})` : t('search:more_filters')}
-          variant="outline"
-          size="lg"
+          variant="secondary"
           icon="options-outline"
           style={{ flex: 1 }}
           onPress={() => router.push('/filters')}
@@ -260,7 +275,6 @@ export default function SearchTab() {
         />
         <Button
           label={total > 0 ? t('search:offers', { count: total }) : t('search:offers_zero')}
-          size="lg"
           icon="search"
           style={{ flex: 1.3 }}
           loading={preview.isLoading}

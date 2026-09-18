@@ -44,7 +44,7 @@ export function SearchField({
           },
         ]}
       >
-        <Ionicons name="search" size={20} color={theme.colors.textMuted} />
+        <Ionicons name="search" size={18} color={theme.colors.textMuted} />
 
         <TextInput
           value={value}
@@ -64,14 +64,14 @@ export function SearchField({
 
         {onVoice ? (
           <Pressable accessibilityRole="button" onPress={onVoice}>
-            <Ionicons name="mic-outline" size={22} color={theme.colors.textMuted} />
+            <Ionicons name="mic-outline" size={20} color={theme.colors.textMuted} />
           </Pressable>
         ) : null}
       </View>
 
       {onReset ? (
         <Pressable accessibilityRole="button" onPress={onReset} testID="search-reset">
-          <Ionicons name="refresh-outline" size={22} color={theme.colors.textMuted} />
+          <Ionicons name="refresh-outline" size={20} color={theme.colors.textMuted} />
         </Pressable>
       ) : null}
     </View>
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    height: 52,
+    height: 46,
   },
   input: {
     flex: 1,

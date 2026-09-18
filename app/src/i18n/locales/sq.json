@@ -114,7 +114,14 @@
       "MK": "Maqedoni e Veriut",
       "RS": "Serbi",
       "BG": "Bullgari"
-    }
+    },
+    "saved_everything": "Të gjitha veturat",
+    "saved_alerts_on": "Njoftimet janë aktive",
+    "saved_empty_title": "Ende asnjë kërkim i ruajtur",
+    "saved_empty_body": "Ndërtoni një kërkim dhe ruajeni. Ju njoftojmë kur shpallet një veturë që përputhet.",
+    "saved_failed_title": "Kërkimet nuk u ngarkuan",
+    "saved_failed_body": "Kontrolloni lidhjen dhe provoni sërish.",
+    "saved_delete_title": "Ta fshijmë këtë kërkim?"
   },
   "listing": {
     "fuel": {

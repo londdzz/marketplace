@@ -31,7 +31,7 @@ export function SearchBar({ title, hint, onPress }: SearchBarProps) {
         flexDirection: 'row',
         alignItems: 'center',
         gap: theme.spacing.md,
-        height: 52,
+        height: 46,
         backgroundColor: pressed ? theme.colors.borderStrong : theme.colors.surface,
         borderWidth: 1,
         borderColor: theme.colors.border,
@@ -39,7 +39,7 @@ export function SearchBar({ title, hint, onPress }: SearchBarProps) {
         paddingHorizontal: theme.spacing.lg,
       })}
     >
-      <Ionicons name="search" size={21} color={theme.colors.textMuted} />
+      <Ionicons name="search" size={18} color={theme.colors.textMuted} />
       <View style={{ flex: 1 }}>
         <Text variant="body" tone="muted" numberOfLines={1}>
           {hint}

@@ -31,7 +31,7 @@ export function PromoBanner({ title, body, cta, onPress }: PromoBannerProps) {
         borderRadius: theme.radius.lg,
         overflow: 'hidden',
         backgroundColor: theme.colors.banner,
-        padding: theme.spacing.xl,
+        padding: theme.spacing.lg,
         justifyContent: 'flex-end',
       }}
     >
@@ -59,7 +59,7 @@ export function PromoBanner({ title, body, cta, onPress }: PromoBannerProps) {
         <Text variant="label" style={{ color: theme.colors.bannerText }}>
           {cta}
         </Text>
-        <Ionicons name="arrow-forward" size={15} color={theme.colors.bannerText} />
+        <Ionicons name="arrow-forward" size={14} color={theme.colors.bannerText} />
       </View>
     </Pressable>
   );

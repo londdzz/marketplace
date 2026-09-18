@@ -34,17 +34,19 @@ export default function TabsLayout() {
         },
         tabBarLabelStyle: {
           ...theme.typography.caption,
+          fontSize: 11,
           fontWeight: '600',
-          marginTop: 3,
+          marginTop: 2,
         },
+        tabBarIconStyle: { marginTop: 1 },
       }}
     >
       <Tabs.Screen
         name="home"
         options={{
           title: t('home'),
-          tabBarIcon: ({ color, size, focused }) => (
-            <Ionicons name={focused ? 'home' : 'home-outline'} size={size} color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? 'home' : 'home-outline'} size={22} color={color} />
           ),
         }}
       />
@@ -52,15 +54,15 @@ export default function TabsLayout() {
         name="search"
         options={{
           title: t('search'),
-          tabBarIcon: ({ color, size }) => <Ionicons name="search" size={size} color={color} />,
+          tabBarIcon: ({ color }) => <Ionicons name="search" size={22} color={color} />,
         }}
       />
       <Tabs.Screen
         name="my-searches"
         options={{
           title: t('my_searches'),
-          tabBarIcon: ({ color, size, focused }) => (
-            <Ionicons name={focused ? 'star' : 'star-outline'} size={size} color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? 'star' : 'star-outline'} size={22} color={color} />
           ),
         }}
       />
@@ -68,8 +70,8 @@ export default function TabsLayout() {
         name="saved"
         options={{
           title: t('saved'),
-          tabBarIcon: ({ color, size, focused }) => (
-            <Ionicons name={focused ? 'heart' : 'heart-outline'} size={size} color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? 'heart' : 'heart-outline'} size={22} color={color} />
           ),
         }}
       />
@@ -77,8 +79,8 @@ export default function TabsLayout() {
         name="sell"
         options={{
           title: t('sell'),
-          tabBarIcon: ({ color, size, focused }) => (
-            <Ionicons name={focused ? 'pricetag' : 'pricetag-outline'} size={size} color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? 'pricetag' : 'pricetag-outline'} size={22} color={color} />
           ),
         }}
       />

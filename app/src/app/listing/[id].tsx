@@ -150,7 +150,7 @@ export default function ListingDetail() {
         ]}
       >
         <Pressable accessibilityRole="button" onPress={() => router.back()} testID="detail-back">
-          <Ionicons name="chevron-back" size={26} color={theme.colors.text} />
+          <Ionicons name="chevron-back" size={22} color={theme.colors.text} />
         </Pressable>
 
         <Text variant="bodyStrong" numberOfLines={1} style={{ flex: 1, textAlign: 'center' }}>
@@ -164,7 +164,7 @@ export default function ListingDetail() {
             void Share.share({ message: `${listingTitle(car)} — ${formatEur(car.price_eur)}` });
           }}
         >
-          <Ionicons name="share-outline" size={24} color={theme.colors.text} />
+          <Ionicons name="share-outline" size={21} color={theme.colors.text} />
         </Pressable>
 
         <Pressable
@@ -174,7 +174,7 @@ export default function ListingDetail() {
         >
           <Ionicons
             name={favorited ? 'heart' : 'heart-outline'}
-            size={24}
+            size={21}
             color={favorited ? theme.colors.danger : theme.colors.text}
           />
         </Pressable>
@@ -193,12 +193,12 @@ export default function ListingDetail() {
             {(car.photos.length > 0 ? car.photos : [null]).map((photo, index) => (
               <View
                 key={photo?.id ?? index}
-                style={{ width, height: width * 0.7, backgroundColor: theme.colors.skeleton }}
+                style={{ width, height: Math.round(width * 0.62), backgroundColor: theme.colors.skeleton }}
               >
                 {photo ? (
                   <Image
                     source={{ uri: photo.url }}
-                    style={{ width, height: width * 0.7 }}
+                    style={{ width, height: Math.round(width * 0.62) }}
                     contentFit="cover"
                     transition={150}
                   />
@@ -250,8 +250,8 @@ export default function ListingDetail() {
             {specs
               .filter(([, , value]) => value !== null)
               .map(([icon, label, value]) => (
-                <View key={label} style={[styles.spec, { marginBottom: theme.spacing.lg, gap: theme.spacing.md }]}>
-                  <Ionicons name={icon} size={20} color={theme.colors.textMuted} />
+                <View key={label} style={[styles.spec, { marginBottom: theme.spacing.md, gap: theme.spacing.md }]}>
+                  <Ionicons name={icon} size={18} color={theme.colors.textMuted} />
                   <View style={{ flexShrink: 1 }}>
                     <Text variant="caption" tone="muted">
                       {label}

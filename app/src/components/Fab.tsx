@@ -35,7 +35,7 @@ export function Fab({ onPress, icon = 'add', accessibilityLabel }: FabProps) {
         },
       ]}
     >
-      <Ionicons name={icon} size={28} color={theme.colors.textOnAccent} />
+      <Ionicons name={icon} size={24} color={theme.colors.textOnAccent} />
     </Pressable>
   );
 }
@@ -44,8 +44,8 @@ const styles = StyleSheet.create({
   base: {
     position: 'absolute',
     bottom: 16,
-    width: 58,
-    height: 58,
+    width: 52,
+    height: 52,
     alignItems: 'center',
     justifyContent: 'center',
     elevation: 4,

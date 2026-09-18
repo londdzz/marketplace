@@ -32,12 +32,12 @@ export function EmptyState({
   const theme = useTheme();
 
   return (
-    <View testID={testID} style={[styles.base, { padding: theme.spacing.xxl }, style]}>
+    <View testID={testID} style={[styles.base, { padding: theme.spacing.xl }, style]}>
       {glyph ? (
         <View
           style={{
-            width: 72,
-            height: 72,
+            width: 60,
+            height: 60,
             borderRadius: theme.radius.full,
             alignItems: 'center',
             justifyContent: 'center',

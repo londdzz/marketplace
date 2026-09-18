@@ -17,7 +17,7 @@ export default function SavedTab() {
   const theme = useTheme();
   const router = useRouter();
   const { width } = useWindowDimensions();
-  const { t } = useTranslation(['home', 'tabs']);
+  const { t } = useTranslation(['home', 'tabs', 'search', 'common']);
 
   const favorites = useQuery({ queryKey: ['favorites'], queryFn: listingsApi.favorites });
   const { byCurrency } = useExchangeRates();
@@ -46,6 +46,14 @@ export default function SavedTab() {
 
       {favorites.isLoading ? (
         <ActivityIndicator color={theme.colors.accent} style={{ marginTop: theme.spacing.xxxl }} />
+      ) : favorites.isError ? (
+        <EmptyState
+          glyph="⚠"
+          title={t('common:error_loading')}
+          description={t('search:saved_failed_body')}
+          actionLabel={t('common:retry')}
+          onAction={() => void favorites.refetch()}
+        />
       ) : (
         <FlatList
           data={listings}

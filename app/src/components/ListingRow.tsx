@@ -51,6 +51,10 @@ export function ListingRow({
 }: ListingRowProps) {
   const theme = useTheme();
 
+  // An empty seller name would otherwise leave the separator stranded at the
+  // start of the line.
+  const seller = [listing.sellerName, listing.sellerKind].filter(Boolean).join(' · ');
+
   return (
     <View
       style={{
@@ -70,8 +74,8 @@ export function ListingRow({
         <View style={{ flexDirection: 'row', gap: theme.spacing.md }}>
           <View
             style={{
-              width: 116,
-              height: 88,
+              width: 104,
+              height: 78,
               borderRadius: theme.radius.md,
               backgroundColor: theme.colors.skeleton,
               overflow: 'hidden',
@@ -80,7 +84,7 @@ export function ListingRow({
             {listing.photoUrl ? (
               <Image
                 source={{ uri: listing.photoUrl }}
-                style={{ width: 116, height: 88 }}
+                style={{ width: 104, height: 78 }}
                 contentFit="cover"
                 transition={150}
               />
@@ -123,26 +127,14 @@ export function ListingRow({
           </View>
         </View>
 
-        <Text variant="meta" tone="muted" style={{ marginTop: theme.spacing.md }}>
+        <Text variant="caption" tone="muted" style={{ marginTop: theme.spacing.md }}>
           {listing.facts}
         </Text>
 
-        <View style={[styles.seller, { marginTop: theme.spacing.sm, gap: theme.spacing.xs }]}>
-          <Text variant="meta" numberOfLines={1} style={{ flexShrink: 1 }}>
-            {listing.sellerName}
-          </Text>
-          <Text variant="meta" tone="muted">
-            ·
-          </Text>
-          <Text variant="meta" tone="muted" numberOfLines={1}>
-            {listing.sellerKind}
-          </Text>
-        </View>
-
-        <View style={[styles.seller, { gap: theme.spacing.xxs }]}>
-          <Ionicons name="location-outline" size={14} color={theme.colors.textMuted} />
-          <Text variant="meta" tone="muted" numberOfLines={1}>
-            {listing.location}
+        <View style={[styles.seller, { marginTop: theme.spacing.xs, gap: theme.spacing.xxs }]}>
+          <Ionicons name="location-outline" size={13} color={theme.colors.textMuted} />
+          <Text variant="caption" tone="muted" numberOfLines={1} style={{ flexShrink: 1 }}>
+            {seller ? `${listing.location} · ${seller}` : listing.location}
           </Text>
         </View>
       </Pressable>
@@ -150,23 +142,23 @@ export function ListingRow({
       <View
         style={{
           flexDirection: 'row',
-          gap: theme.spacing.md,
+          gap: theme.spacing.sm,
           paddingHorizontal: theme.spacing.lg,
           paddingBottom: theme.spacing.lg,
         }}
       >
         <Button
           label={contactLabel}
-          variant="outline"
-          size="md"
+          variant="secondary"
+          size="sm"
           icon="call-outline"
           style={{ flex: 1 }}
           onPress={onContact}
         />
         <Button
           label={parkLabel}
-          variant={listing.favorited ? 'primary' : 'outline'}
-          size="md"
+          variant={listing.favorited ? 'primary' : 'secondary'}
+          size="sm"
           icon={listing.favorited ? 'heart' : 'heart-outline'}
           style={{ flex: 1 }}
           onPress={onPark}

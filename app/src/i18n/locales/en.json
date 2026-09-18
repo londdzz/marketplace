@@ -114,7 +114,14 @@
       "MK": "North Macedonia",
       "RS": "Serbia",
       "BG": "Bulgaria"
-    }
+    },
+    "saved_everything": "Every car",
+    "saved_alerts_on": "Alerts on",
+    "saved_empty_title": "No saved searches yet",
+    "saved_empty_body": "Build a search, then keep it. We will tell you when a car matching it is listed.",
+    "saved_failed_title": "Your searches could not be loaded",
+    "saved_failed_body": "Check your connection and try again.",
+    "saved_delete_title": "Delete this search?"
   },
   "listing": {
     "fuel": {
