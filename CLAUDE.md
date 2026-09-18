@@ -305,6 +305,24 @@ release, and update it whenever a placeholder is added or replaced.
   at the same point size; set at 16 and 20 the app read as a tablet layout shrunk down.
   Control heights follow it — 44 for an input, 34/42/48 for the three button sizes, 22 for
   a bar or header icon — so nothing is a touch target smaller than it looks.
+- **The mark is on every screen.** Each tab wears `TabHeader` (account, wordmark, messages)
+  and every screen in the stack wears `StackHeader`, which positions the wordmark absolutely
+  rather than laying it out between the back arrow and the actions, so it is in the same
+  place whatever sits beside it; the screen's own title goes on the line below. Two bars
+  carry the mark without the word, beside the back arrow: the sell flow's, whose middle is
+  the step count, and a thread's, whose middle is who it is with.
+- **Nothing sets the tab bar's height by hand.** The navigator's stock bar is 49 tall and
+  gives each item 7.5 of margin and 5 of padding, which leaves 25 for a 22 icon and its
+  label — on a phone with no bottom inset the label is drawn outside the item and cut in
+  half, and `numberOfLines` clips it rather than letting it overflow. The item's margin is
+  dropped, the label is `flexShrink: 0` so it is not the thing that gives, and the height is
+  52 plus whatever the device keeps below it. Every pinned bar — the sell footer, the Call
+  and Message bar, the composer, the Save search pill — takes the same inset from
+  `useBottomInset`, and keeps its own background to the bottom edge rather than letting the
+  page show through beneath it.
+- **Text follows the phone's size setting, but only to 1.3×.** iOS Dynamic Type and
+  Android's font scale both reach 2× and beyond, which turns a row with a fixed height into
+  a row with its label clipped.
 - **Only one thing on a screen is azure.** Two outlined accent buttons side by side (the
   results row's Contact and Park, the search builder's More filters beside the offer
   count) shout equally and nothing leads, so the secondary of a pair takes the quiet

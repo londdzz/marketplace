@@ -9,7 +9,7 @@ import { ActivityIndicator, FlatList, Pressable, StyleSheet, View } from 'react-
 import { ApiError } from '../../api/client';
 import { sellApi } from '../../api/sell';
 import type { Listing } from '../../api/types';
-import { Badge, Button, EmptyState, Screen, Text } from '../../components';
+import { Badge, Button, EmptyState, Screen, TabHeader, Text } from '../../components';
 import { formatEur, formatKm, listingTitle } from '../../format';
 import { CreditsSheet } from '../../sell/CreditsSheet';
 import { useCredits } from '../../sell/credits';
@@ -281,10 +281,12 @@ export default function MyListingsTab() {
 
   return (
     <Screen flush edges={['top']}>
+      <TabHeader />
+
       <View
         style={{
           paddingHorizontal: theme.screenPadding,
-          paddingVertical: theme.spacing.md,
+          paddingBottom: theme.spacing.md,
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'space-between',

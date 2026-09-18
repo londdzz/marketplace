@@ -18,6 +18,8 @@ export { Screen, type ScreenProps } from './Screen';
 export { SearchBar, type SearchBarProps } from './SearchBar';
 export { SearchField, type SearchFieldProps } from './SearchField';
 export { SettingRow, type SettingRowProps } from './SettingRow';
+export { StackHeader, type StackHeaderProps } from './StackHeader';
+export { TabHeader, type TabHeaderProps } from './TabHeader';
 export { Text, type TextProps } from './Text';
 export { ToggleRow, type ToggleRowProps } from './ToggleRow';
 export { Wordmark, type WordmarkProps } from './Wordmark';

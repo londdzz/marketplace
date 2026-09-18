@@ -2,11 +2,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, FlatList, Pressable, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { blocksApi, type BlockedUser } from '../../api/blocks';
-import { Button, EmptyState, Text } from '../../components';
+import { Button, EmptyState, StackHeader, Text } from '../../components';
 import { useTheme } from '../../theme';
 
 /**
@@ -79,22 +79,18 @@ export default function BlockedUsersScreen() {
 
   return (
     <SafeAreaView style={[styles.flex, { backgroundColor: theme.colors.background }]}>
-      <View
-        style={[
-          styles.header,
-          { paddingHorizontal: theme.screenPadding, paddingVertical: theme.spacing.md, gap: theme.spacing.md },
-        ]}
+      <StackHeader
+        fallback="/(tabs)/profile"
+        backTestID="blocked-back"
+        backLabel={t('common:back')}
+      />
+
+      <Text
+        variant="title"
+        style={{ paddingHorizontal: theme.screenPadding, paddingBottom: theme.spacing.md }}
       >
-        <Pressable
-          accessibilityRole="button"
-          onPress={() => (router.canGoBack() ? router.back() : router.replace('/(tabs)/profile'))}
-          hitSlop={8}
-          testID="blocked-back"
-        >
-          <Ionicons name="chevron-back" size={26} color={theme.colors.text} />
-        </Pressable>
-        <Text variant="title">{t('profile:blocked')}</Text>
-      </View>
+        {t('profile:blocked')}
+      </Text>
 
       {blocked.isLoading ? (
         <View style={[styles.flex, styles.centre]}>
@@ -142,10 +138,6 @@ export default function BlockedUsersScreen() {
 const styles = StyleSheet.create({
   flex: {
     flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
   },
   row: {
     flexDirection: 'row',

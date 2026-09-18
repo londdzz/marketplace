@@ -74,6 +74,7 @@ export const Input = forwardRef<TextInput, InputProps>(function Input(
         ) : null}
 
         <TextInput
+          maxFontSizeMultiplier={1.3}
           ref={ref}
           style={[styles.input, theme.typography[inputVariant], { color: theme.colors.text }, noOutline, style]}
           placeholderTextColor={theme.colors.textSubtle}

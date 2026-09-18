@@ -14,6 +14,7 @@ import {
   MakeTile,
   Screen,
   SearchField,
+  TabHeader,
   Text,
 } from '../../components';
 import { useFilters } from '../../search/FiltersProvider';
@@ -66,7 +67,9 @@ export default function SearchTab() {
 
   return (
     <Screen flush edges={['top']}>
-      <View style={{ paddingHorizontal: theme.screenPadding, paddingTop: theme.spacing.sm }}>
+      <TabHeader />
+
+      <View style={{ paddingHorizontal: theme.screenPadding }}>
         <SearchField
           placeholder={t('search:anything')}
           value={filters.q ?? ''}

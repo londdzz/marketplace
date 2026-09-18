@@ -2,13 +2,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { authApi } from '../../api/auth';
 import { ApiError } from '../../api/client';
 import { useAuth } from '../../auth/AuthProvider';
-import { Button, Input, Text, ToggleRow } from '../../components';
+import { Button, Input, StackHeader, Text, ToggleRow } from '../../components';
+import { useBottomInset } from '../../hooks/useBottomInset';
 import { useTheme } from '../../theme';
 
 /**
@@ -19,6 +20,7 @@ import { useTheme } from '../../theme';
  */
 export default function ProfileEditScreen() {
   const theme = useTheme();
+  const bottomInset = useBottomInset();
   const router = useRouter();
   const { t } = useTranslation(['profile', 'common']);
   const { user, apply } = useAuth();
@@ -62,23 +64,18 @@ export default function ProfileEditScreen() {
   };
 
   return (
-    <SafeAreaView style={[styles.flex, { backgroundColor: theme.colors.background }]}>
-      <View
-        style={[
-          styles.header,
-          { paddingHorizontal: theme.screenPadding, paddingVertical: theme.spacing.md, gap: theme.spacing.md },
-        ]}
+    <SafeAreaView
+      edges={['top']}
+      style={[styles.flex, { backgroundColor: theme.colors.background }]}
+    >
+      <StackHeader fallback="/(tabs)/profile" backTestID="edit-back" backLabel={t('common:back')} />
+
+      <Text
+        variant="title"
+        style={{ paddingHorizontal: theme.screenPadding, paddingBottom: theme.spacing.md }}
       >
-        <Pressable
-          accessibilityRole="button"
-          onPress={() => (router.canGoBack() ? router.back() : router.replace('/(tabs)/profile'))}
-          hitSlop={8}
-          testID="edit-back"
-        >
-          <Ionicons name="chevron-back" size={26} color={theme.colors.text} />
-        </Pressable>
-        <Text variant="title">{t('profile:details')}</Text>
-      </View>
+        {t('profile:details')}
+      </Text>
 
       <ScrollView
         contentContainerStyle={{ paddingHorizontal: theme.screenPadding, paddingTop: theme.spacing.md }}
@@ -151,7 +148,7 @@ export default function ProfileEditScreen() {
           {
             paddingHorizontal: theme.screenPadding,
             paddingTop: theme.spacing.md,
-            paddingBottom: Platform.OS === 'ios' ? theme.spacing.sm : theme.spacing.lg,
+            paddingBottom: bottomInset,
             borderTopColor: theme.colors.border,
             backgroundColor: theme.colors.surface,
           },
@@ -174,10 +171,6 @@ export default function ProfileEditScreen() {
 const styles = StyleSheet.create({
   flex: {
     flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
   },
   footer: {
     borderTopWidth: 1,

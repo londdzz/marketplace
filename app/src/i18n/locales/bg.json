@@ -322,7 +322,8 @@
     "summary_photos": "Снимки",
     "summary_location": "Локация",
     "summary_description": "Описание",
-    "summary_features": "Оборудване"
+    "summary_features": "Оборудване",
+    "price_hint_eur_only": "В евро. Това виждат и купувачите."
   },
   "messages": {
     "title": "Съобщения",

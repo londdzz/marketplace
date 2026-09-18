@@ -7,7 +7,7 @@ import { ActivityIndicator, Pressable, ScrollView, StyleSheet, useWindowDimensio
 import { listingsApi } from '../../api/listings';
 import { referenceApi } from '../../api/reference';
 import type { Listing } from '../../api/types';
-import { AppHeader, ListingCard, PromoBanner, Screen, SearchBar, Text } from '../../components';
+import { ListingCard, PromoBanner, Screen, SearchBar, TabHeader, Text } from '../../components';
 import { useExchangeRates } from '../../hooks/useExchangeRates';
 import { useListingCardMapper } from '../../hooks/useListingCard';
 import { useListingSearch } from '../../hooks/useListingSearch';
@@ -52,12 +52,9 @@ export default function HomeTab() {
 
   return (
     <Screen flush edges={['top']}>
-      {/* No badges until something real drives them: the unread count arrives
-          with messaging, and a dot that is always on says nothing. */}
-      <AppHeader
-        onAccount={() => router.push('/(tabs)/profile')}
-        onMessages={() => router.push('/(tabs)/messages')}
-      />
+      {/* No badges until something real drives them: a dot that is always on
+          says nothing. */}
+      <TabHeader />
 
       <ScrollView
         contentContainerStyle={{

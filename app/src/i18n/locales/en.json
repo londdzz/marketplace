@@ -322,7 +322,8 @@
     "summary_photos": "Photos",
     "summary_location": "Location",
     "summary_description": "Description",
-    "summary_features": "Features"
+    "summary_features": "Features",
+    "price_hint_eur_only": "In euro. That is what buyers see."
   },
   "messages": {
     "title": "Messages",

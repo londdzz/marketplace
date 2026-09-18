@@ -19,9 +19,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { blocksApi } from '../../api/blocks';
 import { messagingApi } from '../../api/messaging';
 import type { Message } from '../../api/types';
-import { Button, ConfirmDialog, Text } from '../../components';
+import { Button, ConfirmDialog, Text, Wordmark } from '../../components';
 import { formatEur, listingTitle } from '../../format';
 import { dayLabel, messageTime } from '../../messaging/time';
+import { useBottomInset } from '../../hooks/useBottomInset';
 import { useTheme } from '../../theme';
 
 /** How often an open thread asks for anything new. */
@@ -29,6 +30,7 @@ const POLL_MS = 5000;
 
 export default function ConversationScreen() {
   const theme = useTheme();
+  const bottomInset = useBottomInset();
   const router = useRouter();
   const queryClient = useQueryClient();
   const { t } = useTranslation(['messages', 'common']);
@@ -172,7 +174,10 @@ export default function ConversationScreen() {
     thread?.counterpart?.dealer_name ?? thread?.counterpart?.display_name ?? t('messages:someone');
 
   return (
-    <SafeAreaView style={[styles.flex, { backgroundColor: theme.colors.background }]}>
+    <SafeAreaView
+      edges={['top']}
+      style={[styles.flex, { backgroundColor: theme.colors.background }]}
+    >
       <View
         style={[
           styles.header,
@@ -188,6 +193,10 @@ export default function ConversationScreen() {
         <Pressable accessibilityRole="button" onPress={() => router.back()} testID="thread-back" hitSlop={8}>
           <Ionicons name="chevron-back" size={22} color={theme.colors.text} />
         </Pressable>
+
+        {/* The middle of this bar is who the thread is with, so the mark
+            stands beside the back arrow without the word. */}
+        <Wordmark size={20} markOnly />
 
         <Pressable
           accessibilityRole="button"
@@ -313,7 +322,7 @@ export default function ConversationScreen() {
             {
               paddingHorizontal: theme.screenPadding,
               paddingTop: theme.spacing.sm,
-              paddingBottom: theme.spacing.sm,
+              paddingBottom: bottomInset,
               gap: theme.spacing.sm,
               borderTopColor: theme.colors.border,
               backgroundColor: theme.colors.surface,

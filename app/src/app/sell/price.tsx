@@ -62,7 +62,9 @@ export default function SellPriceScreen() {
     <SellStep
       screen="price"
       title={t('sell:price')}
-      hint={t('sell:price_hint')}
+      // The other hint promises a local-currency figure, which only appears
+      // once a market that does not use the euro is open.
+      hint={SHOW_LOCAL_CURRENCY ? t('sell:price_hint') : t('sell:price_hint_eur_only')}
       canContinue={valid}
       onContinue={() => void onContinue()}
     >

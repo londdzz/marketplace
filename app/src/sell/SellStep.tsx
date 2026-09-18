@@ -2,11 +2,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 
-import { Button, Text } from '../components';
+import { Button, Text, Wordmark } from '../components';
+import { useBottomInset } from '../hooks/useBottomInset';
 import { useTheme } from '../theme';
 import { useSell } from './SellProvider';
 import { progressOf, stepOf, TOTAL_STEPS, type SellScreen } from './steps';
@@ -50,6 +51,7 @@ export function SellStep({
   footerNote,
 }: SellStepProps) {
   const theme = useTheme();
+  const bottomInset = useBottomInset();
   const router = useRouter();
   const { t } = useTranslation(['sell', 'common']);
   const { saving, error } = useSell();
@@ -59,7 +61,10 @@ export function SellStep({
   );
 
   return (
-    <SafeAreaView style={[styles.flex, { backgroundColor: theme.colors.background }]}>
+    <SafeAreaView
+      edges={['top']}
+      style={[styles.flex, { backgroundColor: theme.colors.background }]}
+    >
       <StatusBar style={theme.isDark ? 'light' : 'dark'} />
 
       <View
@@ -68,15 +73,21 @@ export function SellStep({
           { paddingHorizontal: theme.screenPadding, paddingVertical: theme.spacing.sm },
         ]}
       >
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={t('common:back')}
-          onPress={() => (router.canGoBack() ? router.back() : router.replace('/(tabs)/sell'))}
-          testID="sell-back"
-          hitSlop={8}
-        >
-          <Ionicons name="chevron-back" size={22} color={theme.colors.text} />
-        </Pressable>
+        <View style={styles.lockup}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t('common:back')}
+            onPress={() => (router.canGoBack() ? router.back() : router.replace('/(tabs)/sell'))}
+            testID="sell-back"
+            hitSlop={8}
+          >
+            <Ionicons name="chevron-back" size={22} color={theme.colors.text} />
+          </Pressable>
+
+          {/* The middle of this bar is how far through the seller is, so the
+              mark stands beside the back arrow without the word. */}
+          <Wordmark size={20} markOnly />
+        </View>
 
         <View
           style={{
@@ -152,7 +163,7 @@ export function SellStep({
           {
             paddingHorizontal: theme.screenPadding,
             paddingTop: theme.spacing.lg,
-            paddingBottom: Platform.OS === 'ios' ? theme.spacing.sm : theme.spacing.lg,
+            paddingBottom: bottomInset,
             borderTopColor: theme.colors.border,
             backgroundColor: theme.colors.surface,
           },
@@ -195,6 +206,11 @@ export function SellStep({
 }
 
 const styles = StyleSheet.create({
+  lockup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
   flex: {
     flex: 1,
   },

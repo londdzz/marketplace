@@ -5,7 +5,7 @@ import { ActivityIndicator, FlatList, useWindowDimensions } from 'react-native';
 
 import { listingsApi } from '../../api/listings';
 import { referenceApi } from '../../api/reference';
-import { EmptyState, ListingCard, Screen, Text } from '../../components';
+import { EmptyState, ListingCard, Screen, TabHeader, Text } from '../../components';
 import { useExchangeRates } from '../../hooks/useExchangeRates';
 import { useListingCardMapper } from '../../hooks/useListingCard';
 import { useTheme } from '../../theme';
@@ -34,6 +34,8 @@ export default function SavedTab() {
 
   return (
     <Screen flush edges={['top']}>
+      <TabHeader />
+
       <Text
         variant="title"
         style={{

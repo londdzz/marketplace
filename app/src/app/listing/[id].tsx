@@ -20,14 +20,16 @@ import { listingsApi } from '../../api/listings';
 import { messagingApi } from '../../api/messaging';
 import { referenceApi } from '../../api/reference';
 import { ApiError } from '../../api/client';
-import { Button, Chip, ConfirmDialog, EmptyState, Screen, Text } from '../../components';
+import { Button, Chip, ConfirmDialog, EmptyState, Screen, StackHeader, Text } from '../../components';
 import { formatEur, formatKm, formatLocal, listingLocation, listingTitle } from '../../format';
+import { useBottomInset } from '../../hooks/useBottomInset';
 import { useExchangeRates } from '../../hooks/useExchangeRates';
 import { SHOW_LOCAL_CURRENCY } from '../../market';
 import { useTheme } from '../../theme';
 
 export default function ListingDetail() {
   const theme = useTheme();
+  const bottomInset = useBottomInset();
   const router = useRouter();
   const { width } = useWindowDimensions();
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -138,47 +140,38 @@ export default function ListingDetail() {
     <Screen flush scroll={false} edges={['top']}>
       <Stack.Screen options={{ headerShown: false }} />
 
-      <View
-        style={[
-          styles.topBar,
-          {
-            paddingHorizontal: theme.screenPadding,
-            paddingVertical: theme.spacing.sm,
-            gap: theme.spacing.md,
-            borderBottomColor: theme.colors.border,
-          },
-        ]}
-      >
-        <Pressable accessibilityRole="button" onPress={() => router.back()} testID="detail-back">
-          <Ionicons name="chevron-back" size={22} color={theme.colors.text} />
-        </Pressable>
+      {/* The car's name was in this bar and again at the top of the page, so
+          the bar carries the mark instead and loses nothing. */}
+      <StackHeader
+        fallback="/(tabs)/home"
+        backTestID="detail-back"
+        backLabel={t('common:back')}
+        actions={
+          <>
+            <Pressable
+              accessibilityRole="button"
+              testID="share-listing"
+              onPress={() => {
+                void Share.share({ message: `${listingTitle(car)} — ${formatEur(car.price_eur)}` });
+              }}
+            >
+              <Ionicons name="share-outline" size={21} color={theme.colors.text} />
+            </Pressable>
 
-        <Text variant="bodyStrong" numberOfLines={1} style={{ flex: 1, textAlign: 'center' }}>
-          {listingTitle(car)}
-        </Text>
-
-        <Pressable
-          accessibilityRole="button"
-          testID="share-listing"
-          onPress={() => {
-            void Share.share({ message: `${listingTitle(car)} — ${formatEur(car.price_eur)}` });
-          }}
-        >
-          <Ionicons name="share-outline" size={21} color={theme.colors.text} />
-        </Pressable>
-
-        <Pressable
-          accessibilityRole="button"
-          testID="favorite-toggle"
-          onPress={() => save.mutate()}
-        >
-          <Ionicons
-            name={favorited ? 'heart' : 'heart-outline'}
-            size={21}
-            color={favorited ? theme.colors.danger : theme.colors.text}
-          />
-        </Pressable>
-      </View>
+            <Pressable
+              accessibilityRole="button"
+              testID="favorite-toggle"
+              onPress={() => save.mutate()}
+            >
+              <Ionicons
+                name={favorited ? 'heart' : 'heart-outline'}
+                size={21}
+                color={favorited ? theme.colors.danger : theme.colors.text}
+              />
+            </Pressable>
+          </>
+        }
+      />
 
       <ScrollView contentContainerStyle={{ paddingBottom: 120 }} showsVerticalScrollIndicator={false}>
         <View>
@@ -368,7 +361,7 @@ export default function ListingDetail() {
           styles.actions,
           {
             padding: theme.screenPadding,
-            paddingBottom: theme.spacing.xxl,
+            paddingBottom: bottomInset,
             backgroundColor: theme.colors.surface,
             borderTopColor: theme.colors.border,
             gap: theme.spacing.md,

@@ -8,7 +8,7 @@ import { ActivityIndicator, Pressable, ScrollView, View } from 'react-native';
 import { listingsApi } from '../../api/listings';
 import { referenceApi } from '../../api/reference';
 import type { SavedSearch } from '../../api/types';
-import { ConfirmDialog, EmptyState, ListGroup, Screen, Text } from '../../components';
+import { ConfirmDialog, EmptyState, ListGroup, Screen, TabHeader, Text } from '../../components';
 import { formatEur, formatKm } from '../../format';
 import { useFilters } from '../../search/FiltersProvider';
 import { useTheme } from '../../theme';
@@ -101,6 +101,8 @@ export default function MySearchesTab() {
 
   return (
     <Screen flush edges={['top']}>
+      <TabHeader />
+
       <Text
         variant="title"
         style={{ paddingHorizontal: theme.screenPadding, paddingVertical: theme.spacing.md }}

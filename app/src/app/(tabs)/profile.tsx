@@ -9,7 +9,7 @@ import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { authApi } from '../../api/auth';
 import { referenceApi } from '../../api/reference';
 import { useAuth } from '../../auth/AuthProvider';
-import { Button, ListGroup, Screen, SettingRow, Text } from '../../components';
+import { Button, ListGroup, Screen, SettingRow, StackHeader, Text } from '../../components';
 import i18n, { LANGUAGE_NAMES, SUPPORTED_LANGUAGES, type Language } from '../../i18n';
 import { CreditsSheet } from '../../sell/CreditsSheet';
 import { useCredits } from '../../sell/credits';
@@ -54,17 +54,14 @@ export default function ProfileTab() {
 
   return (
     <Screen flush edges={['top']}>
-      <View style={[styles.header, { paddingHorizontal: theme.screenPadding, paddingVertical: theme.spacing.md }]}>
-        <Pressable
-          accessibilityRole="button"
-          onPress={() => (router.canGoBack() ? router.back() : router.replace('/(tabs)/home'))}
-          hitSlop={8}
-          testID="profile-back"
-        >
-          <Ionicons name="chevron-back" size={22} color={theme.colors.text} />
-        </Pressable>
-        <Text variant="title">{t('profile:title')}</Text>
-      </View>
+      <StackHeader fallback="/(tabs)/home" backTestID="profile-back" backLabel={t('common:back')} />
+
+      <Text
+        variant="title"
+        style={{ paddingHorizontal: theme.screenPadding, paddingBottom: theme.spacing.md }}
+      >
+        {t('profile:title')}
+      </Text>
 
       <ScrollView
         contentContainerStyle={{
@@ -292,11 +289,6 @@ export default function ProfileTab() {
 }
 
 const styles = StyleSheet.create({
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
   identity: {
     flexDirection: 'row',
     alignItems: 'center',

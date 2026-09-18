@@ -322,7 +322,8 @@
     "summary_photos": "Фотографије",
     "summary_location": "Локација",
     "summary_description": "Опис",
-    "summary_features": "Опрема"
+    "summary_features": "Опрема",
+    "price_hint_eur_only": "У еврима. То виде и купци."
   },
   "messages": {
     "title": "Поруке",

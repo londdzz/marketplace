@@ -47,6 +47,7 @@ export function SearchField({
         <Ionicons name="search" size={18} color={theme.colors.textMuted} />
 
         <TextInput
+          maxFontSizeMultiplier={1.3}
           value={value}
           onChangeText={onChangeText}
           placeholder={placeholder}

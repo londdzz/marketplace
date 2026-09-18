@@ -13,8 +13,20 @@ export type TextProps = RNTextProps & {
 /**
  * Every piece of text goes through here, so no screen picks its own size,
  * weight or colour.
+ *
+ * Text follows the phone's own size setting, but only so far: iOS Dynamic Type
+ * and Android's font scale both reach 2× and beyond, which turns a row with a
+ * fixed height into a row with its label clipped. A third larger is the most
+ * the layouts take, and a caller that can give more room passes its own
+ * multiplier.
  */
-export function Text({ variant = 'body', tone = 'default', style, ...rest }: TextProps) {
+export function Text({
+  variant = 'body',
+  tone = 'default',
+  maxFontSizeMultiplier = 1.3,
+  style,
+  ...rest
+}: TextProps) {
   const theme = useTheme();
 
   const color = {
@@ -27,5 +39,11 @@ export function Text({ variant = 'body', tone = 'default', style, ...rest }: Tex
     success: theme.colors.success,
   }[tone];
 
-  return <RNText style={[theme.typography[variant], { color }, style]} {...rest} />;
+  return (
+    <RNText
+      style={[theme.typography[variant], { color }, style]}
+      maxFontSizeMultiplier={maxFontSizeMultiplier}
+      {...rest}
+    />
+  );
 }

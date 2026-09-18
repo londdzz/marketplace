@@ -10,23 +10,25 @@ export type AppHeaderProps = {
   unreadMessages?: boolean;
   onAccount?: () => void;
   onMessages?: () => void;
-  onNotifications?: () => void;
 };
 
 /**
- * The bar across the top of the home screen.
+ * The bar across the top of every tab.
  *
- * Account on the left, wordmark in the middle, messages and notifications on
- * the right, which is where the reference app keeps them. It also means the
- * profile is two taps from anywhere, and inside it account deletion is the
+ * Account on the left, wordmark in the middle, messages on the right. Every
+ * tab wears it, so the mark is on screen wherever the app is opened and the
+ * profile is two taps from anywhere — inside it account deletion is the
  * second, which is what the App Store asks for.
+ *
+ * There is no bell: saved-search alerts arrive as push notifications and there
+ * is no inbox for them to open, and a bell that does nothing is worse than no
+ * bell at all.
  */
 export function AppHeader({
   accountBadge = false,
   unreadMessages = false,
   onAccount,
   onMessages,
-  onNotifications,
 }: AppHeaderProps) {
   const theme = useTheme();
 
@@ -50,8 +52,10 @@ export function AppHeader({
         </View>
       </Pressable>
 
-      <View style={styles.brand}>
-        <Wordmark size={22} />
+      {/* Positioned rather than laid out, so the mark is in the same place on
+          every screen whatever sits beside it. */}
+      <View style={styles.brand} pointerEvents="none">
+        <Wordmark size={20} />
       </View>
 
       <View style={[styles.actions, { gap: theme.spacing.md }]}>
@@ -64,9 +68,6 @@ export function AppHeader({
           </View>
         </Pressable>
 
-        <Pressable accessibilityRole="button" onPress={onNotifications} testID="header-bell">
-          <Ionicons name="notifications-outline" size={22} color={theme.colors.text} />
-        </Pressable>
       </View>
     </View>
   );
@@ -79,8 +80,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   brand: {
-    flexDirection: 'row',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   actions: {
     flexDirection: 'row',

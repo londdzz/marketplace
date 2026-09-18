@@ -322,7 +322,8 @@
     "summary_photos": "Фотографии",
     "summary_location": "Локација",
     "summary_description": "Опис",
-    "summary_features": "Опрема"
+    "summary_features": "Опрема",
+    "price_hint_eur_only": "Во евра. Тоа го гледаат и купувачите."
   },
   "messages": {
     "title": "Пораки",

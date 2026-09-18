@@ -322,7 +322,8 @@
     "summary_photos": "Fotot",
     "summary_location": "Vendndodhja",
     "summary_description": "Përshkrimi",
-    "summary_features": "Pajisjet"
+    "summary_features": "Pajisjet",
+    "price_hint_eur_only": "Në euro. Këtë shohin edhe blerësit."
   },
   "messages": {
     "title": "Mesazhet",

@@ -7,7 +7,7 @@ import { ActivityIndicator, FlatList, Pressable, StyleSheet, View } from 'react-
 
 import { messagingApi } from '../../api/messaging';
 import type { Conversation } from '../../api/types';
-import { Button, EmptyState, Screen, Text } from '../../components';
+import { Button, EmptyState, Screen, StackHeader, Text } from '../../components';
 import { formatEur, listingTitle } from '../../format';
 import { shortTime } from '../../messaging/time';
 import { useTheme } from '../../theme';
@@ -117,20 +117,18 @@ export default function MessagesTab() {
 
   return (
     <Screen flush edges={['top']}>
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          gap: theme.spacing.md,
-          paddingHorizontal: theme.screenPadding,
-          paddingVertical: theme.spacing.md,
-        }}
+      <StackHeader
+        fallback="/(tabs)/home"
+        backTestID="messages-back"
+        backLabel={t('common:back')}
+      />
+
+      <Text
+        variant="title"
+        style={{ paddingHorizontal: theme.screenPadding, paddingBottom: theme.spacing.md }}
       >
-        <Pressable accessibilityRole="button" onPress={() => (router.canGoBack() ? router.back() : router.replace('/(tabs)/home'))} testID="messages-back" hitSlop={8}>
-          <Ionicons name="chevron-back" size={26} color={theme.colors.text} />
-        </Pressable>
-        <Text variant="title">{t('messages:title')}</Text>
-      </View>
+        {t('messages:title')}
+      </Text>
 
       {conversations.isLoading ? (
         <View style={[styles.centre, { flex: 1 }]}>

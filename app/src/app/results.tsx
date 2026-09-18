@@ -8,9 +8,10 @@ import { ActivityIndicator, FlatList, Linking, Pressable, StyleSheet, useWindowD
 import { listingsApi } from '../api/listings';
 import { referenceApi } from '../api/reference';
 import type { Listing } from '../api/types';
-import { Button, EmptyState, ListingCard, ListingRow, Screen, Text } from '../components';
+import { Button, EmptyState, ListingCard, ListingRow, Screen, StackHeader, Text } from '../components';
 import { formatEur, formatKm, formatLocal, listingLocation, listingTitle } from '../format';
 import { SHOW_LOCAL_CURRENCY } from '../market';
+import { useBottomInset } from '../hooks/useBottomInset';
 import { useExchangeRates } from '../hooks/useExchangeRates';
 import { useListingCardMapper } from '../hooks/useListingCard';
 import { useListingSearch } from '../hooks/useListingSearch';
@@ -21,6 +22,7 @@ const SORTS = ['relevance', 'price_asc', 'price_desc', 'newest', 'mileage_asc'] 
 
 export default function ResultsScreen() {
   const theme = useTheme();
+  const bottomInset = useBottomInset();
   const router = useRouter();
   const queryClient = useQueryClient();
   const { width } = useWindowDimensions();
@@ -88,49 +90,48 @@ export default function ResultsScreen() {
     <Screen flush edges={['top']}>
       <Stack.Screen options={{ headerShown: false }} />
 
+      <StackHeader
+        fallback="/(tabs)/search"
+        backTestID="results-back"
+        backLabel={t('common:back')}
+        actions={
+          <>
+            <Pressable accessibilityRole="button" onPress={cycleSort} testID="results-sort">
+              <Ionicons name="swap-vertical" size={21} color={theme.colors.text} />
+            </Pressable>
+
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => setGrid((value) => !value)}
+              testID="results-layout"
+            >
+              <Ionicons
+                name={grid ? 'list-outline' : 'grid-outline'}
+                size={21}
+                color={theme.colors.text}
+              />
+            </Pressable>
+          </>
+        }
+      />
+
+      {/* The count and the ordering read as one line under the bar, which is
+          where the header's title used to be. */}
       <View
         style={[
-          styles.header,
+          styles.sortLine,
           {
             paddingHorizontal: theme.screenPadding,
-            paddingVertical: theme.spacing.md,
-            borderBottomColor: theme.colors.border,
-            gap: theme.spacing.md,
+            paddingBottom: theme.spacing.sm,
+            gap: theme.spacing.sm,
           },
         ]}
       >
-        <Pressable accessibilityRole="button" onPress={() => router.back()} testID="results-back">
-          <Ionicons name="chevron-back" size={22} color={theme.colors.text} />
-        </Pressable>
-
-        <Text variant="bodyStrong" style={{ flex: 1, textAlign: 'center' }}>
-          {t('search:results_title', { count: total })}
+        <Text variant="bodyStrong">{t('search:results_title', { count: total })}</Text>
+        <Text variant="caption" tone="muted" numberOfLines={1} style={{ flexShrink: 1 }}>
+          {t(`search:sort_${filters.sort ?? 'relevance'}`)}
         </Text>
-
-        <Pressable accessibilityRole="button" onPress={cycleSort} testID="results-sort">
-          <Ionicons name="swap-vertical" size={21} color={theme.colors.text} />
-        </Pressable>
-
-        <Pressable
-          accessibilityRole="button"
-          onPress={() => setGrid((value) => !value)}
-          testID="results-layout"
-        >
-          <Ionicons
-            name={grid ? 'list-outline' : 'grid-outline'}
-            size={21}
-            color={theme.colors.text}
-          />
-        </Pressable>
       </View>
-
-      <Text
-        variant="caption"
-        tone="muted"
-        style={{ paddingHorizontal: theme.screenPadding, paddingTop: theme.spacing.sm }}
-      >
-        {t(`search:sort_${filters.sort ?? 'relevance'}`)}
-      </Text>
 
       {search.isLoading ? (
         <ActivityIndicator color={theme.colors.accent} style={{ marginTop: theme.spacing.xxxl }} />
@@ -217,7 +218,16 @@ export default function ResultsScreen() {
         />
       )}
 
-      <View style={[styles.floating, { bottom: theme.spacing.xxl, left: theme.screenPadding, right: theme.screenPadding }]}>
+      <View
+        style={[
+          styles.floating,
+          {
+            bottom: bottomInset + theme.spacing.sm,
+            left: theme.screenPadding,
+            right: theme.screenPadding,
+          },
+        ]}
+      >
         <Button
           label={t('search:save_search')}
           size="lg"
@@ -234,10 +244,9 @@ export default function ResultsScreen() {
 }
 
 const styles = StyleSheet.create({
-  header: {
+  sortLine: {
     flexDirection: 'row',
-    alignItems: 'center',
-    borderBottomWidth: 1,
+    alignItems: 'baseline',
   },
   floating: {
     position: 'absolute',
