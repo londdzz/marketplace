@@ -414,7 +414,11 @@ release, and update it whenever a placeholder is added or replaced.
   while it is still up, so the app opens finished rather than filling in one panel at a
   time. It is a warm-up, not a gate: anything that fails is left to the screen that needs
   it, and after six seconds the app opens regardless, because a slow connection should
-  mean a screen still loading, never a launch that never ends.
+  mean a screen still loading, never a launch that never ends. The six cards above the
+  fold have their photographs warmed too, since a card's text arrives with the listing
+  but its photograph is a separate request. Nothing else is fetched at launch: the other
+  tabs load when they are opened, each with its own three states, and a launch that
+  fetched everything would make every buyer pay for screens most never open.
 - **`GET /vocabularies`** serves the closed vocabularies (body types, drivetrains,
   colours, feature keys) so the app never keeps its own copy of a list the API
   validates against. Public, like the other reference endpoints.
