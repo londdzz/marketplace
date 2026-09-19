@@ -248,8 +248,14 @@ release, and update it whenever a placeholder is added or replaced.
   only adds rows to a fulltext index when their transaction commits, so a MATCH inside the
   usual test transaction finds nothing the test just inserted.
 - **Featured listings lead every ordering**, including an explicit price sort. That is
-  what being featured buys, and it matches the specified default of featured first, then
-  bumped_at descending.
+  what being featured buys — it is a paid placement, confirmed as such — and it matches
+  the specified default of featured first, then bumped_at descending. One name for it
+  everywhere, `search:top`, on the ribbon at every card size; "special offer" implied a
+  discount, which a promotion is not. **Nothing can be promoted from inside the app yet**:
+  `listings.featured_until` drives the ordering and `CreditReason::Feature` exists, but
+  there is no endpoint, no service method and no screen, so it can only be set by hand.
+  Selling promotion needs a price, a duration, `ListingService::feature()` spending
+  through CreditService, and a way to buy it from My listings.
 - **A saved search is validated by the search rules.** `App\Support\ListingFilterRules`
   is shared between the search endpoint and saved searches, so a saved search can never
   hold a filter that search itself would reject.

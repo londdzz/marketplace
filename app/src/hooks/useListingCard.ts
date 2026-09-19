@@ -14,7 +14,7 @@ export function useListingCardMapper(
   currencyFor: (countryCode: string | null) => string,
   favorites: Set<string> = new Set(),
 ) {
-  const { t } = useTranslation(['home', 'listing']);
+  const { t } = useTranslation(['home', 'listing', 'search']);
 
   return (listing: Listing): ListingCardData => {
     const currency = currencyFor(listing.country_code);
@@ -35,7 +35,7 @@ export function useListingCardMapper(
       photoUrl: listing.photos?.[0]?.thumb_url,
       location: listingLocation(listing),
       featured: listing.is_featured,
-      featuredLabel: listing.is_featured ? t('home:special_offer') : undefined,
+      featuredLabel: listing.is_featured ? t('search:top') : undefined,
       crossBorder: false,
       favorited: favorites.has(listing.id),
     };
