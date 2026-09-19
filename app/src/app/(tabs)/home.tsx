@@ -10,8 +10,14 @@ import type { Listing } from '../../api/types';
 import { ListingCard, PromoBanner, Screen, SearchBar, TabHeader, Text } from '../../components';
 import { useExchangeRates } from '../../hooks/useExchangeRates';
 import { useListingCardMapper } from '../../hooks/useListingCard';
-import { useListingSearch } from '../../hooks/useListingSearch';
+import { useListingPage } from '../../hooks/useListingPage';
 import { useTheme } from '../../theme';
+
+/** The newest cars, which is what the home screen is a window onto. */
+const NEWEST = { sort: 'newest' } as const;
+
+/** Eight on the home screen. The rest are behind Show all. */
+const HOME_CARS = 8;
 
 export default function HomeTab() {
   const theme = useTheme();
@@ -22,7 +28,7 @@ export default function HomeTab() {
 
   // The newest cars across all five markets, which is what a home screen is
   // for: something to look at before anyone has searched for anything.
-  const newest = useListingSearch({ sort: 'newest' });
+  const newest = useListingPage(NEWEST, 1);
   const { byCurrency } = useExchangeRates();
   const countries = useQuery({ queryKey: ['countries'], queryFn: referenceApi.countries });
 
@@ -44,7 +50,7 @@ export default function HomeTab() {
     favoriteIds,
   );
 
-  const listings = (newest.data?.pages[0]?.data ?? []).slice(0, 6);
+  const listings = (newest.data?.data ?? []).slice(0, HOME_CARS);
 
   // Two columns and the gap between them fill the row exactly, on any screen.
   const gap = theme.spacing.md;

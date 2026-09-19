@@ -1,20 +1,29 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Stack, useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, FlatList, Linking, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 
 import { listingsApi } from '../api/listings';
 import { referenceApi } from '../api/reference';
 import type { Listing } from '../api/types';
-import { Button, EmptyState, ListingCard, ListingRow, Screen, StackHeader, Text } from '../components';
+import {
+  Button,
+  EmptyState,
+  ListingCard,
+  ListingRow,
+  Pager,
+  Screen,
+  StackHeader,
+  Text,
+} from '../components';
 import { formatEur, formatKm, formatLocal, listingLocation, listingTitle } from '../format';
 import { SHOW_LOCAL_CURRENCY } from '../market';
 import { useBottomInset } from '../hooks/useBottomInset';
 import { useExchangeRates } from '../hooks/useExchangeRates';
 import { useListingCardMapper } from '../hooks/useListingCard';
-import { useListingSearch } from '../hooks/useListingSearch';
+import { useListingPage } from '../hooks/useListingPage';
 import { useFilters } from '../search/FiltersProvider';
 import { useTheme } from '../theme';
 
@@ -31,8 +40,20 @@ export default function ResultsScreen() {
 
   const [saved, setSaved] = useState(false);
   const [grid, setGrid] = useState(false);
+  const [page, setPage] = useState(1);
+  const list = useRef<FlatList<Listing>>(null);
 
-  const search = useListingSearch(filters);
+  const search = useListingPage(filters, page);
+
+  // A different search is a different set of pages, so it starts at the first.
+  const asked = useRef(filters);
+  if (asked.current !== filters) {
+    asked.current = filters;
+
+    if (page !== 1) {
+      setPage(1);
+    }
+  }
   const { byCurrency } = useExchangeRates();
   const countries = useQuery({ queryKey: ['countries'], queryFn: referenceApi.countries });
   const favorites = useQuery({ queryKey: ['favorites'], queryFn: listingsApi.favorites });
@@ -57,8 +78,16 @@ export default function ResultsScreen() {
     },
   });
 
-  const listings = search.data?.pages.flatMap((page) => page.data) ?? [];
-  const total = search.data?.pages[0]?.meta.total ?? 0;
+  const listings = search.data?.data ?? [];
+  const lastPage = search.data?.meta.last_page ?? 1;
+
+  /** A new page starts at the top of itself, not wherever the last one ended. */
+  const turnTo = (next: number) => {
+    setPage(next);
+    list.current?.scrollToOffset({ offset: 0, animated: false });
+  };
+
+  const total = search.data?.meta.total ?? 0;
 
   const currencyFor = (code: string | null) =>
     countries.data?.find((country) => country.code === code)?.currency ?? 'EUR';
@@ -137,6 +166,7 @@ export default function ResultsScreen() {
         <ActivityIndicator color={theme.colors.accent} style={{ marginTop: theme.spacing.xxxl }} />
       ) : (
         <FlatList
+          ref={list}
           data={listings}
           key={grid ? 'grid' : 'rows'}
           keyExtractor={(listing) => listing.id}
@@ -148,12 +178,6 @@ export default function ResultsScreen() {
             gap: grid ? theme.spacing.xl : theme.spacing.lg,
           }}
           showsVerticalScrollIndicator={false}
-          onEndReachedThreshold={0.6}
-          onEndReached={() => {
-            if (search.hasNextPage && !search.isFetchingNextPage) {
-              void search.fetchNextPage();
-            }
-          }}
           ListEmptyComponent={
             <EmptyState
               glyph="🔍"
@@ -162,9 +186,15 @@ export default function ResultsScreen() {
             />
           }
           ListFooterComponent={
-            search.isFetchingNextPage ? (
-              <ActivityIndicator color={theme.colors.accent} style={{ marginVertical: theme.spacing.lg }} />
-            ) : null
+            <Pager
+              page={page}
+              lastPage={lastPage}
+              label={t('search:page_of', { page, total: lastPage })}
+              previousLabel={t('search:previous')}
+              nextLabel={t('search:next')}
+              busy={search.isFetching}
+              onChange={turnTo}
+            />
           }
           renderItem={({ item }) => {
             const currency = currencyFor(item.country_code);

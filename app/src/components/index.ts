@@ -13,6 +13,7 @@ export { ListingCard, type ListingCardData, type ListingCardProps } from './List
 export { ListingRow, type ListingRowData, type ListingRowProps } from './ListingRow';
 export { MakeTile, type MakeTileProps } from './MakeTile';
 export { OptionRow, type OptionRowProps } from './OptionRow';
+export { Pager, type PagerProps } from './Pager';
 export { PromoBanner, type PromoBannerProps } from './PromoBanner';
 export { Screen, type ScreenProps } from './Screen';
 export { SearchBar, type SearchBarProps } from './SearchBar';

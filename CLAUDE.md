@@ -402,6 +402,13 @@ release, and update it whenever a placeholder is added or replaced.
   the listing on the first step and updates it on every one after, so closing the app
   halfway leaves a draft on the server rather than losing the work. Resuming jumps to
   the first thing still missing, not back to the beginning.
+- **Results are paged, not endless.** A buyer comparing cars needs to know where they
+  are and be able to get back to it, and an endless list gives them neither. `Pager`
+  sits under the list — Back, "Page 2 of 5", Next — both in the quiet fill, because the
+  screen's one filled button is Save search. Turning a page scrolls to the top of it,
+  `keepPreviousData` holds the current page on screen while the next is fetched so the
+  list never empties, and changing the filters resets to page one. The home screen shows
+  the eight newest and sends the rest to Show all.
 - **Saved searches are a real tab.** `GET /saved-searches` fills it; tapping one puts its
   filters back into the search the whole app shares and opens the results, so it runs
   exactly as it did the day it was saved. There is no endpoint for editing one, so nothing

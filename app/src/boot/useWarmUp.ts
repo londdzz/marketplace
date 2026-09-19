@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { listingsApi } from '../api/listings';
 import { referenceApi } from '../api/reference';
 import type { ListingPage } from '../api/types';
+import { listingPageKey } from '../hooks/useListingPage';
 
 /** How long the launch waits before showing the app half-filled anyway. */
 const PATIENCE_MS = 6000;
@@ -13,7 +14,10 @@ const PATIENCE_MS = 6000;
 const REFERENCE_STALE_MS = 60 * 60 * 1000;
 
 /** How many of the home screen's cars are on screen before a scroll. */
-const CARS_ABOVE_THE_FOLD = 6;
+const CARS_ABOVE_THE_FOLD = 8;
+
+/** The home screen's own query, warmed under the key that screen reads. */
+const NEWEST = { sort: 'newest' } as const;
 
 /**
  * Fetches what the first screens need before they are shown.
@@ -69,10 +73,9 @@ export function useWarmUp(waitFor: boolean, signedIn: boolean): boolean {
     // The home screen's own two requests, so it opens with cars on it.
     const mine = signedIn
       ? [
-          queryClient.prefetchInfiniteQuery({
-            queryKey: ['listings', { sort: 'newest' }],
-            queryFn: () => listingsApi.search({ sort: 'newest' }, 1),
-            initialPageParam: 1,
+          queryClient.prefetchQuery({
+            queryKey: listingPageKey(NEWEST, 1),
+            queryFn: () => listingsApi.search(NEWEST, 1),
           }),
           queryClient.prefetchQuery({
             queryKey: ['favorites'],
@@ -90,12 +93,9 @@ export function useWarmUp(waitFor: boolean, signedIn: boolean): boolean {
         return;
       }
 
-      const cached = queryClient.getQueryData<{ pages: ListingPage[] }>([
-        'listings',
-        { sort: 'newest' },
-      ]);
+      const cached = queryClient.getQueryData<ListingPage>(listingPageKey(NEWEST, 1));
 
-      const urls = (cached?.pages[0]?.data ?? [])
+      const urls = (cached?.data ?? [])
         .slice(0, CARS_ABOVE_THE_FOLD)
         .map((listing) => listing.photos?.[0]?.thumb_url)
         .filter((url): url is string => Boolean(url));
