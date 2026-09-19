@@ -2,10 +2,14 @@
 /**
  * Draw the app's icons and splash mark from the Autevo identity.
  *
- * The mark is two mirrored chevrons woven into an A and a V: petrol in front,
- * azure behind. It needs no font to render, and the single-colour variants are
- * the same paths with one stroke dropped, which is what the brand asks for
- * below twenty pixels.
+ * The mark is a leaning A with three motion wedges running into it. The letter
+ * is drawn pre-skewed, so nothing here transforms it, and it needs no font to
+ * render. The single-colour variants are the letter alone, which is what the
+ * brand asks for wherever the platform flattens colour: Android's themed icon
+ * and its notification icon.
+ *
+ * The paths are the same ones `src/components/Wordmark.tsx` draws. Change one
+ * and change the other.
  *
  * Usage, from /app:  node scripts/make-brand-assets.js
  */
@@ -16,19 +20,30 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE ?? 'playwright-core')
 const OUT = path.join(__dirname, '..', 'assets');
 
 const PETROL = '#0E2E2A';
-const AZURE = '#1E6FD9';
 const AZURE_LIGHT = '#4D94F0';
 const PAPER = '#F7F6F3';
 
+const WEDGES = [
+  'M10.0 36 H51.3 L43.1 50 H7.8 Z',
+  'M6.5 58 H53.4 L43.9 74 H4.0 Z',
+  'M3.1 80 H25.4 L18.3 92 H1.2 Z',
+];
+
+const LETTER =
+  'M74.05 6 L92.05 6 L116.11 94 L93.11 94 L88.28 74 ' +
+  'L56.28 74 L45.11 94 L22.11 94 Z ' +
+  'M79.25 30 L65.81 58 L83.81 58 Z';
+
 /**
- * @param up    the A, in front
- * @param down  the V, behind — null draws the single-colour mark
+ * @param letter  the A
+ * @param wedge   the three wedges — null draws the letter alone, for the
+ *                platforms that strip colour
  */
-function mark(up, down) {
+function mark(letter, wedge) {
   return `
-    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
-      ${down ? `<path d="M14 36 L50 92 L86 36" fill="none" stroke="${down}" stroke-width="15" stroke-linejoin="miter"/>` : ''}
-      <path d="M14 64 L50 8 L86 64" fill="none" stroke="${up}" stroke-width="15" stroke-linejoin="miter"/>
+    <svg viewBox="-6 -8 132 110" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+      ${wedge ? `<g fill="${wedge}">${WEDGES.map((d) => `<path d="${d}"/>`).join('')}</g>` : ''}
+      <path d="${LETTER}" fill="${letter}" fill-rule="evenodd"/>
     </svg>`;
 }
 
@@ -36,56 +51,59 @@ function page(inner, size, background = 'transparent') {
   return `<html><body style="margin:0;width:${size}px;height:${size}px;background:${background};display:flex;align-items:center;justify-content:center;overflow:hidden">${inner}</body></html>`;
 }
 
-/** A square of the mark at a share of the canvas. */
+/** The mark at a share of the canvas, keeping its 1.2 : 1 ratio. */
 function centred(svg, size, share) {
-  const box = Math.round(size * share);
+  const width = Math.round(size * share);
 
-  return `<div style="width:${box}px;height:${box}px">${svg}</div>`;
+  return `<div style="width:${width}px;height:${Math.round(width / 1.2)}px">${svg}</div>`;
 }
 
 const FILES = [
   {
-    // The store icon: a light tile, petrol A in front, azure V behind. The
-    // rounded corners are Apple's job on iOS and the mask's on Android.
+    // The store icon: a petrol tile, paper letter, azure wedges. The rounded
+    // corners are Apple's job on iOS and the mask's on Android.
     name: 'icon.png',
     size: 1024,
-    background: PAPER,
-    inner: (size) => centred(mark(PETROL, AZURE), size, 0.66),
+    background: PETROL,
+    inner: (size) => centred(mark(PAPER, AZURE_LIGHT), size, 0.66),
   },
   {
+    // Android crops this to a circle or a squircle depending on the phone, so
+    // the mark keeps well inside the central two thirds.
     name: 'android-icon-foreground.png',
-    size: 1024,
-    inner: (size) => centred(mark(PETROL, AZURE), size, 0.44),
-  },
-  {
-    name: 'android-icon-background.png',
-    size: 1024,
-    background: PAPER,
-    inner: () => '',
-  },
-  {
-    // Themed icons are one flat shape, so the weave is dropped.
-    name: 'android-icon-monochrome.png',
-    size: 1024,
-    inner: (size) => centred(mark('#000000', null), size, 0.44),
-  },
-  {
-    // The splash sits on petrol, so the mark is reversed.
-    name: 'splash-icon.png',
     size: 1024,
     inner: (size) => centred(mark(PAPER, AZURE_LIGHT), size, 0.5),
   },
   {
-    // Android's status bar: a white silhouette, nothing else.
+    name: 'android-icon-background.png',
+    size: 1024,
+    background: PETROL,
+    inner: () => '',
+  },
+  {
+    // Themed icons are recoloured to one flat shape, so the wedges are dropped
+    // and the letter stands alone.
+    name: 'android-icon-monochrome.png',
+    size: 1024,
+    inner: (size) => centred(mark('#000000', null), size, 0.5),
+  },
+  {
+    // The splash sits on the app's own ground, so the mark is reversed.
+    name: 'splash-icon.png',
+    size: 1024,
+    inner: (size) => centred(mark(PAPER, AZURE_LIGHT), size, 0.55),
+  },
+  {
+    // Android's status bar keeps the silhouette and throws the colour away.
     name: 'notification-icon.png',
     size: 192,
-    inner: (size) => centred(mark('#FFFFFF', null), size, 0.62),
+    inner: (size) => centred(mark('#FFFFFF', null), size, 0.68),
   },
   {
     name: 'favicon.png',
     size: 96,
-    background: PAPER,
-    inner: (size) => centred(mark(PETROL, AZURE), size, 0.66),
+    background: PETROL,
+    inner: (size) => centred(mark(PAPER, AZURE_LIGHT), size, 0.7),
   },
 ];
 

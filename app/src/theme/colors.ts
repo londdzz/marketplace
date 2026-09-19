@@ -1,4 +1,4 @@
-import { amber, azure, green, neutral, paper, petrol, red } from './palette';
+import { amber, azure, azureOnDark, green, neutral, paper, petrol, red } from './palette';
 
 /**
  * Every colour a screen is allowed to use, named by what it is for rather than
@@ -105,7 +105,7 @@ export const darkColors: ThemeColors = {
   // On a light azure, a near-black petrol is what stays readable.
   textOnAccent: '#08131B',
 
-  accent: '#4D94F0',
+  accent: azureOnDark,
   accentPressed: azure[400],
   accentMuted: 'rgba(77, 148, 240, 0.16)',
   accentBorder: 'rgba(77, 148, 240, 0.36)',

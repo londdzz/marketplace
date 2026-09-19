@@ -303,8 +303,12 @@ release, and update it whenever a placeholder is added or replaced.
   small thumbnail on the left rather than a full-width photo. The banner carries a deep
   brand blue in both schemes, because a full-width block of the light accent is glaring
   against a near-black page.
-- **The identity is Autevo: petrol and azure, Sora, dark only.** The mark is two
-  mirrored chevrons woven into an A and a V. Petrol `#0E2E2A` carries every surface;
+- **The identity is Autevo: petrol and azure, Sora, dark only.** The mark is a leaning
+  A with three azure motion wedges running into it, drawn by a designer and handed over
+  as flattened paths — the letter already carries its nine degrees, so nothing
+  transforms it. The wedges thin out as it shrinks: all three at 32 and above, two from
+  20, the letter alone below that. `Wordmark.tsx` exports the paths, and the icon
+  generator and the Play feature graphic draw the same ones. Petrol `#0E2E2A` carries every surface;
   azure `#1E6FD9` is the only action colour, so anything azure has to be tappable.
   Cards are flat with a one-pixel border — there are exactly two elevations, flat and
   the sheet shadow. Radii are 6 for chips and inputs, 10 for buttons, 16 for cards.
@@ -363,9 +367,12 @@ release, and update it whenever a placeholder is added or replaced.
   `app/scripts/store-screenshots.js`, at both store sizes and in both languages. They are never
   mock-ups, so a screenshot that looks wrong is a bug: the first run of it caught euro prices
   still carrying a denar line in the results list.
-- **The icon set is generated** by `app/scripts/make-brand-assets.js`: one chevron mark drawn as
-  SVG, rendered to the icon, the Android adaptive and monochrome layers, the splash and the
-  notification silhouette. No font has to be installed for it to build.
+- **The icon set is generated** by `app/scripts/make-brand-assets.js`: the mark drawn as SVG,
+  rendered to the icon, the Android adaptive and monochrome layers, the splash and the
+  notification silhouette. No font has to be installed for it to build. The tile is petrol,
+  not paper, so the Android background layer and `adaptiveIcon.backgroundColor` follow it.
+  Where a platform strips colour — Android's themed icon, its notification icon — the wedges
+  are dropped and the letter stands alone.
 - **Blocking hides, it never deletes.** `user_blocks` is one row per direction, and everything
   asks `BlockService::eitherWay()`: search, the listing policy, the conversation policy, the
   conversations list, saved cars and the saved-search job. Unblocking gives all of it back,

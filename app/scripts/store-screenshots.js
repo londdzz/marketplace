@@ -99,17 +99,29 @@ async function capture(browser, device, language) {
 async function featureGraphic(browser) {
   const page = await browser.newPage({ viewport: { width: 1024, height: 500 }, deviceScaleFactor: 1 });
 
+  // The same paths the app and the icon generator draw, on the brand's own
+  // petrol rather than a gradient that belongs to nothing.
+  const WEDGES = [
+    'M10.0 36 H51.3 L43.1 50 H7.8 Z',
+    'M6.5 58 H53.4 L43.9 74 H4.0 Z',
+    'M3.1 80 H25.4 L18.3 92 H1.2 Z',
+  ];
+  const LETTER =
+    'M74.05 6 L92.05 6 L116.11 94 L93.11 94 L88.28 74 ' +
+    'L56.28 74 L45.11 94 L22.11 94 Z ' +
+    'M79.25 30 L65.81 58 L83.81 58 Z';
+
   await page.setContent(`
-    <html><body style="margin:0;width:1024px;height:500px;background:linear-gradient(140deg,#1E4FD8 0%,#152B66 100%);
-      display:flex;align-items:center;justify-content:center;gap:28px;
+    <html><body style="margin:0;width:1024px;height:500px;background:#0E2E2A;
+      display:flex;align-items:center;justify-content:center;gap:34px;
       font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif">
-      <svg width="132" height="132" viewBox="0 0 1024 1024" fill="none">
-        <path d="M318 360 L512 700 L706 360" stroke="#FFFFFF" stroke-width="132"
-              stroke-linecap="round" stroke-linejoin="round"/>
+      <svg width="158" height="132" viewBox="-6 -8 132 110">
+        <g fill="#4D94F0">${WEDGES.map((d) => `<path d="${d}"/>`).join('')}</g>
+        <path d="${LETTER}" fill="#F7F6F3" fill-rule="evenodd"/>
       </svg>
       <div>
-        <div style="color:#fff;font-size:84px;font-weight:700;letter-spacing:-3px">Autevo</div>
-        <div style="color:#D6E3FF;font-size:30px;margin-top:6px">Половни автомобили · Used cars</div>
+        <div style="color:#F7F6F3;font-size:84px;font-weight:700;letter-spacing:-3px">Autevo</div>
+        <div style="color:#93A5A2;font-size:30px;margin-top:6px">Половни автомобили · Used cars</div>
       </div>
     </body></html>`);
 

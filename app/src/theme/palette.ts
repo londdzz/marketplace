@@ -20,6 +20,13 @@ export const azure = {
   700: '#1A5FBA',
 } as const;
 
+/**
+ * Azure as it reads on a dark ground: the accent on every screen, and the
+ * mark's wedges there too. Lighter than azure 600, which is the pairing for a
+ * light surface.
+ */
+export const azureOnDark = '#4D94F0';
+
 /** The light tile the mark sits on, in the icon and on the splash. */
 export const paper = '#F7F6F3';
 

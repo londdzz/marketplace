@@ -1,8 +1,8 @@
 import { Platform, StyleSheet, View } from 'react-native';
-import Svg, { Path } from 'react-native-svg';
+import Svg, { G, Path } from 'react-native-svg';
 
 import { useTheme } from '../theme';
-import { azure, paper, petrol } from '../theme/palette';
+import { azure, azureOnDark, paper, petrol } from '../theme/palette';
 import { Text } from './Text';
 
 export type WordmarkProps = {
@@ -14,28 +14,67 @@ export type WordmarkProps = {
   reversed?: boolean;
 };
 
+/** The mark's box. The letter is drawn pre-skewed, so nothing transforms it. */
+export const MARK_VIEW_BOX = '-6 -8 132 110';
+
+/** Width is height times this. The mark is wider than it is tall. */
+export const MARK_ASPECT = 1.2;
+
 /**
- * The Autevo mark: two mirrored chevrons woven into an A and a V, because a
- * marketplace is two sides facing each other.
+ * Three motion wedges, longest at the top, reading left into the letter. Their
+ * uneven lengths come from the letterform, so they are never evened up and a
+ * fourth is never added.
+ */
+export const MARK_WEDGES = [
+  'M10.0 36 H51.3 L43.1 50 H7.8 Z',
+  'M6.5 58 H53.4 L43.9 74 H4.0 Z',
+  'M3.1 80 H25.4 L18.3 92 H1.2 Z',
+] as const;
+
+/** The leaning A, already carrying its nine degrees. Needs `evenodd` to hollow the counter. */
+export const MARK_LETTER =
+  'M74.05 6 L92.05 6 L116.11 94 L93.11 94 L88.28 74 ' +
+  'L56.28 74 L45.11 94 L22.11 94 Z ' +
+  'M79.25 30 L65.81 58 L83.81 58 Z';
+
+/**
+ * How much of the mark survives at a given height.
  *
- * Below twenty pixels the weave muddies, so the azure stroke is dropped and the
- * mark is drawn in one colour.
+ * The wedges are the first thing to muddy as the mark shrinks, so they are
+ * dropped in order rather than all at once: three above thirty-two, two from
+ * twenty, and below that the letter stands alone.
+ */
+export function wedgesFor(size: number): readonly string[] {
+  if (size >= 32) {
+    return MARK_WEDGES;
+  }
+
+  return size >= 20 ? MARK_WEDGES.slice(1) : [];
+}
+
+/**
+ * The Autevo mark: a leaning A with three motion wedges running into it.
+ *
+ * The word beside it is real text rather than an outline, so it stays sharp at
+ * every density and follows the same face as the rest of the app.
  */
 export function Wordmark({ size = 24, markOnly = false, reversed = false }: WordmarkProps) {
   const theme = useTheme();
-  const small = size < 20;
 
   const onDark = reversed || theme.isDark;
-  const up = onDark ? paper : petrol[800];
-  const down = onDark ? '#4D94F0' : azure[600];
+  const letter = onDark ? paper : petrol[800];
+  const wedge = onDark ? azureOnDark : azure[600];
 
   return (
-    <View style={[styles.lockup, { gap: size * 0.4 }]}>
-      <Svg width={size} height={size} viewBox="0 0 100 100">
-        {!small ? (
-          <Path d="M14 36 L50 92 L86 36" fill="none" stroke={down} strokeWidth={15} />
-        ) : null}
-        <Path d="M14 64 L50 8 L86 64" fill="none" stroke={up} strokeWidth={15} />
+    <View style={[styles.lockup, { gap: size * 0.35 }]}>
+      <Svg width={size * MARK_ASPECT} height={size} viewBox={MARK_VIEW_BOX}>
+        <G fill={wedge}>
+          {wedgesFor(size).map((d) => (
+            <Path key={d} d={d} />
+          ))}
+        </G>
+
+        <Path d={MARK_LETTER} fill={letter} fillRule="evenodd" />
       </Svg>
 
       {markOnly ? null : (
@@ -43,12 +82,12 @@ export function Wordmark({ size = 24, markOnly = false, reversed = false }: Word
           style={[
             theme.typography.wordmark,
             {
-              fontSize: size * 0.72,
-              lineHeight: size * 0.88,
-              color: onDark ? paper : theme.colors.text,
+              fontSize: size * 0.73,
+              lineHeight: size * 0.9,
+              color: letter,
               // The tracking is part of the logotype, not a style choice.
-              letterSpacing: size * 0.12,
-              ...Platform.select({ web: { paddingRight: size * 0.12 }, default: {} }),
+              letterSpacing: size * 0.11,
+              ...Platform.select({ web: { paddingRight: size * 0.11 }, default: {} }),
             },
           ]}
         >
