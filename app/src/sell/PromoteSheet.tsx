@@ -7,7 +7,7 @@ import { ActivityIndicator, Pressable, StyleSheet, useWindowDimensions, View } f
 
 import { sellApi } from '../api/sell';
 import type { Listing, PromotionOptions } from '../api/types';
-import { Button, Text } from '../components';
+import { Button, Slider, Text } from '../components';
 import { useTheme } from '../theme';
 
 export type PromoteSheetProps = {
@@ -121,8 +121,11 @@ export function PromoteSheet({ listing, onClose, onPromoted }: PromoteSheetProps
     });
   })();
 
-  const step = (by: number) =>
-    setCredits((current) => Math.min(Math.max(current + by, minimum), maximum));
+  // What other sellers spend, shaded on the track. Absent when the ledger has
+  // too little to describe, exactly like the line below it.
+  const band = data?.typical
+    ? { low: data.typical.low, high: Math.min(data.typical.high, maximum) }
+    : null;
 
   return (
     <BottomSheet
@@ -168,31 +171,20 @@ export function PromoteSheet({ listing, onClose, onPromoted }: PromoteSheetProps
           </View>
         ) : (
           <>
-            {/* The budget, and what it buys, as one figure the seller sets. */}
+            {/* The budget, and what it buys, as one figure the seller drags to. */}
             <View
               style={[
                 styles.dial,
                 {
                   marginTop: theme.spacing.xl,
-                  paddingVertical: theme.spacing.lg,
+                  paddingHorizontal: theme.spacing.lg,
+                  paddingTop: theme.spacing.lg,
+                  paddingBottom: theme.spacing.md,
                   borderRadius: theme.radius.lg,
                   backgroundColor: theme.colors.surfaceMuted,
-                  gap: theme.spacing.lg,
                 },
               ]}
             >
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel={t('sell:promote_less')}
-                onPress={() => step(-1)}
-                disabled={credits <= minimum}
-                hitSlop={10}
-                testID="promote-less"
-                style={[styles.step, { opacity: credits <= minimum ? 0.35 : 1 }]}
-              >
-                <Ionicons name="remove" size={20} color={theme.colors.text} />
-              </Pressable>
-
               <View style={styles.readout}>
                 <Text variant="display">{t('sell:promote_credits', { count: credits })}</Text>
                 <Text variant="meta" tone="muted">
@@ -200,17 +192,26 @@ export function PromoteSheet({ listing, onClose, onPromoted }: PromoteSheetProps
                 </Text>
               </View>
 
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel={t('sell:promote_more')}
-                onPress={() => step(1)}
-                disabled={credits >= maximum}
-                hitSlop={10}
-                testID="promote-more"
-                style={[styles.step, { opacity: credits >= maximum ? 0.35 : 1 }]}
-              >
-                <Ionicons name="add" size={20} color={theme.colors.text} />
-              </Pressable>
+              <Slider
+                value={credits}
+                min={minimum}
+                max={maximum}
+                onChange={setCredits}
+                band={band}
+                accessibilityLabel={t('sell:promote_budget')}
+                testID="promote-slider"
+                style={{ marginTop: theme.spacing.sm }}
+              />
+
+              {/* The ends of what can be spent, so the drag has a scale. */}
+              <View style={styles.ends}>
+                <Text variant="caption" tone="subtle">
+                  {minimum}
+                </Text>
+                <Text variant="caption" tone="subtle">
+                  {maximum}
+                </Text>
+              </View>
             </View>
 
             <View style={{ marginTop: theme.spacing.lg, gap: theme.spacing.sm }}>
@@ -286,19 +287,14 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   dial: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  step: {
-    width: 40,
-    height: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: 'stretch',
   },
   readout: {
-    minWidth: 150,
     alignItems: 'center',
+  },
+  ends: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   line: {
     flexDirection: 'row',

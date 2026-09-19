@@ -328,6 +328,7 @@
     "price_hint_eur_only": "В евро. Това виждат и купувачите.",
     "promote_title": "Промотирай този автомобил",
     "promote_body": "Промотиран автомобил стои над всички други резултати, както и да ги подредят купувачите.",
+    "promote_budget": "Бюджет за промоция",
     "promote_credits_one": "{{count}} кредит",
     "promote_credits_other": "{{count}} кредита",
     "promote_days_one": "{{count}} ден на върха",

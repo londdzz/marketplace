@@ -328,6 +328,7 @@
     "price_hint_eur_only": "In euro. That is what buyers see.",
     "promote_title": "Promote this car",
     "promote_body": "A promoted car sits above every other result, however buyers sort them.",
+    "promote_budget": "Promotion budget",
     "promote_credits_one": "{{count}} credit",
     "promote_credits_other": "{{count}} credits",
     "promote_days_one": "{{count}} day on top",

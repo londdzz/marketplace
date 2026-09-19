@@ -19,6 +19,7 @@ export { Screen, type ScreenProps } from './Screen';
 export { SearchBar, type SearchBarProps } from './SearchBar';
 export { SearchField, type SearchFieldProps } from './SearchField';
 export { SettingRow, type SettingRowProps } from './SettingRow';
+export { Slider, type SliderBand, type SliderProps } from './Slider';
 export { StackHeader, type StackHeaderProps } from './StackHeader';
 export { TabHeader, type TabHeaderProps } from './TabHeader';
 export { Text, type TextProps } from './Text';

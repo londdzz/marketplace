@@ -328,6 +328,7 @@
     "price_hint_eur_only": "Në euro. Këtë shohin edhe blerësit.",
     "promote_title": "Promovo këtë veturë",
     "promote_body": "Një veturë e promovuar qëndron mbi çdo rezultat tjetër, sido që t’i renditin blerësit.",
+    "promote_budget": "Buxheti i promovimit",
     "promote_credits_one": "{{count}} kredi",
     "promote_credits_other": "{{count}} kredi",
     "promote_days_one": "{{count}} ditë në krye",
