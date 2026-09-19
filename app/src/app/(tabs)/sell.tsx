@@ -10,6 +10,7 @@ import { ApiError } from '../../api/client';
 import { sellApi } from '../../api/sell';
 import type { Listing } from '../../api/types';
 import { Badge, Button, EmptyState, Screen, TabHeader, Text } from '../../components';
+import { PromoteSheet } from '../../sell/PromoteSheet';
 import { formatEur, formatKm, listingTitle } from '../../format';
 import { CreditsSheet } from '../../sell/CreditsSheet';
 import { useCredits } from '../../sell/credits';
@@ -46,7 +47,7 @@ export default function MyListingsTab() {
   const theme = useTheme();
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { t } = useTranslation(['sell', 'listing', 'common']);
+  const { t, i18n } = useTranslation(['sell', 'listing', 'common']);
   const { clear, resume } = useSell();
 
   const credits = useCredits();
@@ -54,6 +55,7 @@ export default function MyListingsTab() {
 
   const [sheetOpen, setSheetOpen] = useState(false);
   const [confirming, setConfirming] = useState<string | null>(null);
+  const [promoting, setPromoting] = useState<Listing | null>(null);
   const [failure, setFailure] = useState<string | null>(null);
 
   const listings = useQuery({
@@ -176,6 +178,24 @@ export default function MyListingsTab() {
               ) : null}
             </View>
 
+            {/* A running promotion is money the seller has already spent, so
+                the card says how long it has left. */}
+            {listing.is_featured && listing.featured_until ? (
+              <View
+                style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.xxs }}
+              >
+                <Ionicons name="rocket" size={12} color={theme.colors.accent} />
+                <Text variant="caption" tone="accent">
+                  {t('sell:promoted_until', {
+                    date: new Date(listing.featured_until).toLocaleDateString(i18n.language, {
+                      day: 'numeric',
+                      month: 'long',
+                    }),
+                  })}
+                </Text>
+              </View>
+            ) : null}
+
             <Text variant="bodyStrong" numberOfLines={1}>
               {listingTitle(listing) || t('sell:untitled_draft')}
             </Text>
@@ -224,6 +244,18 @@ export default function MyListingsTab() {
                 disabled={working}
                 onPress={() => renew.mutate(listing)}
                 testID={`renew-${listing.id}`}
+              />
+            ) : null}
+
+            {listing.status === 'active' ? (
+              <Button
+                label={t('sell:promote')}
+                icon="rocket-outline"
+                size="sm"
+                variant="secondary"
+                disabled={working}
+                onPress={() => setPromoting(listing)}
+                testID={`promote-${listing.id}`}
               />
             ) : null}
 
@@ -390,6 +422,8 @@ export default function MyListingsTab() {
         onClose={() => setSheetOpen(false)}
         onGranted={() => setSheetOpen(false)}
       />
+
+      <PromoteSheet listing={promoting} onClose={() => setPromoting(null)} />
     </Screen>
   );
 }

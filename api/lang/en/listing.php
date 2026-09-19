@@ -7,6 +7,11 @@ return [
         'not_ready' => 'This listing still needs a few details before it can go live.',
         'wrong_status' => 'This listing cannot be published from its current state.',
     ],
+    'promote' => [
+        'wrong_status' => 'Only a live listing can be promoted.',
+        'out_of_range' => 'That is not an amount of credits a promotion can take.',
+    ],
+
     'renew' => [
         'wrong_status' => 'Only a live or recently expired listing can be renewed.',
     ],

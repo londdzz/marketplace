@@ -252,10 +252,14 @@ release, and update it whenever a placeholder is added or replaced.
   the specified default of featured first, then bumped_at descending. One name for it
   everywhere, `search:top`, on the ribbon at every card size; "special offer" implied a
   discount, which a promotion is not. **Nothing can be promoted from inside the app yet**:
-  `listings.featured_until` drives the ordering and `CreditReason::Feature` exists, but
-  there is no endpoint, no service method and no screen, so it can only be set by hand.
-  Selling promotion needs a price, a duration, `ListingService::feature()` spending
-  through CreditService, and a way to buy it from My listings.
+  it is sold from My listings, where `PromoteSheet` lets a seller set a budget and
+  everything follows from it: `credits.promote.days_per_credit` (two) turns credits into
+  days, and `ListingService::promote()` spends through CreditService like publish and
+  renew. Time still running is added to rather than overwritten, the same bargain renewing
+  makes. **The benchmark is measured, never estimated.** `PromotionBenchmark` reads the
+  ledger for the quartiles of what other sellers spent, and returns null until
+  `benchmark_min_sample` promotions exist — the sheet then shows no comparison at all,
+  because a made-up range would be advice about someone's money.
 - **A saved search is validated by the search rules.** `App\Support\ListingFilterRules`
   is shared between the search endpoint and saved searches, so a saved search can never
   hold a filter that search itself would reject.

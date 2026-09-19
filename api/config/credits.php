@@ -20,6 +20,30 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Promotion
+    |--------------------------------------------------------------------------
+    |
+    | A promoted listing leads every ordering, which is what the seller is
+    | paying for. The seller chooses how many credits to spend and the days
+    | follow from the rate below, so there are no tiers to keep in step — the
+    | whole price list is this one number.
+    |
+    | `benchmark_min_sample` is how many promotions have to exist before the
+    | app will tell a seller what others spend. Below it there is nothing
+    | honest to say, so it says nothing.
+    |
+    */
+
+    'promote' => [
+        'days_per_credit' => 2,
+        'min_credits' => 1,
+        'max_credits' => 30,
+        'benchmark_days' => 90,
+        'benchmark_min_sample' => 5,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Credit packs
     |--------------------------------------------------------------------------
     |

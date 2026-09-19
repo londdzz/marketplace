@@ -110,6 +110,7 @@ export type Listing = {
   seller?: Seller;
   view_count: number;
   is_featured: boolean;
+  featured_until: string | null;
   published_at: string | null;
   expires_at: string | null;
 };
@@ -153,6 +154,21 @@ export type ListingPage = {
 export type SortOption = 'relevance' | 'price_asc' | 'price_desc' | 'newest' | 'mileage_asc';
 
 /** What the filter sheet holds. Everything optional; absent means no filter. */
+/**
+ * What a seller needs to choose a promotion budget.
+ *
+ * `typical` is null while too few sellers have promoted anything for the range
+ * to mean something. The app says nothing rather than inventing a number.
+ */
+export type PromotionOptions = {
+  days_per_credit: number;
+  min_credits: number;
+  max_credits: number;
+  balance: number;
+  featured_until: string | null;
+  typical: { low: number; high: number; median: number; sample: number } | null;
+};
+
 /** A search a buyer kept, as GET /saved-searches returns it. */
 export type SavedSearch = {
   id: string;

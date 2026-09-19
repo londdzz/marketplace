@@ -1,7 +1,7 @@
 import { Platform } from 'react-native';
 
 import { api } from './client';
-import type { ApiResource, Listing, ListingPage, ListingPhoto } from './types';
+import type { ApiResource, Listing, ListingPage, ListingPhoto, PromotionOptions } from './types';
 
 /** What a step of the sell flow sends. Every field is optional: a draft is saved
  * after each step, so it is incomplete by design until the last one. */
@@ -84,6 +84,17 @@ export const sellApi = {
   publish: (id: string) => api.post<ApiResource<Listing>>(`/listings/${id}/publish`).then((r) => r.data),
 
   renew: (id: string) => api.post<ApiResource<Listing>>(`/listings/${id}/renew`).then((r) => r.data),
+
+  /** What a promotion would cost and buy, before the seller commits to one. */
+  promotionOptions: (id: string) =>
+    api
+      .get<ApiResource<PromotionOptions>>(`/listings/${id}/promotion`)
+      .then((r) => r.data),
+
+  promote: (id: string, credits: number) =>
+    api
+      .post<ApiResource<Listing>>(`/listings/${id}/promote`, { credits })
+      .then((r) => r.data),
 
   markSold: (id: string) =>
     api.post<ApiResource<Listing>>(`/listings/${id}/mark-sold`).then((r) => r.data),

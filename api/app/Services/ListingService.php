@@ -133,6 +133,48 @@ final class ListingService
      *
      * @throws ListingStatusException|InsufficientCreditsException
      */
+    /**
+     * Put a listing in front of the others, for as long as the credits buy.
+     *
+     * The seller picks the credits and the days follow from the rate, the way
+     * a budget buys impressions anywhere else. Time still running is kept and
+     * added to rather than overwritten, so topping up a promotion early costs
+     * a seller nothing — the same bargain renewing makes.
+     *
+     * @param  int  $credits  what the seller chose to spend
+     *
+     * @throws ListingStatusException the listing is not one a buyer can see
+     * @throws InsufficientCreditsException
+     */
+    public function promote(Listing $listing, int $credits): Listing
+    {
+        if ($listing->status !== ListingStatus::Active) {
+            throw new ListingStatusException('listing.promote.wrong_status');
+        }
+
+        $min = (int) config('credits.promote.min_credits');
+        $max = (int) config('credits.promote.max_credits');
+
+        if ($credits < $min || $credits > $max) {
+            throw new ListingStatusException('listing.promote.out_of_range');
+        }
+
+        return DB::transaction(function () use ($listing, $credits): Listing {
+            $this->credits->spend($listing->user, $credits, CreditReason::Feature, $listing);
+
+            $now = Carbon::now();
+            $from = $listing->featured_until !== null && $listing->featured_until->isFuture()
+                ? $listing->featured_until->copy()
+                : $now->copy();
+
+            $listing->forceFill([
+                'featured_until' => $from->addDays($credits * (int) config('credits.promote.days_per_credit')),
+            ])->save();
+
+            return $listing->refresh();
+        });
+    }
+
     public function renew(Listing $listing): Listing
     {
         if (! in_array($listing->status, [ListingStatus::Active, ListingStatus::Expired], true)) {

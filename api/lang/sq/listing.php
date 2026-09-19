@@ -7,6 +7,11 @@ return [
         'not_ready' => 'Kësaj shpallje i mungojnë ende disa të dhëna para se të publikohet.',
         'wrong_status' => 'Kjo shpallje nuk mund të publikohet nga gjendja e saj aktuale.',
     ],
+    'promote' => [
+        'wrong_status' => 'Vetëm një shpallje aktive mund të promovohet.',
+        'out_of_range' => 'Kjo nuk është një sasi kredish që promovimi e pranon.',
+    ],
+
     'renew' => [
         'wrong_status' => 'Vetëm një shpallje aktive ose e skaduar së fundmi mund të rinovohet.',
     ],

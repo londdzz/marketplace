@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Listing;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Listing\PromoteListingRequest;
 use App\Http\Resources\ListingResource;
+use App\Http\Resources\PromotionOptionsResource;
 use App\Models\Listing;
 use App\Services\ListingService;
+use App\Services\PromotionBenchmark;
 use Illuminate\Http\JsonResponse;
 
 /**
@@ -16,7 +19,10 @@ use Illuminate\Http\JsonResponse;
  */
 class ListingLifecycleController extends Controller
 {
-    public function __construct(private readonly ListingService $listings) {}
+    public function __construct(
+        private readonly ListingService $listings,
+        private readonly PromotionBenchmark $benchmark,
+    ) {}
 
     public function publish(Listing $listing): JsonResponse
     {
@@ -32,6 +38,32 @@ class ListingLifecycleController extends Controller
         $this->authorize('publish', $listing);
 
         $listing = $this->listings->renew($listing);
+
+        return ListingResource::make($listing->load(['make', 'model', 'city', 'photos']))->response();
+    }
+
+    /**
+     * What a promotion would cost and buy, before the seller commits to one.
+     */
+    public function promotionOptions(Listing $listing): JsonResponse
+    {
+        $this->authorize('publish', $listing);
+
+        return PromotionOptionsResource::make([
+            'days_per_credit' => (int) config('credits.promote.days_per_credit'),
+            'min_credits' => (int) config('credits.promote.min_credits'),
+            'max_credits' => (int) config('credits.promote.max_credits'),
+            'balance' => (int) $listing->user->credits,
+            'featured_until' => $listing->featured_until?->toIso8601String(),
+            'typical' => $this->benchmark->typical(),
+        ])->response();
+    }
+
+    public function promote(PromoteListingRequest $request, Listing $listing): JsonResponse
+    {
+        $this->authorize('publish', $listing);
+
+        $listing = $this->listings->promote($listing, $request->credits());
 
         return ListingResource::make($listing->load(['make', 'model', 'city', 'photos']))->response();
     }

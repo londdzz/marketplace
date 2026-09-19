@@ -73,6 +73,8 @@ Route::middleware(['auth:sanctum', 'blocked'])->group(function (): void {
 
     Route::post('listings/{listing}/publish', [ListingLifecycleController::class, 'publish'])->name('listings.publish');
     Route::post('listings/{listing}/renew', [ListingLifecycleController::class, 'renew'])->name('listings.renew');
+    Route::get('listings/{listing}/promotion', [ListingLifecycleController::class, 'promotionOptions'])->name('listings.promotion');
+    Route::post('listings/{listing}/promote', [ListingLifecycleController::class, 'promote'])->name('listings.promote');
     Route::post('listings/{listing}/mark-sold', [ListingLifecycleController::class, 'markSold'])->name('listings.mark-sold');
 
     Route::get('credits', [CreditController::class, 'index'])->name('credits.index');
