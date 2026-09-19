@@ -220,6 +220,11 @@ export default function MyListingsTab() {
             style={{
               flexDirection: 'row',
               alignItems: 'center',
+              // Four actions do not fit one line on a narrow phone. Wrapping
+              // lets them fall to a second rather than pushing the delete off
+              // the card, which is what a fixed row and a collapsing spacer
+              // did as soon as Promote joined them.
+              flexWrap: 'wrap',
               gap: theme.spacing.sm,
               paddingTop: theme.spacing.md,
               borderTopWidth: 1,
@@ -238,7 +243,6 @@ export default function MyListingsTab() {
             {listing.status === 'active' || listing.status === 'expired' ? (
               <Button
                 label={renew.isPending ? t('sell:renewing') : t('sell:renew')}
-                icon="refresh"
                 size="sm"
                 variant={listing.status === 'expired' ? 'primary' : 'secondary'}
                 disabled={working}
@@ -250,7 +254,6 @@ export default function MyListingsTab() {
             {listing.status === 'active' ? (
               <Button
                 label={t('sell:promote')}
-                icon="rocket-outline"
                 size="sm"
                 variant="secondary"
                 disabled={working}
@@ -270,8 +273,6 @@ export default function MyListingsTab() {
               />
             ) : null}
 
-            <View style={{ flex: 1 }} />
-
             {/* Deleting is one tap away but never the loudest thing on the
                 card, and it asks before it does anything. */}
             {confirming === listing.id ? (
@@ -281,6 +282,7 @@ export default function MyListingsTab() {
                 variant="danger"
                 disabled={working}
                 onPress={() => remove.mutate(listing)}
+                style={{ marginLeft: 'auto' }}
                 testID={`delete-${listing.id}`}
               />
             ) : (
@@ -292,6 +294,7 @@ export default function MyListingsTab() {
                 style={({ pressed }) => [
                   styles.centre,
                   {
+                    marginLeft: 'auto',
                     width: 36,
                     height: 36,
                     borderRadius: theme.radius.md,
