@@ -40,16 +40,15 @@ export const MARK_LETTER =
 /**
  * How much of the mark survives at a given height.
  *
- * The wedges are the first thing to muddy as the mark shrinks, so they are
- * dropped in order rather than all at once: three above thirty-two, two from
- * twenty, and below that the letter stands alone.
+ * The handoff drops the top wedge between twenty and thirty-one, on the
+ * reasoning that the wedges muddy as the mark shrinks. At the twenty the
+ * headers use they do not — on a phone that is sixty physical pixels — and
+ * what the two-wedge variant actually does is leave the letter leaning over a
+ * gap, so it reads as a mark with a piece missing rather than a smaller one.
+ * All three stay down to twenty; below that the letter stands alone.
  */
 export function wedgesFor(size: number): readonly string[] {
-  if (size >= 32) {
-    return MARK_WEDGES;
-  }
-
-  return size >= 20 ? MARK_WEDGES.slice(1) : [];
+  return size >= 20 ? MARK_WEDGES : [];
 }
 
 /**
