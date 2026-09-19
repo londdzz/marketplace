@@ -20,6 +20,12 @@ export type PromoteSheetProps = {
 /** Where a budget sits against what other sellers spend. */
 type Standing = 'below' | 'typical' | 'above';
 
+const STANDING_ICON: Record<Standing, keyof typeof Ionicons.glyphMap> = {
+  below: 'trending-down',
+  typical: 'people',
+  above: 'trending-up',
+};
+
 function standingFor(credits: number, typical: PromotionOptions['typical']): Standing | null {
   if (!typical) {
     return null;
@@ -214,6 +220,43 @@ export function PromoteSheet({ listing, onClose, onPromoted }: PromoteSheetProps
               </View>
             </View>
 
+            {/* Measured from the ledger, or absent. Never estimated. It gets a
+                block of its own rather than a line among the others, because
+                it is the one thing here the seller cannot work out alone. */}
+            {data?.typical && standing ? (
+              <View
+                style={[
+                  styles.standing,
+                  {
+                    marginTop: theme.spacing.md,
+                    padding: theme.spacing.md,
+                    gap: theme.spacing.md,
+                    borderRadius: theme.radius.md,
+                    backgroundColor:
+                      standing === 'below' ? theme.colors.warningMuted : theme.colors.successMuted,
+                  },
+                ]}
+              >
+                <Ionicons
+                  name={STANDING_ICON[standing]}
+                  size={20}
+                  color={standing === 'below' ? theme.colors.warning : theme.colors.success}
+                  style={styles.standingIcon}
+                />
+                <View style={styles.standingText}>
+                  <Text variant="bodyStrong" tone={standing === 'below' ? 'warning' : 'success'}>
+                    {t(`sell:promote_standing_${standing}`)}
+                  </Text>
+                  <Text variant="meta" tone="muted">
+                    {t('sell:promote_standing_range', {
+                      low: data.typical.low,
+                      high: data.typical.high,
+                    })}
+                  </Text>
+                </View>
+              </View>
+            ) : null}
+
             <View style={{ marginTop: theme.spacing.lg, gap: theme.spacing.sm }}>
               <View style={[styles.line, { gap: theme.spacing.sm }]}>
                 <Ionicons name="calendar-outline" size={15} color={theme.colors.textMuted} />
@@ -221,27 +264,6 @@ export function PromoteSheet({ listing, onClose, onPromoted }: PromoteSheetProps
                   {t('sell:promote_until', { date: until })}
                 </Text>
               </View>
-
-              {/* Measured from the ledger, or absent. Never estimated. */}
-              {data?.typical && standing ? (
-                <View style={[styles.line, { gap: theme.spacing.sm }]}>
-                  <Ionicons
-                    name={standing === 'below' ? 'trending-down-outline' : 'people-outline'}
-                    size={15}
-                    color={standing === 'below' ? theme.colors.warning : theme.colors.textMuted}
-                  />
-                  <Text
-                    variant="meta"
-                    tone={standing === 'below' ? 'default' : 'muted'}
-                    style={{ flex: 1 }}
-                  >
-                    {t(`sell:promote_standing_${standing}`, {
-                      low: data.typical.low,
-                      high: data.typical.high,
-                    })}
-                  </Text>
-                </View>
-              ) : null}
 
               <View style={[styles.line, { gap: theme.spacing.sm }]}>
                 <Ionicons name="pricetag-outline" size={15} color={theme.colors.textMuted} />
@@ -299,5 +321,17 @@ const styles = StyleSheet.create({
   line: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  standing: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  standingIcon: {
+    // Optically on the first line rather than centred on both.
+    marginTop: 1,
+  },
+  standingText: {
+    flex: 1,
+    gap: 2,
   },
 });

@@ -219,18 +219,27 @@ export default function MyListingsTab() {
           <View
             style={{
               flexDirection: 'row',
-              alignItems: 'center',
-              // Four actions do not fit one line on a narrow phone. Wrapping
-              // lets them fall to a second rather than pushing the delete off
-              // the card, which is what a fixed row and a collapsing spacer
-              // did as soon as Promote joined them.
-              flexWrap: 'wrap',
+              alignItems: 'flex-start',
               gap: theme.spacing.sm,
               paddingTop: theme.spacing.md,
               borderTopWidth: 1,
               borderTopColor: theme.colors.border,
             }}
           >
+            {/* The actions wrap among themselves and the delete keeps its own
+                column, so it stays at the top right of the row whatever the
+                labels come out to. Macedonian's are half again as long as
+                English's, and one wrapping row left the bin stranded on a
+                line of its own. */}
+            <View
+              style={{
+                flex: 1,
+                flexDirection: 'row',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: theme.spacing.sm,
+              }}
+            >
             {isDraft ? (
               <Button
                 label={t('sell:resume')}
@@ -273,6 +282,8 @@ export default function MyListingsTab() {
               />
             ) : null}
 
+            </View>
+
             {/* Deleting is one tap away but never the loudest thing on the
                 card, and it asks before it does anything. */}
             {confirming === listing.id ? (
@@ -282,7 +293,6 @@ export default function MyListingsTab() {
                 variant="danger"
                 disabled={working}
                 onPress={() => remove.mutate(listing)}
-                style={{ marginLeft: 'auto' }}
                 testID={`delete-${listing.id}`}
               />
             ) : (
@@ -294,7 +304,6 @@ export default function MyListingsTab() {
                 style={({ pressed }) => [
                   styles.centre,
                   {
-                    marginLeft: 'auto',
                     width: 36,
                     height: 36,
                     borderRadius: theme.radius.md,

@@ -3,7 +3,15 @@ import { Text as RNText, type TextProps as RNTextProps } from 'react-native';
 import { useTheme } from '../theme';
 import type { TypographyKey } from '../theme/typography';
 
-type Tone = 'default' | 'muted' | 'subtle' | 'accent' | 'onAccent' | 'danger' | 'success';
+type Tone =
+  | 'default'
+  | 'muted'
+  | 'subtle'
+  | 'accent'
+  | 'onAccent'
+  | 'danger'
+  | 'warning'
+  | 'success';
 
 export type TextProps = RNTextProps & {
   variant?: TypographyKey;
@@ -36,6 +44,7 @@ export function Text({
     accent: theme.colors.accent,
     onAccent: theme.colors.textOnAccent,
     danger: theme.colors.danger,
+    warning: theme.colors.warning,
     success: theme.colors.success,
   }[tone];
 
