@@ -25,9 +25,8 @@ import { useExchangeRates } from '../hooks/useExchangeRates';
 import { useListingCardMapper } from '../hooks/useListingCard';
 import { useListingPage } from '../hooks/useListingPage';
 import { useFilters } from '../search/FiltersProvider';
+import { SortSheet } from '../search/SortSheet';
 import { useTheme } from '../theme';
-
-const SORTS = ['relevance', 'price_asc', 'price_desc', 'newest', 'mileage_asc'] as const;
 
 export default function ResultsScreen() {
   const theme = useTheme();
@@ -36,11 +35,12 @@ export default function ResultsScreen() {
   const queryClient = useQueryClient();
   const { width } = useWindowDimensions();
   const { t } = useTranslation(['search', 'listing', 'common']);
-  const { filters, set } = useFilters();
+  const { filters, set, count } = useFilters();
 
   const [saved, setSaved] = useState(false);
   const [grid, setGrid] = useState(false);
   const [page, setPage] = useState(1);
+  const [sorting, setSorting] = useState(false);
   const list = useRef<FlatList<Listing>>(null);
 
   const search = useListingPage(filters, page);
@@ -109,11 +109,11 @@ export default function ResultsScreen() {
       .filter(Boolean)
       .join(' · ');
 
-  const cycleSort = () => {
-    const current = filters.sort ?? 'relevance';
-    const next = SORTS[(SORTS.indexOf(current) + 1) % SORTS.length];
-    set({ sort: next });
-  };
+  const sort = filters.sort ?? 'relevance';
+
+  // Saving a list of every car is not a search, so the button only appears
+  // once something has actually been narrowed down.
+  const searched = count > 0 || Boolean(filters.q);
 
   return (
     <Screen flush edges={['top']}>
@@ -125,7 +125,11 @@ export default function ResultsScreen() {
         backLabel={t('common:back')}
         actions={
           <>
-            <Pressable accessibilityRole="button" onPress={cycleSort} testID="results-sort">
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => setSorting(true)}
+              testID="results-sort"
+            >
               <Ionicons name="swap-vertical" size={21} color={theme.colors.text} />
             </Pressable>
 
@@ -248,6 +252,7 @@ export default function ResultsScreen() {
         />
       )}
 
+      {searched ? (
       <View
         style={[
           styles.floating,
@@ -269,6 +274,17 @@ export default function ResultsScreen() {
           testID="save-search"
         />
       </View>
+      ) : null}
+
+      <SortSheet
+        open={sorting}
+        current={sort}
+        onChoose={(next) => {
+          set({ sort: next });
+          setSorting(false);
+        }}
+        onClose={() => setSorting(false)}
+      />
     </Screen>
   );
 }

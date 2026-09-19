@@ -11,6 +11,7 @@ import { ListingCard, PromoBanner, Screen, SearchBar, TabHeader, Text } from '..
 import { useExchangeRates } from '../../hooks/useExchangeRates';
 import { useListingCardMapper } from '../../hooks/useListingCard';
 import { useListingPage } from '../../hooks/useListingPage';
+import { useFilters } from '../../search/FiltersProvider';
 import { useTheme } from '../../theme';
 
 /** The newest cars, which is what the home screen is a window onto. */
@@ -25,6 +26,7 @@ export default function HomeTab() {
   const { width } = useWindowDimensions();
   const { t } = useTranslation(['home', 'common']);
   const queryClient = useQueryClient();
+  const { replace } = useFilters();
 
   // The newest cars across all five markets, which is what a home screen is
   // for: something to look at before anyone has searched for anything.
@@ -88,7 +90,13 @@ export default function HomeTab() {
           <Pressable
             accessibilityRole="button"
             style={styles.showAll}
-            onPress={() => router.push('/results')}
+            // Show all means all of these, newest first — not whatever search
+            // was last built in the search tab, which is what the results
+            // screen would otherwise still be holding.
+            onPress={() => {
+              replace(NEWEST);
+              router.push('/results');
+            }}
             testID="home-show-all"
           >
             <Text variant="label" tone="accent">
