@@ -407,6 +407,14 @@ release, and update it whenever a placeholder is added or replaced.
   exactly as it did the day it was saved. There is no endpoint for editing one, so nothing
   on the screen pretends there is: a search is run or it is deleted. A tab screen is never
   unmounted, so the list refetches on focus and saving from the results invalidates it.
+- **The launch screen is held until the app has something to show.** The native splash
+  stays up for the typeface, then hands over to `BootScreen`, which is drawn to match it
+  exactly — same mark, same ground — so nothing flashes between the two. `useWarmUp`
+  fetches the reference data and, for a signed-in account, the home screen's own cars
+  while it is still up, so the app opens finished rather than filling in one panel at a
+  time. It is a warm-up, not a gate: anything that fails is left to the screen that needs
+  it, and after six seconds the app opens regardless, because a slow connection should
+  mean a screen still loading, never a launch that never ends.
 - **`GET /vocabularies`** serves the closed vocabularies (body types, drivetrains,
   colours, feature keys) so the app never keeps its own copy of a list the API
   validates against. Public, like the other reference endpoints.

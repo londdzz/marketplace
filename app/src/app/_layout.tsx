@@ -2,20 +2,22 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Slot, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, View } from 'react-native';
+
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { AuthProvider, useAuth } from '../auth/AuthProvider';
+import { useWarmUp } from '../boot/useWarmUp';
+import { BootScreen } from '../components/BootScreen';
 import { useAppFonts } from '../theme/fonts';
 import { FiltersProvider } from '../search/FiltersProvider';
 import { SellProvider } from '../sell/SellProvider';
 import '../i18n';
 import { ThemeProvider } from '../theme/ThemeProvider';
-import { useTheme } from '../theme';
 
-// The splash stays up until the typeface has loaded and the stored token has
-// been checked, so the first painted frame is the real thing.
+// The native splash stays up until the typeface has loaded, and the launch
+// screen it hands over to is drawn to match it, so nothing flashes between the
+// two and the app is only revealed once it has something to show.
 void SplashScreen.preventAutoHideAsync();
 
 const queryClient = new QueryClient({
@@ -37,8 +39,11 @@ function AuthGate() {
   const { user, restoring } = useAuth();
   const segments = useSegments();
   const router = useRouter();
-  const theme = useTheme();
   const [ready, setReady] = useState(false);
+
+  // Reference data, and the home screen's own cars, fetched while the launch
+  // screen is still up rather than after it has gone.
+  const warm = useWarmUp(!restoring, Boolean(user));
 
   useEffect(() => {
     if (restoring) {
@@ -56,19 +61,8 @@ function AuthGate() {
     setReady(true);
   }, [restoring, user, segments, router]);
 
-  if (restoring || !ready) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: theme.colors.background,
-        }}
-      >
-        <ActivityIndicator color={theme.colors.accent} />
-      </View>
-    );
+  if (restoring || !ready || !warm) {
+    return <BootScreen />;
   }
 
   return <Slot />;
