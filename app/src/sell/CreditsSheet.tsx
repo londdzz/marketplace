@@ -1,8 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
-import BottomSheet, { BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
+import BottomSheet, { BottomSheetBackdrop, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 
 import type { CreditPack } from '../api/sell';
 import { Badge, Button, Text } from '../components';
@@ -32,6 +32,7 @@ export function CreditsSheet({ open, onClose, onGranted }: CreditsSheetProps) {
   const theme = useTheme();
   const { t } = useTranslation(['sell', 'common']);
   const sheet = useRef<BottomSheet>(null);
+  const window = useWindowDimensions();
 
   const credits = useCredits();
   const balance = credits.data?.balance ?? 0;
@@ -151,7 +152,10 @@ export function CreditsSheet({ open, onClose, onGranted }: CreditsSheetProps) {
     [],
   );
 
-  const snapPoints = useMemo(() => ['70%'], []);
+  // Sized to its content rather than to a percentage of the display: a share
+  // of a tall phone is generous and the same share of a short one cut the
+  // bottom of the sheet off. Past the cap it scrolls instead.
+  const maxHeight = useMemo(() => window.height * 0.92, [window.height]);
   const working = phase === 'buying' || phase === 'confirming';
 
   if (!open) {
@@ -162,14 +166,20 @@ export function CreditsSheet({ open, onClose, onGranted }: CreditsSheetProps) {
     <BottomSheet
       ref={sheet}
       index={0}
-      snapPoints={snapPoints}
+      enableDynamicSizing
+      maxDynamicContentSize={maxHeight}
       enablePanDownToClose
       onClose={onClose}
       backdropComponent={backdrop}
       backgroundStyle={{ backgroundColor: theme.colors.surface, borderRadius: theme.radius.xl }}
       handleIndicatorStyle={{ backgroundColor: theme.colors.borderStrong }}
     >
-      <BottomSheetView style={{ paddingHorizontal: theme.screenPadding, paddingBottom: theme.spacing.xxxl }}>
+      <BottomSheetScrollView
+        contentContainerStyle={{
+          paddingHorizontal: theme.screenPadding,
+          paddingBottom: theme.spacing.xxxl,
+        }}
+      >
         <View style={[styles.head, { marginBottom: theme.spacing.xs }]}>
           <Text variant="display">{t('sell:credits_title')}</Text>
           <Pressable accessibilityRole="button" onPress={onClose} hitSlop={8} testID="credits-close">
@@ -267,7 +277,7 @@ export function CreditsSheet({ open, onClose, onGranted }: CreditsSheetProps) {
             {t('sell:credits_unavailable')}
           </Text>
         ) : null}
-      </BottomSheetView>
+      </BottomSheetScrollView>
     </BottomSheet>
   );
 }

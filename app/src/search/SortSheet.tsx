@@ -1,8 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
-import BottomSheet, { BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
+import BottomSheet, { BottomSheetBackdrop, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 
 import type { SortOption } from '../api/types';
 import { ListGroup, Text } from '../components';
@@ -39,6 +39,7 @@ export function SortSheet({ open, current, onChoose, onClose }: SortSheetProps) 
   const theme = useTheme();
   const { t } = useTranslation(['search', 'common']);
   const sheet = useRef<BottomSheet>(null);
+  const window = useWindowDimensions();
 
   const backdrop = useCallback(
     (props: React.ComponentProps<typeof BottomSheetBackdrop>) => (
@@ -52,7 +53,10 @@ export function SortSheet({ open, current, onChoose, onClose }: SortSheetProps) 
     [],
   );
 
-  const snapPoints = useMemo(() => ['52%'], []);
+  // Sized to its content rather than to a percentage of the display: a share
+  // of a tall phone is generous and the same share of a short one cut the
+  // bottom of the sheet off. Past the cap it scrolls instead.
+  const maxHeight = useMemo(() => window.height * 0.92, [window.height]);
 
   if (!open) {
     return null;
@@ -62,15 +66,19 @@ export function SortSheet({ open, current, onChoose, onClose }: SortSheetProps) 
     <BottomSheet
       ref={sheet}
       index={0}
-      snapPoints={snapPoints}
+      enableDynamicSizing
+      maxDynamicContentSize={maxHeight}
       enablePanDownToClose
       onClose={onClose}
       backdropComponent={backdrop}
       backgroundStyle={{ backgroundColor: theme.colors.surface, borderRadius: theme.radius.xl }}
       handleIndicatorStyle={{ backgroundColor: theme.colors.borderStrong }}
     >
-      <BottomSheetView
-        style={{ paddingHorizontal: theme.screenPadding, paddingBottom: theme.spacing.xxxl }}
+      <BottomSheetScrollView
+        contentContainerStyle={{
+          paddingHorizontal: theme.screenPadding,
+          paddingBottom: theme.spacing.xxxl,
+        }}
       >
         <View style={[styles.head, { marginBottom: theme.spacing.lg }]}>
           <Text variant="title">{t('search:sort')}</Text>
@@ -127,7 +135,7 @@ export function SortSheet({ open, current, onChoose, onClose }: SortSheetProps) 
             );
           })}
         </ListGroup>
-      </BottomSheetView>
+      </BottomSheetScrollView>
     </BottomSheet>
   );
 }

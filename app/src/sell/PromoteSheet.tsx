@@ -1,9 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
-import BottomSheet, { BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet';
+import BottomSheet, { BottomSheetBackdrop, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 
 import { sellApi } from '../api/sell';
 import type { Listing, PromotionOptions } from '../api/types';
@@ -46,6 +46,7 @@ export function PromoteSheet({ listing, onClose, onPromoted }: PromoteSheetProps
   const { t, i18n } = useTranslation(['sell', 'common']);
   const sheet = useRef<BottomSheet>(null);
   const queryClient = useQueryClient();
+  const window = useWindowDimensions();
 
   const [credits, setCredits] = useState(1);
   const [failure, setFailure] = useState<string | null>(null);
@@ -89,7 +90,10 @@ export function PromoteSheet({ listing, onClose, onPromoted }: PromoteSheetProps
     [],
   );
 
-  const snapPoints = useMemo(() => ['72%'], []);
+  // Sized to its content rather than to a percentage of the display: a share
+  // of a tall phone is generous and the same share of a short one cut the
+  // confirm button off the bottom. Past the cap it scrolls instead.
+  const maxHeight = useMemo(() => window.height * 0.92, [window.height]);
 
   if (!listing) {
     return null;
@@ -124,15 +128,19 @@ export function PromoteSheet({ listing, onClose, onPromoted }: PromoteSheetProps
     <BottomSheet
       ref={sheet}
       index={0}
-      snapPoints={snapPoints}
+      enableDynamicSizing
+      maxDynamicContentSize={maxHeight}
       enablePanDownToClose
       onClose={onClose}
       backdropComponent={backdrop}
       backgroundStyle={{ backgroundColor: theme.colors.surface, borderRadius: theme.radius.xl }}
       handleIndicatorStyle={{ backgroundColor: theme.colors.borderStrong }}
     >
-      <BottomSheetView
-        style={{ paddingHorizontal: theme.screenPadding, paddingBottom: theme.spacing.xxxl }}
+      <BottomSheetScrollView
+        contentContainerStyle={{
+          paddingHorizontal: theme.screenPadding,
+          paddingBottom: theme.spacing.xxxl,
+        }}
       >
         <View style={styles.head}>
           <Text variant="title">{t('sell:promote_title')}</Text>
@@ -266,7 +274,7 @@ export function PromoteSheet({ listing, onClose, onPromoted }: PromoteSheetProps
             />
           </>
         )}
-      </BottomSheetView>
+      </BottomSheetScrollView>
     </BottomSheet>
   );
 }
