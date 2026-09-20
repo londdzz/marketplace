@@ -196,7 +196,6 @@ export default function HomeTab() {
             onPress={() => router.push('/(tabs)/search')}
             scrollY={scrollY}
             pinAt={headerHeight}
-            gutter={theme.screenPadding}
           />
 
           <PromoBanner

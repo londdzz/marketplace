@@ -400,12 +400,12 @@ release, and update it whenever a placeholder is added or replaced.
   that were the same picture.
 - **The home screen's app bar gives up the top, and the search bar takes it.** Scrolling
   fades and lifts `TabHeader` away, and the search bar — child zero of the scroll view,
-  pinned by `stickyHeaderIndices` rather than by anything we animate — settles at the top
-  on a strip that runs to both edges, so the cars pass underneath instead of beside it.
-  The bar arrives lifted: a gloss across its upper edge, a brighter outline and a hairline
-  under the strip. On a near-black page a shadow casts nothing, so the lift is carried by
-  light rather than by dark; `theme.elevation.sheet` stays underneath for the platforms
-  where it does read. The gloss is fixed, not a sweep — a shimmer on every scroll would be
+  pinned by `stickyHeaderIndices` rather than by anything we animate — settles at the top.
+  **Nothing is drawn behind it**: the cars run underneath the pill, into the gutters beside
+  it and through the gap above it. A strip carrying the bar reads as a box stuck to the top
+  of the screen, which is the opposite of floating. The bar arrives lifted instead: a gloss
+  across its upper edge, a brighter outline, and `theme.elevation.sheet`, which now has a
+  photograph to fall on rather than a near-black page. The gloss is fixed, not a sweep — a shimmer on every scroll would be
   the loudest thing on a screen whose job is to show cars. The faded bar is still drawn
   over the pinned search bar, so it drops `pointerEvents` once it is gone; without that the
   search bar would be dead exactly where it floats. The bar's height is measured rather

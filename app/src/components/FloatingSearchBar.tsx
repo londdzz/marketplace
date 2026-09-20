@@ -17,8 +17,6 @@ export type FloatingSearchBarProps = SearchBarProps & {
   scrollY: SharedValue<number>;
   /** The scroll offset at which the bar reaches the top and stops moving. */
   pinAt: number;
-  /** The page gutter, which the dock has to bleed past to reach both edges. */
-  gutter: number;
 };
 
 /** The pill's height, which the layers behind and in front of it match. */
@@ -31,22 +29,21 @@ const INSET = 8;
  * The search bar at the top of the home screen, drawn as something that lifts
  * off the page once it pins there.
  *
- * Below the fold it is flat, like every other card on the screen. As the app
- * bar slides away and the search bar takes the top for itself, three things
- * arrive together: a gloss across its upper edge, a brighter outline, and a
- * hairline ruling off the strip it sits on. On a near-black page a shadow
- * alone is invisible, so the lift is carried by light rather than by dark —
- * the sheet shadow is kept underneath for the platforms where it does read.
+ * Nothing is drawn behind it. The pill alone stays on screen and the cars run
+ * underneath it, into the gutters beside it and through the gap above it — a
+ * strip carrying the bar reads as a box stuck to the top of the screen, which
+ * is the opposite of floating.
+ *
+ * Below the fold it is flat, like every other card. As the app bar slides away
+ * and the search bar takes the top for itself, it gains a gloss across its
+ * upper edge, a brighter outline and the sheet shadow, which now has a
+ * photograph to fall on rather than a near-black page.
  *
  * The gloss is a fixed highlight rather than a sweep: a shimmer running across
  * it on every scroll would be the loudest thing on a screen whose job is to
  * show cars.
- *
- * It owns the strip as well as the pill because the two only make sense
- * together — the strip is what stops the cars showing through beside a bar
- * that is floating over them.
  */
-export function FloatingSearchBar({ scrollY, pinAt, gutter, ...bar }: FloatingSearchBarProps) {
+export function FloatingSearchBar({ scrollY, pinAt, ...bar }: FloatingSearchBarProps) {
   const theme = useTheme();
 
   // It starts lifting a little before it lands, so the shadow and the gloss
@@ -56,15 +53,7 @@ export function FloatingSearchBar({ scrollY, pinAt, gutter, ...bar }: FloatingSe
   }));
 
   return (
-    <View
-      style={{
-        marginHorizontal: -gutter,
-        paddingHorizontal: gutter,
-        paddingVertical: INSET,
-        backgroundColor: theme.colors.background,
-      }}
-      testID="home-search-dock"
-    >
+    <View style={styles.dock} testID="home-search-dock">
       <View style={styles.pill}>
         {/* Behind the bar, so the shadow has something opaque to fall from. */}
         <Animated.View
@@ -103,16 +92,14 @@ export function FloatingSearchBar({ scrollY, pinAt, gutter, ...bar }: FloatingSe
           ]}
         />
       </View>
-
-      <Animated.View
-        pointerEvents="none"
-        style={[styles.rule, { backgroundColor: theme.colors.border }, lift]}
-      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  dock: {
+    paddingVertical: INSET,
+  },
   pill: {
     height: PILL_HEIGHT,
     justifyContent: 'center',
@@ -127,12 +114,5 @@ const styles = StyleSheet.create({
   },
   clip: {
     overflow: 'hidden',
-  },
-  rule: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
-    height: StyleSheet.hairlineWidth,
   },
 });
