@@ -165,9 +165,6 @@ return [
             'mileage_max' => 120000,
             'year_min' => 2016,
         ],
-        'automatic' => [
-            'transmission' => 'automatic',
-        ],
         'electrified' => [
             'fuel' => ['electric', 'hybrid'],
         ],

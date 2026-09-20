@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import type { BrowseCollection } from '../api/reference';
 import { referenceApi } from '../api/reference';
 import type { SearchFilters } from '../api/types';
+import type { CollectionArt } from '../components/CollectionCard';
 import { formatEur, formatKm } from '../format';
 
 /** The key every screen reads the browse sections under. */
@@ -35,6 +36,34 @@ const ICONS: Record<string, string> = {
 export function collectionIcon(key: string): string {
   return ICONS[key] ?? 'pricetag-outline';
 }
+
+/**
+ * Art commissioned for a collection: the scene a car like this is used in,
+ * and the car itself cut out to stand on the join.
+ *
+ * Only the collections that have been drawn appear here. The rest fall back to
+ * a photograph of a car actually in them, which is what every collection had
+ * before any of this was drawn and what a new one gets the day it is added.
+ */
+const ART: Record<string, CollectionArt> = {
+  family: {
+    background: require('../../assets/collections/family-bg.jpg'),
+    car: require('../../assets/collections/family-car.png'),
+    carRatio: 0.616,
+  },
+  first_car: {
+    background: require('../../assets/collections/first-car-bg.jpg'),
+    car: require('../../assets/collections/first-car.png'),
+    carRatio: 0.503,
+  },
+};
+
+export function collectionArt(key: string): CollectionArt | null {
+  return ART[key] ?? null;
+}
+
+/** At most four, two to a row, as the card draws them. */
+const MAX_CHIPS = 4;
 
 /**
  * A collection's own filters, written out as a buyer would read them.
@@ -82,6 +111,6 @@ export function useCollectionChips() {
       chips.push(...filters.fuel.map((fuel) => t(`listing:fuel.${fuel}`, { ns: 'listing' })));
     }
 
-    return chips;
+    return chips.slice(0, MAX_CHIPS);
   };
 }

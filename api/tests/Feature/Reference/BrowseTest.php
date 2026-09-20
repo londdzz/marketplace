@@ -58,7 +58,7 @@ function browsable(array $attributes = []): Listing
 }
 
 it('offers the ways in without a token', function (): void {
-    browsable(['transmission' => Transmission::Automatic]);
+    browsable(['fuel' => FuelType::Electric]);
 
     $this->getJson('/api/v1/browse')
         ->assertOk()
@@ -66,41 +66,41 @@ it('offers the ways in without a token', function (): void {
 });
 
 it('counts a collection against live listings rather than estimating', function (): void {
-    // Three automatics a buyer can see, and three they cannot.
-    browsable(['transmission' => Transmission::Automatic]);
-    browsable(['transmission' => Transmission::Automatic]);
-    browsable(['transmission' => Transmission::Automatic]);
+    // Three electrified cars a buyer can see, and three they cannot.
+    browsable(['fuel' => FuelType::Electric]);
+    browsable(['fuel' => FuelType::Hybrid]);
+    browsable(['fuel' => FuelType::Electric]);
 
-    browsable(['transmission' => Transmission::Manual]);
+    browsable(['fuel' => FuelType::Diesel]);
     Listing::factory()->create([
         'status' => ListingStatus::Draft,
-        'transmission' => Transmission::Automatic,
+        'fuel' => FuelType::Electric,
         'make_id' => $this->make->id,
         'model_id' => $this->model->id,
     ]);
     Listing::factory()->expired()->create([
-        'transmission' => Transmission::Automatic,
+        'fuel' => FuelType::Electric,
         'make_id' => $this->make->id,
         'model_id' => $this->model->id,
     ]);
 
     $response = $this->getJson('/api/v1/browse')->assertOk();
 
-    $automatic = collect($response->json('data.collections'))->firstWhere('key', 'automatic');
+    $electrified = collect($response->json('data.collections'))->firstWhere('key', 'electrified');
 
-    expect($automatic['count'])->toBe(3)
-        ->and($automatic['filters'])->toBe(['transmission' => 'automatic']);
+    expect($electrified['count'])->toBe(3)
+        ->and($electrified['filters'])->toBe(['fuel' => ['electric', 'hybrid']]);
 });
 
 it('leaves out a collection with nothing in it', function (): void {
-    browsable(['transmission' => Transmission::Manual]);
+    browsable(['fuel' => FuelType::Diesel]);
 
     $keys = collect($this->getJson('/api/v1/browse')->assertOk()->json('data.collections'))
         ->pluck('key')
         ->all();
 
     // An empty category is a worse tap than no category.
-    expect($keys)->not->toContain('automatic');
+    expect($keys)->not->toContain('electrified');
 });
 
 it('puts the busiest collection first', function (): void {
@@ -168,7 +168,7 @@ it('serves everyone who has blocked nobody the same cached answer', function ():
 });
 
 it('puts a car actually in the collection on its card', function (): void {
-    $listing = browsable(['transmission' => Transmission::Automatic]);
+    $listing = browsable(['fuel' => FuelType::Electric]);
     $listing->photos()->create([
         'path' => 'listings/a.jpg',
         'thumb_path' => 'listings/a_thumb.jpg',
@@ -177,26 +177,26 @@ it('puts a car actually in the collection on its card', function (): void {
         'height' => 1200,
     ]);
 
-    $automatic = collect($this->getJson('/api/v1/browse')->assertOk()->json('data.collections'))
-        ->firstWhere('key', 'automatic');
+    $electrified = collect($this->getJson('/api/v1/browse')->assertOk()->json('data.collections'))
+        ->firstWhere('key', 'electrified');
 
-    expect($automatic['photo_url'])->toContain('listings/a_thumb.jpg');
+    expect($electrified['photo_url'])->toContain('listings/a_thumb.jpg');
 });
 
 it('shows no photograph rather than one belonging to another category', function (): void {
     // Every car listed without pictures: there is nothing honest to show.
-    browsable(['transmission' => Transmission::Automatic]);
+    browsable(['fuel' => FuelType::Electric]);
 
-    $automatic = collect($this->getJson('/api/v1/browse')->assertOk()->json('data.collections'))
-        ->firstWhere('key', 'automatic');
+    $electrified = collect($this->getJson('/api/v1/browse')->assertOk()->json('data.collections'))
+        ->firstWhere('key', 'electrified');
 
-    expect($automatic['photo_url'])->toBeNull();
+    expect($electrified['photo_url'])->toBeNull();
 });
 
 it('gives each card its own car when there is one to spare', function (): void {
     foreach (['a', 'b'] as $index => $name) {
         $listing = browsable([
-            'transmission' => Transmission::Automatic,
+            'fuel' => FuelType::Electric,
             'body_type' => 'suv',
             'published_at' => now()->subMinutes($index),
         ]);
@@ -211,7 +211,7 @@ it('gives each card its own car when there is one to spare', function (): void {
 
     $data = $this->getJson('/api/v1/browse')->assertOk()->json('data');
 
-    $collection = collect($data['collections'])->firstWhere('key', 'automatic');
+    $collection = collect($data['collections'])->firstWhere('key', 'electrified');
     $shape = collect($data['body_types'])->firstWhere('key', 'suv');
 
     // Both categories hold both cars, so they take one each rather than

@@ -17,7 +17,7 @@ import {
   TabHeader,
   Text,
 } from '../../components';
-import { collectionIcon, useBrowse, useCollectionChips } from '../../hooks/useBrowse';
+import { collectionArt, collectionIcon, useBrowse, useCollectionChips } from '../../hooks/useBrowse';
 import { useExchangeRates } from '../../hooks/useExchangeRates';
 import { useListingCardMapper } from '../../hooks/useListingCard';
 import { useListingPage } from '../../hooks/useListingPage';
@@ -37,7 +37,7 @@ const HOME_CARS = 8;
  * them at once is a wall to read rather than a rack to flick through, and it
  * pushes the cars themselves off the bottom of the screen.
  */
-const COLLECTION_CARD = 244;
+const COLLECTION_CARD = 264;
 const SHAPE_TILE = 112;
 
 export default function HomeTab() {
@@ -57,13 +57,6 @@ export default function HomeTab() {
   // The ways in that are not a search box, each with a count the API measured.
   const browse = useBrowse();
   const chipsFor = useCollectionChips();
-
-  /** The filters as one line, unless that line only repeats the name. */
-  const detailFor = (collection: Parameters<typeof chipsFor>[0], title: string) => {
-    const line = chipsFor(collection).join(' · ');
-
-    return line && line !== title ? line : null;
-  };
 
   const favorites = useQuery({ queryKey: ['favorites'], queryFn: listingsApi.favorites });
   const favoriteIds = new Set((favorites.data?.data ?? []).map((listing) => listing.id));
@@ -158,7 +151,11 @@ export default function HomeTab() {
                   key={collection.key}
                   title={t(`home:collection_${collection.key}`, collection.key)}
                   count={t('search:offers', { count: collection.count })}
-                  detail={detailFor(collection, t(`home:collection_${collection.key}`, collection.key))}
+                  // A chip that only repeats the name above it says nothing.
+                  chips={chipsFor(collection).filter(
+                    (chip) => chip !== t(`home:collection_${collection.key}`, collection.key),
+                  )}
+                  art={collectionArt(collection.key)}
                   photoUrl={collection.photoUrl}
                   icon={collectionIcon(collection.key) as never}
                   width={COLLECTION_CARD}

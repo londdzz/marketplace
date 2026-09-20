@@ -154,6 +154,12 @@ in section 2 has to be real before a purchase can ever add anything.
   real listing data after launch.
 - Credit pack prices in copy (1 for EUR 1.50, 8 for EUR 9.99, 25 for EUR 24.99) must match
   what is actually configured in App Store Connect and Play Console.
+- **The collection art in `app/assets/collections` was supplied, not licensed by us.**
+  Family cars and First car each carry a scene photograph and a cut-out car, given to the
+  project rather than bought through a stock library. **Confirm the rights to all four
+  files before submission** — they ship inside the binary and appear on the first screen
+  of the app, which is the most visible place artwork can be. Every other collection falls
+  back to a real listing's photograph and needs nothing.
 - **`app/src/app/design.tsx` is a developer screen with eight dead buttons.** It is the
   design-system gallery — every component at every size, for judging them side by side —
   and its buttons are `onPress={() => {}}` on purpose. Nothing in the app links to it, so

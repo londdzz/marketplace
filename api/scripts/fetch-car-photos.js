@@ -25,15 +25,22 @@ const AGENT = 'AutevoDevSeeder/1.0 (development seed data; contact: dev@autevo.m
 
 /** What the seeder publishes, and the search that finds each one. */
 const CARS = [
-  { slug: 'passat', query: 'Volkswagen Passat B8 sedan' },
-  { slug: 'a4', query: 'Audi A4 B9 Avant' },
-  { slug: 'octavia', query: 'Škoda Octavia car' },
-  { slug: 'series-3', query: 'BMW 3 Series F31 Touring' },
-  { slug: 'c-class', query: 'Mercedes-Benz W205 sedan' },
-  { slug: 'golf', query: 'Volkswagen Golf VII hatchback' },
-  { slug: 'astra', query: 'Opel Astra K hatchback' },
-  { slug: 'corolla', query: 'Toyota Corolla E210 sedan' },
+  { slug: 'passat', query: 'Volkswagen Passat B8 sedan', must: [/passat/i] },
+  { slug: 'a4', query: 'Audi A4 B9 Avant', must: [/audi/i, /\bA4\b/] },
+  { slug: 'octavia', query: 'Škoda Octavia car', must: [/octavia/i] },
+  { slug: 'series-3', query: 'BMW 3 Series F31 Touring', must: [/bmw/i] },
+  { slug: 'c-class', query: 'Mercedes-Benz C-Class W205', must: [/mercedes/i, /c-class|c\s?class|W205/i] },
+  { slug: 'golf', query: 'Volkswagen Golf VII hatchback', must: [/golf/i] },
+  { slug: 'astra', query: 'Opel Astra K hatchback', must: [/astra/i] },
+  { slug: 'corolla', query: 'Toyota Corolla E210 sedan', must: [/corolla/i] },
 ];
+
+/**
+ * Commons is full of engine bays, dashboards and badges. A card wants the car,
+ * three-quarters on if possible, so anything naming a part of one is skipped.
+ */
+const NOT_THE_CAR =
+  /engine|motor|interior|dashboard|cockpit|instrument|badge|logo|emblem|wheel|headlamp|headlight|taillight|tail light|rear light|seat|boot|trunk|steering|gearbox|detail|plate|chassis|cutaway|diagram|\bM\d{3}\b|\bEA\d{3}\b|\bOM\d{3}\b/;
 
 /** Licences we will use, best first. Anything else is left alone. */
 const ACCEPTED = [/^cc0/i, /^public domain/i, /^cc by 4/i, /^cc by 3/i, /^cc by-sa 4/i, /^cc by-sa 3/i];
@@ -65,7 +72,7 @@ function get(url, binary = false) {
 
 const plain = (html) => (html ?? '').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
 
-async function bestPhoto(query) {
+async function bestPhoto(query, must) {
   const url =
     'https://commons.wikimedia.org/w/api.php?action=query&format=json&generator=search' +
     `&gsrsearch=${encodeURIComponent(query)}&gsrnamespace=6&gsrlimit=40` +
@@ -90,9 +97,18 @@ async function bestPhoto(query) {
         score: rank(licence),
       };
     })
-    // Landscape only: a card crops to a wide box, and a portrait shot of a car
-    // loses the car.
-    .filter((row) => row.score !== Number.MAX_SAFE_INTEGER && row.thumbUrl && row.width > row.height)
+    .filter(
+      (row) =>
+        row.score !== Number.MAX_SAFE_INTEGER &&
+        row.thumbUrl &&
+        // Landscape only: a card crops to a wide box, and a portrait shot of a
+        // car loses the car.
+        row.width > row.height &&
+        !NOT_THE_CAR.test(row.title) &&
+        // The search engine is generous; a photograph that does not name the
+        // car in its title is usually a photograph of something else.
+        must.every((pattern) => pattern.test(row.title)),
+    )
     .sort((a, b) => a.score - b.score || b.width - a.width);
 
   return usable[0] ?? null;
@@ -107,7 +123,7 @@ async function bestPhoto(query) {
     process.stdout.write(`${car.slug.padEnd(10)} `);
 
     try {
-      const photo = await bestPhoto(car.query);
+      const photo = await bestPhoto(car.query, car.must);
 
       if (!photo) {
         console.log('no freely licensed photograph found');
