@@ -17,6 +17,16 @@ export type ThemeColors = {
   border: string;
   borderStrong: string;
 
+  /**
+   * A surface with the page blurred behind it rather than hidden by it, for
+   * the one control that floats over the content instead of scrolling with
+   * it. Translucent on purpose — the blur is only half of the material, and
+   * an opaque fill would throw the other half away.
+   */
+  glass: string;
+  /** The lit edge of that surface, which is what gives it a thickness. */
+  glassEdge: string;
+
   /** Body copy and, importantly, prices. Prices are never the accent colour. */
   text: string;
   /** Metadata lines: year, kilometres, fuel, location. */
@@ -64,6 +74,9 @@ export const lightColors: ThemeColors = {
   border: neutral[200],
   borderStrong: neutral[300],
 
+  glass: 'rgba(255, 255, 255, 0.62)',
+  glassEdge: 'rgba(255, 255, 255, 0.90)',
+
   text: neutral.ink,
   textMuted: neutral[500],
   textSubtle: neutral[400],
@@ -98,6 +111,11 @@ export const darkColors: ThemeColors = {
   surfaceRaised: petrol[700],
   border: neutral[700],
   borderStrong: '#2F4F47',
+
+  // Dark enough that muted placeholder type holds up over a bright photograph
+  // sliding past underneath, light enough that the photograph still reads.
+  glass: 'rgba(15, 33, 30, 0.58)',
+  glassEdge: 'rgba(237, 242, 241, 0.22)',
 
   text: neutral.inkLight,
   textMuted: neutral[400],

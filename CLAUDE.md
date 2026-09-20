@@ -403,9 +403,17 @@ release, and update it whenever a placeholder is added or replaced.
   pinned by `stickyHeaderIndices` rather than by anything we animate — settles at the top.
   **Nothing is drawn behind it**: the cars run underneath the pill, into the gutters beside
   it and through the gap above it. A strip carrying the bar reads as a box stuck to the top
-  of the screen, which is the opposite of floating. The bar arrives lifted instead: a gloss
-  across its upper edge, a brighter outline, and `theme.elevation.sheet`, which now has a
-  photograph to fall on rather than a near-black page. The gloss is fixed, not a sweep — a shimmer on every scroll would be
+  of the screen, which is the opposite of floating.
+- **The search bar is solid while it is part of the page and glass once it floats.** As it
+  pins, its opaque fill fades out to leave the blur that was behind it all along: `expo-blur`
+  at intensity 72, tinted by the `glass` token far enough that the placeholder holds up over
+  a bright photograph sliding past underneath — a see-through field nobody can read is worse
+  than no effect at all. A blur alone is a smear, so a lit top edge and a raking gloss give
+  the pane its thickness. There is no drop shadow: a shadow needs an opaque caster, which is
+  the one thing this cannot have, and on a near-black page it cast nothing worth keeping.
+  Android draws no blur at all without `experimentalBlurMethod="dimezisBlurView"`.
+  `SearchBar` gained a `translucent` prop for it, so the glass behind provides the fill and
+  the field does not paint its own. The gloss is fixed, not a sweep — a shimmer on every scroll would be
   the loudest thing on a screen whose job is to show cars. The faded bar is still drawn
   over the pinned search bar, so it drops `pointerEvents` once it is gone; without that the
   search bar would be dead exactly where it floats. The bar's height is measured rather

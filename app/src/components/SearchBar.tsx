@@ -9,6 +9,11 @@ export type SearchBarProps = {
   title: string;
   hint: string;
   onPress?: () => void;
+  /**
+   * Draw no fill and no outline of its own, because something behind it is
+   * providing both — the glass the floating variant sits on.
+   */
+  translucent?: boolean;
 };
 
 /**
@@ -18,7 +23,7 @@ export type SearchBarProps = {
  * Two stacked lines of type made it the tallest thing on the screen, which is
  * not what the screen is about.
  */
-export function SearchBar({ title, hint, onPress }: SearchBarProps) {
+export function SearchBar({ title, hint, onPress, translucent = false }: SearchBarProps) {
   const theme = useTheme();
 
   return (
@@ -32,8 +37,14 @@ export function SearchBar({ title, hint, onPress }: SearchBarProps) {
         alignItems: 'center',
         gap: theme.spacing.md,
         height: 46,
-        backgroundColor: pressed ? theme.colors.borderStrong : theme.colors.surface,
-        borderWidth: 1,
+        backgroundColor: translucent
+          ? pressed
+            ? theme.colors.glassEdge
+            : 'transparent'
+          : pressed
+            ? theme.colors.borderStrong
+            : theme.colors.surface,
+        borderWidth: translucent ? 0 : 1,
         borderColor: theme.colors.border,
         borderRadius: theme.radius.full,
         paddingHorizontal: theme.spacing.lg,
