@@ -141,3 +141,9 @@ in section 2 has to be real before a purchase can ever add anything.
   real listing data after launch.
 - Credit pack prices in copy (1 for EUR 1.50, 8 for EUR 9.99, 25 for EUR 24.99) must match
   what is actually configured in App Store Connect and Play Console.
+- **`app/src/app/design.tsx` is a developer screen with eight dead buttons.** It is the
+  design-system gallery — every component at every size, for judging them side by side —
+  and its buttons are `onPress={() => {}}` on purpose. Nothing in the app links to it, so
+  it can only be reached by typing `/design`, but it is still in the shipped bundle. Delete
+  the file before submission, or gate it behind `__DEV__`. It is the only screen in the app
+  where a control does nothing when you press it.
