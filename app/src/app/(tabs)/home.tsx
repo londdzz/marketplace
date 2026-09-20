@@ -3,7 +3,23 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
+import {
+  ActivityIndicator,
+  type LayoutChangeEvent,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  useWindowDimensions,
+  View,
+} from 'react-native';
+import Animated, {
+  interpolate,
+  runOnJS,
+  useAnimatedReaction,
+  useAnimatedScrollHandler,
+  useAnimatedStyle,
+  useSharedValue,
+} from 'react-native-reanimated';
 
 import { authApi } from '../../api/auth';
 import { listingsApi } from '../../api/listings';
@@ -12,11 +28,11 @@ import type { Listing } from '../../api/types';
 import {
   BodyTypeTile,
   CollectionCard,
+  FloatingSearchBar,
   ListingCard,
   RateCard,
   PromoBanner,
   Screen,
-  SearchBar,
   TabHeader,
   Text,
 } from '../../components';
@@ -50,6 +66,14 @@ const HOME_CARS = 8;
 const COLLECTION_CARD = 264;
 const SHAPE_TILE = 112;
 
+/**
+ * The app bar's height before it has been measured: 26 for the icons and the
+ * spacing scale's md above and below them. It is measured anyway, because the
+ * phone's text size setting can make it taller, but starting at the right
+ * number means the page is never laid out wrong even for one frame.
+ */
+const HEADER_HEIGHT = 50;
+
 export default function HomeTab() {
   const theme = useTheme();
   const router = useRouter();
@@ -63,6 +87,37 @@ export default function HomeTab() {
   // drawn on the next launch. It must not take it off the screen mid-tap,
   // though, or the thank-you is never seen — so this keeps it for the session.
   const [rated, setRated] = useState(false);
+
+  // The app bar gives up the top of the screen as soon as the page moves and
+  // the search bar takes it, which is the one control a buyer scrolling past
+  // the cars is most likely to want next. Its height is measured rather than
+  // assumed, because the phone's text size setting decides it.
+  const [headerHeight, setHeaderHeight] = useState(HEADER_HEIGHT);
+  const [headerGone, setHeaderGone] = useState(false);
+  const scrollY = useSharedValue(0);
+
+  const onScroll = useAnimatedScrollHandler((event) => {
+    scrollY.value = event.contentOffset.y;
+  });
+
+  // Gone well before the search bar arrives, so the two are never both there.
+  const headerStyle = useAnimatedStyle(() => {
+    const progress = interpolate(scrollY.value, [0, headerHeight * 0.6], [0, 1], 'clamp');
+
+    return { opacity: 1 - progress, transform: [{ translateY: -progress * 10 }] };
+  }, [headerHeight]);
+
+  // Faded out, it is still drawn over the pinned search bar, so it has to stop
+  // taking touches — otherwise the bar would be dead exactly where it floats.
+  useAnimatedReaction(
+    () => scrollY.value > headerHeight * 0.5,
+    (gone, was) => {
+      if (gone !== was) {
+        runOnJS(setHeaderGone)(gone);
+      }
+    },
+    [headerHeight],
+  );
 
   // The newest cars across all five markets, which is what a home screen is
   // for: something to look at before anyone has searched for anything.
@@ -120,157 +175,186 @@ export default function HomeTab() {
 
   return (
     <Screen flush edges={['top']}>
-      {/* No badges until something real drives them: a dot that is always on
-          says nothing. */}
-      <TabHeader />
-
-      <ScrollView
-        contentContainerStyle={{
-          paddingHorizontal: theme.screenPadding,
-          paddingBottom: theme.spacing.huge,
-          gap: theme.spacing.xl,
-        }}
-        showsVerticalScrollIndicator={false}
-      >
-        <SearchBar
-          title={t('home:search_placeholder')}
-          hint={t('home:search_hint')}
-          onPress={() => router.push('/(tabs)/search')}
-        />
-
-        <PromoBanner
-          title={t('home:promo_title')}
-          body={t('home:promo_body')}
-          cta={t('home:promo_cta')}
-          onPress={() => router.push('/(tabs)/sell')}
-        />
-
-        {/* Somewhere to start for a buyer with nothing to type yet. Both
-            sections are drawn from what the API says is actually in the
-            catalogue, so neither can offer a category with no cars in it. */}
-        {collections.length > 0 ? (
-          <View style={{ gap: theme.spacing.md }}>
-            <Text variant="title">{t('home:browse_collections')}</Text>
-
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              decelerationRate="fast"
-              snapToInterval={COLLECTION_CARD + gap}
-              snapToAlignment="start"
-              style={rail}
-              contentContainerStyle={railContent}
-              testID="collections-rail"
-            >
-              {collections.map((collection) => (
-                <CollectionCard
-                  key={collection.key}
-                  title={t(`home:collection_${collection.key}`, collection.key)}
-                  count={t('search:offers', { count: collection.count })}
-                  // A chip that only repeats the name above it says nothing.
-                  chips={chipsFor(collection).filter(
-                    (chip) => chip !== t(`home:collection_${collection.key}`, collection.key),
-                  )}
-                  art={collectionArt(collection.key)}
-                  photoUrl={collection.photoUrl}
-                  icon={collectionIcon(collection.key) as never}
-                  width={COLLECTION_CARD}
-                  onPress={() => open(collection.filters)}
-                  testID={`collection-${collection.key}`}
-                />
-              ))}
-            </ScrollView>
-          </View>
-        ) : null}
-
-        <View style={styles.sectionHeader}>
-          <Text variant="title">{t('home:newest')}</Text>
-          <Pressable
-            accessibilityRole="button"
-            style={styles.showAll}
-            // Show all means all of these, newest first — not whatever search
-            // was last built in the search tab, which is what the results
-            // screen would otherwise still be holding.
-            onPress={() => {
-              replace(NEWEST);
-              router.push('/results');
-            }}
-            testID="home-show-all"
-          >
-            <Text variant="label" tone="accent">
-              {t('home:show_all')}
-            </Text>
-            <Ionicons
-              name="chevron-forward"
-              size={15}
-              color={theme.colors.accent}
-              style={{ marginLeft: 2 }}
-            />
-          </Pressable>
-        </View>
-
-        {newest.isLoading ? (
-          <ActivityIndicator color={theme.colors.accent} style={{ marginTop: theme.spacing.xl }} />
-        ) : (
-          <View style={[styles.grid, { gap, marginTop: -theme.spacing.sm }]}>
-            {listings.map((listing) => (
-              <ListingCard
-                key={listing.id}
-                listing={toCard(listing)}
-                compact
-                width={cardWidth}
-                onPress={() => router.push(`/listing/${listing.id}`)}
-                onToggleFavorite={() => save.mutate(listing)}
-              />
-            ))}
-          </View>
-        )}
-        {shapes.length > 0 ? (
-          <View style={{ gap: theme.spacing.md }}>
-            <Text variant="title">{t('home:browse_body_types')}</Text>
-
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              style={rail}
-              contentContainerStyle={railContent}
-              testID="shapes-rail"
-            >
-              {shapes.map((shape) => (
-                <BodyTypeTile
-                  key={shape.key}
-                  label={t(`listing:body_type.${shape.key}`, shape.key)}
-                  count={t('search:offers', { count: shape.count })}
-                  shape={shape.key}
-                  image={bodyTypeArt(shape.key)}
-                  width={SHAPE_TILE}
-                  onPress={() => open({ bodyType: [shape.key] })}
-                  testID={`shape-${shape.key}`}
-                />
-              ))}
-            </ScrollView>
-          </View>
-        ) : null}
-
-
-        {/* The one question, at the bottom where it interrupts nothing, and
-            only until it has been answered. */}
-        {user && (!user.rated_at || rated) ? (
-          <RateCard
-            onRate={async (score) => {
-              await authApi.rate(score);
-              setRated(true);
-              apply({ ...user, rated_at: new Date().toISOString() });
-            }}
+      <View style={styles.flex}>
+        <Animated.ScrollView
+          onScroll={onScroll}
+          scrollEventThrottle={16}
+          // The search bar is child zero, so the platform pins it to the top
+          // of the screen itself once the page has scrolled past it.
+          stickyHeaderIndices={[0]}
+          contentContainerStyle={{
+            paddingTop: headerHeight,
+            paddingHorizontal: theme.screenPadding,
+            paddingBottom: theme.spacing.huge,
+            gap: theme.spacing.xl,
+          }}
+          showsVerticalScrollIndicator={false}
+        >
+          <FloatingSearchBar
+            title={t('home:search_placeholder')}
+            hint={t('home:search_hint')}
+            onPress={() => router.push('/(tabs)/search')}
+            scrollY={scrollY}
+            pinAt={headerHeight}
+            gutter={theme.screenPadding}
           />
-        ) : null}
 
-      </ScrollView>
+          <PromoBanner
+            title={t('home:promo_title')}
+            body={t('home:promo_body')}
+            cta={t('home:promo_cta')}
+            onPress={() => router.push('/(tabs)/sell')}
+          />
+
+          {/* Somewhere to start for a buyer with nothing to type yet. Both
+              sections are drawn from what the API says is actually in the
+              catalogue, so neither can offer a category with no cars in it. */}
+          {collections.length > 0 ? (
+            <View style={{ gap: theme.spacing.md }}>
+              <Text variant="title">{t('home:browse_collections')}</Text>
+
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                decelerationRate="fast"
+                snapToInterval={COLLECTION_CARD + gap}
+                snapToAlignment="start"
+                style={rail}
+                contentContainerStyle={railContent}
+                testID="collections-rail"
+              >
+                {collections.map((collection) => (
+                  <CollectionCard
+                    key={collection.key}
+                    title={t(`home:collection_${collection.key}`, collection.key)}
+                    count={t('search:offers', { count: collection.count })}
+                    // A chip that only repeats the name above it says nothing.
+                    chips={chipsFor(collection).filter(
+                      (chip) => chip !== t(`home:collection_${collection.key}`, collection.key),
+                    )}
+                    art={collectionArt(collection.key)}
+                    photoUrl={collection.photoUrl}
+                    icon={collectionIcon(collection.key) as never}
+                    width={COLLECTION_CARD}
+                    onPress={() => open(collection.filters)}
+                    testID={`collection-${collection.key}`}
+                  />
+                ))}
+              </ScrollView>
+            </View>
+          ) : null}
+
+          <View style={styles.sectionHeader}>
+            <Text variant="title">{t('home:newest')}</Text>
+            <Pressable
+              accessibilityRole="button"
+              style={styles.showAll}
+              // Show all means all of these, newest first — not whatever search
+              // was last built in the search tab, which is what the results
+              // screen would otherwise still be holding.
+              onPress={() => {
+                replace(NEWEST);
+                router.push('/results');
+              }}
+              testID="home-show-all"
+            >
+              <Text variant="label" tone="accent">
+                {t('home:show_all')}
+              </Text>
+              <Ionicons
+                name="chevron-forward"
+                size={15}
+                color={theme.colors.accent}
+                style={{ marginLeft: 2 }}
+              />
+            </Pressable>
+          </View>
+
+          {newest.isLoading ? (
+            <ActivityIndicator color={theme.colors.accent} style={{ marginTop: theme.spacing.xl }} />
+          ) : (
+            <View style={[styles.grid, { gap, marginTop: -theme.spacing.sm }]}>
+              {listings.map((listing) => (
+                <ListingCard
+                  key={listing.id}
+                  listing={toCard(listing)}
+                  compact
+                  width={cardWidth}
+                  onPress={() => router.push(`/listing/${listing.id}`)}
+                  onToggleFavorite={() => save.mutate(listing)}
+                />
+              ))}
+            </View>
+          )}
+          {shapes.length > 0 ? (
+            <View style={{ gap: theme.spacing.md }}>
+              <Text variant="title">{t('home:browse_body_types')}</Text>
+
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={rail}
+                contentContainerStyle={railContent}
+                testID="shapes-rail"
+              >
+                {shapes.map((shape) => (
+                  <BodyTypeTile
+                    key={shape.key}
+                    label={t(`listing:body_type.${shape.key}`, shape.key)}
+                    count={t('search:offers', { count: shape.count })}
+                    shape={shape.key}
+                    image={bodyTypeArt(shape.key)}
+                    width={SHAPE_TILE}
+                    onPress={() => open({ bodyType: [shape.key] })}
+                    testID={`shape-${shape.key}`}
+                  />
+                ))}
+              </ScrollView>
+            </View>
+          ) : null}
+
+
+          {/* The one question, at the bottom where it interrupts nothing, and
+              only until it has been answered. */}
+          {user && (!user.rated_at || rated) ? (
+            <RateCard
+              onRate={async (score) => {
+                await authApi.rate(score);
+                setRated(true);
+                apply({ ...user, rated_at: new Date().toISOString() });
+              }}
+            />
+          ) : null}
+
+        </Animated.ScrollView>
+
+        {/* Drawn over the page rather than above it, so the cars scroll up
+            behind it as it goes. No badges until something real drives them:
+            a dot that is always on says nothing. */}
+        <Animated.View
+          style={[styles.header, headerStyle]}
+          pointerEvents={headerGone ? 'none' : 'auto'}
+          onLayout={(event: LayoutChangeEvent) =>
+            setHeaderHeight(Math.round(event.nativeEvent.layout.height))
+          }
+        >
+          <TabHeader />
+        </Animated.View>
+      </View>
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
+  flex: {
+    flex: 1,
+  },
+  header: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+  },
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',

@@ -398,6 +398,18 @@ release, and update it whenever a placeholder is added or replaced.
   the only size it is ever drawn at — they were drawn against a rendered contact sheet
   rather than by eye, because the first pass made a saloon, a hatchback and an estate
   that were the same picture.
+- **The home screen's app bar gives up the top, and the search bar takes it.** Scrolling
+  fades and lifts `TabHeader` away, and the search bar — child zero of the scroll view,
+  pinned by `stickyHeaderIndices` rather than by anything we animate — settles at the top
+  on a strip that runs to both edges, so the cars pass underneath instead of beside it.
+  The bar arrives lifted: a gloss across its upper edge, a brighter outline and a hairline
+  under the strip. On a near-black page a shadow casts nothing, so the lift is carried by
+  light rather than by dark; `theme.elevation.sheet` stays underneath for the platforms
+  where it does read. The gloss is fixed, not a sweep — a shimmer on every scroll would be
+  the loudest thing on a screen whose job is to show cars. The faded bar is still drawn
+  over the pinned search bar, so it drops `pointerEvents` once it is gone; without that the
+  search bar would be dead exactly where it floats. The bar's height is measured rather
+  than assumed, because the phone's text size setting decides it.
 - **The home screen follows the reference app closely**: header, search bar, a wide banner
   where their advertisement sits, a section header with a Show all link, and cards with a
   small thumbnail on the left rather than a full-width photo. The banner carries a deep

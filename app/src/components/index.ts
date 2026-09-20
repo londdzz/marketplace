@@ -16,6 +16,7 @@ export { Chip, type ChipProps } from './Chip';
 export { CollectionCard, type CollectionCardProps } from './CollectionCard';
 export { ConfirmDialog, type ConfirmDialogProps } from './ConfirmDialog';
 export { EmptyState, type EmptyStateProps } from './EmptyState';
+export { FloatingSearchBar, type FloatingSearchBarProps } from './FloatingSearchBar';
 export { Fab, type FabProps } from './Fab';
 export { Input, type InputProps } from './Input';
 export { ListGroup, type ListGroupProps } from './ListGroup';
