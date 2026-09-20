@@ -29,7 +29,7 @@ export default function SellTransmissionScreen() {
     }
 
     if (await save({ transmission: selected })) {
-      router.push(pathTo('photos'));
+      router.push(pathTo('shape'));
     }
   };
 

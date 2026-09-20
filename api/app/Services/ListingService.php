@@ -11,6 +11,7 @@ use App\Exceptions\ListingNotReadyException;
 use App\Exceptions\ListingStatusException;
 use App\Models\Listing;
 use App\Models\User;
+use App\Models\VehicleModel;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -54,6 +55,8 @@ final class ListingService
         $listing->user_id = $user->getKey();
         $listing->status = ListingStatus::Draft;
 
+        $this->inheritBodyType($listing, $attributes);
+
         // Fall back to the seller's own location so a draft always has
         // somewhere to be, which the location step can then change.
         $listing->country_code ??= $user->country_code;
@@ -69,9 +72,35 @@ final class ListingService
      */
     public function update(Listing $listing, array $attributes): Listing
     {
-        $listing->fill($attributes)->save();
+        $listing->fill($attributes);
+        $this->inheritBodyType($listing, $attributes);
+        $listing->save();
 
         return $listing->refresh();
+    }
+
+    /**
+     * Give a listing the shape its model is usually built in.
+     *
+     * Nothing in the sell flow asks a seller what a hatchback is, and before
+     * this nothing set the column at all, so every listing was shapeless and
+     * browsing by shape found nothing. The model knows: a Golf is a hatchback,
+     * a Tiguan is an SUV.
+     *
+     * It is a starting point rather than an answer. Our model list names
+     * ranges, not variants — a Passat Variant is an estate and this will call
+     * it a saloon — so the seller is asked to confirm it, and once they have
+     * chosen, picking a different model never overwrites them.
+     *
+     * @param  array<string, mixed>  $attributes
+     */
+    private function inheritBodyType(Listing $listing, array $attributes): void
+    {
+        if (! array_key_exists('model_id', $attributes) || $listing->body_type !== null) {
+            return;
+        }
+
+        $listing->body_type = VehicleModel::query()->find($listing->model_id)?->body_type;
     }
 
     /**

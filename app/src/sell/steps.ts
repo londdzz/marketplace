@@ -4,9 +4,9 @@ import type { Listing } from '../api/types';
  * The sell flow, in order.
  *
  * One decision per screen, but the seller is told how far along they are in
- * terms of the seven things a listing needs, not the eleven screens it takes to
- * collect them: "step 2 of 7" while answering year, kilometres, fuel and
- * gearbox is honest, "step 5 of 11" just looks longer than it is.
+ * terms of the seven things a listing needs, not the twelve screens it takes to
+ * collect them: "step 2 of 7" while answering year, kilometres, fuel, gearbox
+ * and shape is honest, "step 5 of 12" just looks longer than it is.
  */
 export type SellScreen =
   | 'make'
@@ -15,6 +15,7 @@ export type SellScreen =
   | 'mileage'
   | 'fuel'
   | 'transmission'
+  | 'shape'
   | 'photos'
   | 'price'
   | 'location'
@@ -28,6 +29,7 @@ export const SELL_SCREENS: SellScreen[] = [
   'mileage',
   'fuel',
   'transmission',
+  'shape',
   'photos',
   'price',
   'location',
@@ -43,6 +45,7 @@ const STEP_OF: Record<SellScreen, number> = {
   mileage: 2,
   fuel: 2,
   transmission: 2,
+  shape: 2,
   photos: 3,
   price: 4,
   location: 5,

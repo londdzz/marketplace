@@ -372,6 +372,17 @@ release, and update it whenever a placeholder is added or replaced.
   more; a grid showing all of them at once is a wall to read rather than a rack to flick
   through, and it pushed the cars themselves off the bottom of the screen. The rails run
   to both edges of the display while the first card still lines up with everything above.
+- **A listing gets its shape from its model, and the seller confirms it.** Nothing in the
+  sell flow asked what a hatchback is and nothing set the column, so every real listing was
+  shapeless: browsing by shape would have found nothing in production, the `body_type`
+  search filter did nothing, and the City and Family collections would both have been
+  empty. All 176 seeded models now carry the shape their range is usually built in — a Golf
+  is a hatchback, a Tiguan an SUV — and `ListingService` gives a draft that shape when the
+  model is picked. It is a starting point, not an answer: our list names ranges and not
+  variants, so a Passat Variant would be filed as a saloon, and estates are half the cars
+  in the region. So the sell flow asks, in `sell/shape`, with the model's guess already
+  chosen — one more screen inside step 2, which still reads "step 2 of 7". Once the seller
+  has chosen, changing the model never overwrites them.
 - **The body shapes are drawn, not photographed.** A photograph of a car means one
   particular car, and each of these stands for every car of its shape, so
   `BodyTypeTile` holds ten silhouettes in one 64 x 26 box on a common ground line. Each

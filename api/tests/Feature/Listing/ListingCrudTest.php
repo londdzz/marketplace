@@ -253,3 +253,36 @@ it('rejects a status the marketplace does not have', function (): void {
         ->assertStatus(422)
         ->assertJsonValidationErrors('status');
 });
+
+it('gives a draft the shape its model is usually built in', function (): void {
+    $vw = Make::query()->where('name', 'Volkswagen')->firstOrFail();
+    $golf = VehicleModel::query()->where('make_id', $vw->id)->where('name', 'Golf')->firstOrFail();
+
+    // Nothing in the sell flow asks what a hatchback is, so the model answers.
+    $response = $this->actingAs($this->seller, 'sanctum')
+        ->postJson('/api/v1/listings', ['make_id' => $vw->id, 'model_id' => $golf->id])
+        ->assertCreated();
+
+    expect($response->json('data.body_type'))->toBe('hatchback');
+});
+
+it('lets the seller correct the shape, and never overwrites them', function (): void {
+    $vw = Make::query()->where('name', 'Volkswagen')->firstOrFail();
+    $passat = VehicleModel::query()->where('make_id', $vw->id)->where('name', 'Passat')->firstOrFail();
+    $golf = VehicleModel::query()->where('make_id', $vw->id)->where('name', 'Golf')->firstOrFail();
+
+    $id = $this->actingAs($this->seller, 'sanctum')
+        ->postJson('/api/v1/listings', ['make_id' => $vw->id, 'model_id' => $passat->id])
+        ->json('data.id');
+
+    // Our list names ranges, not variants: this one is a Variant.
+    $this->actingAs($this->seller, 'sanctum')
+        ->patchJson("/api/v1/listings/{$id}", ['body_type' => 'estate'])
+        ->assertOk();
+
+    $response = $this->actingAs($this->seller, 'sanctum')
+        ->patchJson("/api/v1/listings/{$id}", ['model_id' => $golf->id])
+        ->assertOk();
+
+    expect($response->json('data.body_type'))->toBe('estate');
+});

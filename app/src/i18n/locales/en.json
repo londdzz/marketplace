@@ -256,6 +256,8 @@
     "mileage": "How many kilometres?",
     "fuel": "Fuel",
     "transmission": "Gearbox",
+    "shape": "What shape is it?",
+    "shape_hint": "We guessed from the model. Change it if the car is an estate, a coupé or anything else.",
     "photos": "Add photos",
     "photos_hint": "At least {{min}}, up to {{max}}. The first one is the cover.",
     "photos_count": "{{count}} of {{max}} photos",

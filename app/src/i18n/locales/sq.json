@@ -256,6 +256,8 @@
     "mileage": "Sa kilometra ka?",
     "fuel": "Karburanti",
     "transmission": "Transmisioni",
+    "shape": "Çfarë forme ka?",
+    "shape_hint": "E gjetëm nga modeli. Ndryshojeni nëse vetura është familjare, kupe ose diçka tjetër.",
     "photos": "Shto foto",
     "photos_hint": "Së paku {{min}}, maksimumi {{max}}. E para është kopertina.",
     "photos_count": "{{count}} nga {{max}} foto",
