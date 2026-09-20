@@ -7,10 +7,10 @@ should or tells you what is wrong, so you never move on carrying a mistake.
 
 Everything you copy onto the server is in **`deploy/`** in this repository.
 
-> **Throughout this document the domain is `autevo.mk`.** If the one you bought is
-> different, tell me and I will change it everywhere — `eas.json`, the GitHub workflow,
-> the policies and these files. Do that **before** the first store upload: the bundle
-> identifier `mk.autevo.app` can never be changed once a version ships.
+> **The domain is `autevo.mk`, and it is bought.** Everything in the repository already
+> uses it — `eas.json`, the iOS workflow, the policies, the store listings and these
+> files — so there is nothing to rename. It is also what justifies the bundle identifier
+> `mk.autevo.app`, which can never be changed once a version ships.
 
 ---
 
