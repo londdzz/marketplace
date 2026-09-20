@@ -1,5 +1,6 @@
 export { AccordionCard, type AccordionCardProps } from './AccordionCard';
 export { AppHeader, type AppHeaderProps } from './AppHeader';
+export { BodyTypeTile, type BodyTypeTileProps } from './BodyTypeTile';
 export { Badge, type BadgeProps } from './Badge';
 export { Button, type ButtonProps } from './Button';
 export { Card, type CardProps } from './Card';
@@ -12,6 +13,7 @@ export {
   type CentreTabDiscProps,
 } from './CentreTabButton';
 export { Chip, type ChipProps } from './Chip';
+export { CollectionCard, type CollectionCardProps } from './CollectionCard';
 export { ConfirmDialog, type ConfirmDialogProps } from './ConfirmDialog';
 export { EmptyState, type EmptyStateProps } from './EmptyState';
 export { Fab, type FabProps } from './Fab';

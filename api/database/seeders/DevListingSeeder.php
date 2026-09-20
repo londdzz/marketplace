@@ -31,17 +31,17 @@ use Illuminate\Support\Carbon;
 class DevListingSeeder extends Seeder
 {
     /**
-     * @var array<int, array{make: string, model: string, variant: string, year: int, km: int, fuel: FuelType, gearbox: Transmission, hp: int, price: string, city: string, colour: array{int, int, int}}>
+     * @var array<int, array{make: string, model: string, variant: string, year: int, km: int, fuel: FuelType, gearbox: Transmission, hp: int, price: string, city: string, body: string, colour: array{int, int, int}}>
      */
     private const CARS = [
-        ['make' => 'Volkswagen', 'model' => 'Passat', 'variant' => '2.0 TDI Highline', 'year' => 2016, 'km' => 168000, 'fuel' => FuelType::Diesel, 'gearbox' => Transmission::Manual, 'hp' => 150, 'price' => '8950.00', 'city' => 'Skopje', 'colour' => [38, 54, 78]],
-        ['make' => 'Audi', 'model' => 'A4', 'variant' => 'Avant 2.0 TDI quattro', 'year' => 2018, 'km' => 121000, 'fuel' => FuelType::Diesel, 'gearbox' => Transmission::Automatic, 'hp' => 190, 'price' => '12400.00', 'city' => 'Skopje', 'colour' => [82, 86, 92]],
-        ['make' => 'Škoda', 'model' => 'Octavia', 'variant' => '1.6 TDI Ambition', 'year' => 2015, 'km' => 198000, 'fuel' => FuelType::Diesel, 'gearbox' => Transmission::Manual, 'hp' => 110, 'price' => '7300.00', 'city' => 'Tetovo', 'colour' => [140, 146, 150]],
-        ['make' => 'BMW', 'model' => 'Series 3', 'variant' => '320d Touring', 'year' => 2019, 'km' => 96000, 'fuel' => FuelType::Diesel, 'gearbox' => Transmission::Automatic, 'hp' => 190, 'price' => '14900.00', 'city' => 'Kumanovo', 'colour' => [26, 30, 36]],
-        ['make' => 'Mercedes-Benz', 'model' => 'C-Class', 'variant' => 'C 220 d AMG Line', 'year' => 2017, 'km' => 143000, 'fuel' => FuelType::Diesel, 'gearbox' => Transmission::Automatic, 'hp' => 170, 'price' => '16500.00', 'city' => 'Ohrid', 'colour' => [198, 200, 204]],
-        ['make' => 'Golf', 'model' => 'Golf', 'variant' => '1.6 TDI Comfortline', 'year' => 2014, 'km' => 212000, 'fuel' => FuelType::Diesel, 'gearbox' => Transmission::Manual, 'hp' => 105, 'price' => '6200.00', 'city' => 'Prilep', 'colour' => [156, 42, 44]],
-        ['make' => 'Opel', 'model' => 'Astra', 'variant' => '1.6 CDTI Innovation', 'year' => 2017, 'km' => 134000, 'fuel' => FuelType::Diesel, 'gearbox' => Transmission::Manual, 'hp' => 136, 'price' => '8100.00', 'city' => 'Bitola', 'colour' => [60, 90, 120]],
-        ['make' => 'Toyota', 'model' => 'Corolla', 'variant' => '1.8 Hybrid Comfort', 'year' => 2020, 'km' => 64000, 'fuel' => FuelType::Hybrid, 'gearbox' => Transmission::Automatic, 'hp' => 122, 'price' => '17900.00', 'city' => 'Bitola', 'colour' => [235, 238, 240]],
+        ['make' => 'Volkswagen', 'model' => 'Passat', 'variant' => '2.0 TDI Highline', 'body' => 'sedan', 'year' => 2016, 'km' => 168000, 'fuel' => FuelType::Diesel, 'gearbox' => Transmission::Manual, 'hp' => 150, 'price' => '8950.00', 'city' => 'Skopje', 'colour' => [38, 54, 78]],
+        ['make' => 'Audi', 'model' => 'A4', 'variant' => 'Avant 2.0 TDI quattro', 'body' => 'estate', 'year' => 2018, 'km' => 121000, 'fuel' => FuelType::Diesel, 'gearbox' => Transmission::Automatic, 'hp' => 190, 'price' => '12400.00', 'city' => 'Skopje', 'colour' => [82, 86, 92]],
+        ['make' => 'Škoda', 'model' => 'Octavia', 'variant' => '1.6 TDI Ambition', 'body' => 'hatchback', 'year' => 2015, 'km' => 198000, 'fuel' => FuelType::Diesel, 'gearbox' => Transmission::Manual, 'hp' => 110, 'price' => '7300.00', 'city' => 'Tetovo', 'colour' => [140, 146, 150]],
+        ['make' => 'BMW', 'model' => 'Series 3', 'variant' => '320d Touring', 'body' => 'estate', 'year' => 2019, 'km' => 96000, 'fuel' => FuelType::Diesel, 'gearbox' => Transmission::Automatic, 'hp' => 190, 'price' => '14900.00', 'city' => 'Kumanovo', 'colour' => [26, 30, 36]],
+        ['make' => 'Mercedes-Benz', 'model' => 'C-Class', 'variant' => 'C 220 d AMG Line', 'body' => 'sedan', 'year' => 2017, 'km' => 143000, 'fuel' => FuelType::Diesel, 'gearbox' => Transmission::Automatic, 'hp' => 170, 'price' => '16500.00', 'city' => 'Ohrid', 'colour' => [198, 200, 204]],
+        ['make' => 'Golf', 'model' => 'Golf', 'variant' => '1.6 TDI Comfortline', 'body' => 'hatchback', 'year' => 2014, 'km' => 212000, 'fuel' => FuelType::Diesel, 'gearbox' => Transmission::Manual, 'hp' => 105, 'price' => '6200.00', 'city' => 'Prilep', 'colour' => [156, 42, 44]],
+        ['make' => 'Opel', 'model' => 'Astra', 'variant' => '1.6 CDTI Innovation', 'body' => 'hatchback', 'year' => 2017, 'km' => 134000, 'fuel' => FuelType::Diesel, 'gearbox' => Transmission::Manual, 'hp' => 136, 'price' => '8100.00', 'city' => 'Bitola', 'colour' => [60, 90, 120]],
+        ['make' => 'Toyota', 'model' => 'Corolla', 'variant' => '1.8 Hybrid Comfort', 'body' => 'sedan', 'year' => 2020, 'km' => 64000, 'fuel' => FuelType::Hybrid, 'gearbox' => Transmission::Automatic, 'hp' => 122, 'price' => '17900.00', 'city' => 'Bitola', 'colour' => [235, 238, 240]],
     ];
 
     public function run(): void
@@ -85,7 +85,7 @@ class DevListingSeeder extends Seeder
                 'fuel' => $car['fuel'],
                 'transmission' => $car['gearbox'],
                 'power_hp' => $car['hp'],
-                'body_type' => 'estate',
+                'body_type' => $car['body'],
                 'drivetrain' => 'fwd',
                 'color' => 'grey',
                 'doors' => 5,

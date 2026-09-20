@@ -68,6 +68,33 @@ final class ListingSearchService
     }
 
     /**
+     * How many live listings a set of filters would return.
+     *
+     * The home screen puts a number under every category it offers, and a
+     * number that was estimated is a number that is wrong. This runs the same
+     * filters against the same listings the search itself would, minus the
+     * ordering and the eager loads, which count for nothing when counting.
+     *
+     * @param  array<string, mixed>  $filters
+     */
+    public function count(array $filters, ?User $viewer = null): int
+    {
+        $query = Listing::query()->where('status', ListingStatus::Active);
+
+        $hidden = $this->blocks->hiddenFrom($viewer);
+
+        if ($hidden !== []) {
+            $query->whereNotIn('user_id', $hidden);
+        }
+
+        $this->applyText($query, $filters['q'] ?? null);
+        $this->applyVehicle($query, $filters);
+        $this->applyPlace($query, $filters);
+
+        return $query->count();
+    }
+
+    /**
      * @param  Builder<Listing>  $query
      */
     private function applyText(Builder $query, ?string $q): void

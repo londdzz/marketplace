@@ -58,7 +58,22 @@
     "promo_body": "1 kredi = 1 shpallje aktive për 2 javë",
     "promo_cta": "Fillo",
     "vat_note": "{{net}} (neto) + TVSH",
-    "newest": "Të shtuara së fundmi"
+    "newest": "Të shtuara së fundmi",
+    "browse_collections": "Shfleto sipas nevojës",
+    "browse_body_types": "Shfleto sipas formës",
+    "collection_family": "Vetura familjare",
+    "collection_first_car": "Vetura e parë",
+    "collection_premium": "Premium",
+    "collection_low_mileage": "Kilometrazh i ulët",
+    "collection_automatic": "Automatik",
+    "collection_electrified": "Elektrike dhe hibride",
+    "filter_from_year": "nga {{year}}",
+    "filter_to_year": "deri {{year}}",
+    "filter_from_price": "nga {{price}}",
+    "filter_to_price": "deri {{price}}",
+    "filter_to_mileage": "deri {{mileage}} km",
+    "filter_automatic": "Automatik",
+    "filter_manual": "Manual"
   },
   "search": {
     "results": "{{count}} makina",

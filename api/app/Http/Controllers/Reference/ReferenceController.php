@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Reference;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\BrowseResource;
 use App\Http\Resources\CityResource;
 use App\Http\Resources\CountryResource;
 use App\Http\Resources\ExchangeRateResource;
@@ -16,6 +17,7 @@ use App\Models\Country;
 use App\Models\ExchangeRate;
 use App\Models\Make;
 use App\Models\VehicleModel;
+use App\Services\BrowseService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Cache;
@@ -97,6 +99,19 @@ class ReferenceController extends Controller
             'colors' => (array) config('listings.colors'),
             'features' => (array) config('listings.features'),
         ]);
+    }
+
+    /**
+     * The home screen's ways in: curated collections and body shapes, each
+     * with the number of live cars behind it.
+     *
+     * Counted rather than cached against a guess, and the count is the point:
+     * a category that says how many cars are in it is a category a buyer can
+     * decide about before tapping.
+     */
+    public function browse(Request $request, BrowseService $browse): BrowseResource
+    {
+        return BrowseResource::make($browse->sections($request->user()));
     }
 
     /**

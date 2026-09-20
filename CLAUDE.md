@@ -298,7 +298,9 @@ release, and update it whenever a placeholder is added or replaced.
   screen with their own header, sort control and Save search.
 - **Three things in the reference are deliberately absent**, because the specification puts
   them under "do not build": the price rating bars, financing, and seller star ratings. The
-  vehicle-type row is gone too, since the marketplace sells cars only.
+  reference's vehicle-type row — car, van, motorbike, caravan — is gone too, since the
+  marketplace sells cars only. Body shapes are a different thing and are on the home
+  screen, below.
 - **Make logos are supported but not shipped.** `makes.logo_path` holds the file,
   `MakeResource` exposes `logo_url`, `MakeTile` draws it tinted to the text colour, and
   `php artisan makes:logos` links files dropped into `makes/` on the storage disk. A make
@@ -321,6 +323,25 @@ release, and update it whenever a placeholder is added or replaced.
   longer inside of; `CENTRE_TAB_OVERHANG` falls out of it, and anything pinned
   directly above the bar pads its own contents by that much. The profile stays two taps away, so account deletion
   inside it is the second tap and the App Store requirement still holds.
+- **The home screen is a way in, not just a list.** Above the newest cars sit two
+  sections a buyer with nothing to type can use: collections ("Family cars", "First
+  car", "Electric & hybrid") and body shapes. Both come from `GET /browse`, and every
+  number on them is **counted against live listings** by `BrowseService` — a category
+  that says how many cars are behind it is one a buyer can judge before tapping, and an
+  estimated number would be a wrong one. A collection with nothing in it is not shown
+  at all, because an empty category is a worse tap than no category, and the busiest
+  comes first. The collections live in `config/listings.php` like every other closed
+  vocabulary, and each carries its own filters to the app, so tapping one runs the same
+  search the search tab runs rather than the app keeping a second idea of what "a family
+  car" means. The line under a collection's name is written from those same filters, so
+  it can never describe something different from what it searches for.
+- **The body shapes are drawn, not photographed.** A photograph of a car means one
+  particular car, and each of these stands for every car of its shape, so
+  `BodyTypeTile` holds ten silhouettes in one 64 x 26 box on a common ground line. Each
+  has to be recognisable from its roofline alone at a third of a screen wide, which is
+  the only size it is ever drawn at — they were drawn against a rendered contact sheet
+  rather than by eye, because the first pass made a saloon, a hatchback and an estate
+  that were the same picture.
 - **The home screen follows the reference app closely**: header, search bar, a wide banner
   where their advertisement sits, a section header with a Show all link, and cards with a
   small thumbnail on the left rather than a full-width photo. The banner carries a deep

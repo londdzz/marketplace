@@ -42,7 +42,7 @@ export function toQuery(filters: SearchFilters, page = 1): string {
 }
 
 /** The filter object as the API stores it, in its own snake_case spelling. */
-type ApiFilters = {
+export type ApiFilters = {
   q?: string;
   make_id?: number;
   model_id?: number;
@@ -67,8 +67,14 @@ type SavedSearchRow = {
   created_at: string | null;
 };
 
-/** The reverse of what `saveSearch` sends, so a kept search can be re-run. */
-function fromApiFilters(filters: ApiFilters | null): SearchFilters {
+/**
+ * The reverse of what `saveSearch` sends, so a kept search can be re-run.
+ *
+ * A browse collection arrives in the same spelling and goes through here too:
+ * both are filter sets the API holds and the app has to be able to put back
+ * into the search it already runs.
+ */
+export function fromApiFilters(filters: ApiFilters | null): SearchFilters {
   if (!filters) {
     return {};
   }

@@ -132,6 +132,49 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Browse collections
+    |--------------------------------------------------------------------------
+    |
+    | Saved searches nobody had to save: the handful of things buyers come
+    | looking for, each one a set of filters the search endpoint already
+    | accepts. Keys only, like every other vocabulary here — the apps hold the
+    | wording, and the chips under a collection's name are drawn from its own
+    | filters rather than written out again.
+    |
+    | A collection is only as real as its count, which is measured against live
+    | listings every time. One with nothing in it is not shown at all: a
+    | category that opens an empty list is worse than no category.
+    |
+    */
+
+    'collections' => [
+        'family' => [
+            'body_type' => 'estate',
+            'year_min' => 2014,
+            'price_max' => 20000,
+        ],
+        'first_car' => [
+            'price_max' => 7000,
+            'mileage_max' => 220000,
+        ],
+        'premium' => [
+            'price_min' => 15000,
+            'year_min' => 2018,
+        ],
+        'low_mileage' => [
+            'mileage_max' => 120000,
+            'year_min' => 2016,
+        ],
+        'automatic' => [
+            'transmission' => 'automatic',
+        ],
+        'electrified' => [
+            'fuel' => ['electric', 'hybrid'],
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | View counting
     |--------------------------------------------------------------------------
     |

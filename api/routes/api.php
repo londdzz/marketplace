@@ -57,6 +57,7 @@ Route::get('makes', [ReferenceController::class, 'makes'])->name('makes.index');
 Route::get('makes/{make}/models', [ReferenceController::class, 'models'])->name('makes.models');
 Route::get('exchange-rates', [ReferenceController::class, 'exchangeRates'])->name('exchange-rates.index');
 Route::get('vocabularies', [ReferenceController::class, 'vocabularies'])->name('vocabularies.index');
+Route::get('browse', [ReferenceController::class, 'browse'])->name('browse.index');
 
 /*
  * A published listing is public. Everything that changes one needs the seller.

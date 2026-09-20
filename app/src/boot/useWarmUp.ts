@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { listingsApi } from '../api/listings';
 import { referenceApi } from '../api/reference';
 import type { ListingPage } from '../api/types';
+import { BROWSE_KEY } from '../hooks/useBrowse';
 import { listingPageKey } from '../hooks/useListingPage';
 
 /** How long the launch waits before showing the app half-filled anyway. */
@@ -67,6 +68,12 @@ export function useWarmUp(waitFor: boolean, signedIn: boolean): boolean {
         queryKey: ['exchange-rates'],
         queryFn: referenceApi.exchangeRates,
         staleTime: REFERENCE_STALE_MS,
+      }),
+      // The home screen's collections and body shapes, so it opens with
+      // somewhere to go rather than two headings filling in afterwards.
+      queryClient.prefetchQuery({
+        queryKey: BROWSE_KEY,
+        queryFn: referenceApi.browse,
       }),
     ];
 

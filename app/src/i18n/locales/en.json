@@ -58,7 +58,22 @@
     "promo_body": "1 credit = 1 listing, live for 2 weeks",
     "promo_cta": "Start",
     "vat_note": "{{net}} (net) + VAT",
-    "newest": "Recently added"
+    "newest": "Recently added",
+    "browse_collections": "Browse by need",
+    "browse_body_types": "Browse by shape",
+    "collection_family": "Family cars",
+    "collection_first_car": "First car",
+    "collection_premium": "Premium",
+    "collection_low_mileage": "Low mileage",
+    "collection_automatic": "Automatic",
+    "collection_electrified": "Electric & hybrid",
+    "filter_from_year": "from {{year}}",
+    "filter_to_year": "to {{year}}",
+    "filter_from_price": "from {{price}}",
+    "filter_to_price": "to {{price}}",
+    "filter_to_mileage": "to {{mileage}} km",
+    "filter_automatic": "Automatic",
+    "filter_manual": "Manual"
   },
   "search": {
     "results": "{{count}} cars",

@@ -58,7 +58,22 @@
     "promo_body": "1 кредит = 1 оглас, активен 2 недели",
     "promo_cta": "Започни",
     "vat_note": "{{net}} (нето) + ДДВ",
-    "newest": "Неодамна додадени"
+    "newest": "Неодамна додадени",
+    "browse_collections": "Разгледај по потреба",
+    "browse_body_types": "Разгледај по форма",
+    "collection_family": "Семејни автомобили",
+    "collection_first_car": "Прв автомобил",
+    "collection_premium": "Премиум",
+    "collection_low_mileage": "Мала километража",
+    "collection_automatic": "Автоматик",
+    "collection_electrified": "Електрични и хибридни",
+    "filter_from_year": "од {{year}}",
+    "filter_to_year": "до {{year}}",
+    "filter_from_price": "од {{price}}",
+    "filter_to_price": "до {{price}}",
+    "filter_to_mileage": "до {{mileage}} км",
+    "filter_automatic": "Автоматик",
+    "filter_manual": "Рачен"
   },
   "search": {
     "results": "{{count}} автомобили",

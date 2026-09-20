@@ -1,5 +1,6 @@
 import { api } from './client';
-import type { ApiResource, City, Country, Make, VehicleModel } from './types';
+import { fromApiFilters, type ApiFilters } from './listings';
+import type { ApiResource, City, Country, Make, SearchFilters, VehicleModel } from './types';
 
 /** The closed vocabularies the API validates against. Keys, never wording. */
 export type Vocabularies = {
@@ -7,6 +8,36 @@ export type Vocabularies = {
   drivetrains: string[];
   colors: string[];
   features: string[];
+};
+
+/**
+ * The ways into the catalogue that are not a search box.
+ *
+ * A collection carries its own filters, so tapping it runs the same search the
+ * search tab would, rather than the app keeping a second copy of what "a family
+ * car" means. Every count is measured against live listings by the API.
+ */
+export type BrowseCollection = {
+  key: string;
+  filters: SearchFilters;
+  count: number;
+};
+
+/** The same three fields, in the spelling the API sends them. */
+type BrowseCollectionRow = {
+  key: string;
+  filters: ApiFilters | null;
+  count: number;
+};
+
+export type BrowseBodyType = {
+  key: string;
+  count: number;
+};
+
+export type Browse = {
+  collections: BrowseCollection[];
+  body_types: BrowseBodyType[];
 };
 
 export type ExchangeRate = {
@@ -33,6 +64,19 @@ export const referenceApi = {
       .then((r) => r.data),
   vocabularies: () =>
     api.get<ApiResource<Vocabularies>>('/vocabularies', { anonymous: true }).then((r) => r.data),
+  browse: () =>
+    api
+      .get<ApiResource<{ collections: BrowseCollectionRow[]; body_types: BrowseBodyType[] }>>(
+        '/browse',
+      )
+      .then((response) => ({
+        collections: response.data.collections.map((row) => ({
+          key: row.key,
+          filters: fromApiFilters(row.filters),
+          count: row.count,
+        })),
+        body_types: response.data.body_types,
+      })),
   exchangeRates: () =>
     api.get<ApiResource<ExchangeRate[]>>('/exchange-rates', { anonymous: true }).then((r) => r.data),
 };

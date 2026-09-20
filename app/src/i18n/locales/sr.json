@@ -58,7 +58,22 @@
     "promo_body": "1 кредит = 1 оглас, активан 2 недеље",
     "promo_cta": "Почни",
     "vat_note": "{{net}} (нето) + ПДВ",
-    "newest": "Недавно додато"
+    "newest": "Недавно додато",
+    "browse_collections": "Прегледај по потреби",
+    "browse_body_types": "Прегледај по облику",
+    "collection_family": "Породични аутомобили",
+    "collection_first_car": "Први аутомобил",
+    "collection_premium": "Премијум",
+    "collection_low_mileage": "Мала километража",
+    "collection_automatic": "Аутоматик",
+    "collection_electrified": "Електрични и хибридни",
+    "filter_from_year": "од {{year}}",
+    "filter_to_year": "до {{year}}",
+    "filter_from_price": "од {{price}}",
+    "filter_to_price": "до {{price}}",
+    "filter_to_mileage": "до {{mileage}} км",
+    "filter_automatic": "Аутоматик",
+    "filter_manual": "Ручни"
   },
   "search": {
     "results": "{{count}} аутомобила",
