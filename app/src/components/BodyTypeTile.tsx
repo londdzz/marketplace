@@ -156,6 +156,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   art: {
+    // Stretched, because the cut-out sizes itself to the full width of the
+    // tile and a box that hugs its content gives it nothing to fill.
+    alignSelf: 'stretch',
     height: ART_HEIGHT,
     alignItems: 'center',
     justifyContent: 'center',

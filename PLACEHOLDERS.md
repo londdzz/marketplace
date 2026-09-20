@@ -156,8 +156,9 @@ in section 2 has to be real before a purchase can ever add anything.
   what is actually configured in App Store Connect and Play Console.
 - **The collection art in `app/assets/collections` was supplied, not licensed by us.**
   Family cars, First car, Premium and City cars each carry a scene photograph and a cut-out
-  car, given to the project rather than bought through a stock library. **Confirm the rights
-  to all eight files before submission** — they ship inside the binary and appear on the first screen
+  car, and `app/assets/shapes` holds a cut-out per body shape (Saloon so far). All of them
+  were given to the project rather than bought through a stock library. **Confirm the rights
+  to every one before submission** — they ship inside the binary and appear on the first screen
   of the app, which is the most visible place artwork can be. Every other collection falls
   back to a real listing's photograph and needs nothing.
 - **`app/src/app/design.tsx` is a developer screen with eight dead buttons.** It is the
