@@ -8,6 +8,10 @@ Nothing here blocks development. All of it blocks store submission.
 **`docs/credentials.md` says where each of these comes from**, in the order they should be
 collected, with what each one costs and how long it takes.
 
+**`docs/deployment.md` says where they go** — what server to buy, how to point the domain
+at it, and how to get an `.ipa` onto a phone talking to the real API. The files it tells
+you to copy onto the server are in `deploy/`.
+
 Update this file whenever a placeholder is added or replaced.
 
 ---

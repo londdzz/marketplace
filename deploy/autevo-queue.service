@@ -1,0 +1,28 @@
+# The queue worker. Push notifications and anything else deferred runs here.
+#
+# Install:
+#   sudo cp deploy/autevo-queue.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now autevo-queue
+#
+# Forge does this for you: Server → Daemons → New Daemon, with the command
+# below and the same user. Either way it must be restarted after every deploy,
+# because a running worker holds the old code in memory.
+
+[Unit]
+Description=Autevo queue worker
+After=network.target mysql.service
+
+[Service]
+User=forge
+Group=forge
+Restart=always
+RestartSec=5
+WorkingDirectory=/home/forge/api.autevo.mk/api
+
+# --max-time recycles the worker hourly so a slow leak can never grow.
+# --tries=3 is what stops one bad job retrying for ever.
+ExecStart=/usr/bin/php artisan queue:work --sleep=3 --tries=3 --max-time=3600
+
+[Install]
+WantedBy=multi-user.target

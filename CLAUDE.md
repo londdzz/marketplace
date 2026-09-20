@@ -190,6 +190,12 @@ deleted — all of it is closed rather than removed:
 - Phase 12: complete (app.json, EAS, icons, push registration, /docs, store copy, screenshots,
   privacy and data-safety answers, pre-submission checklist). **All twelve phases are done.**
 - Blocking another user is built (Apple 1.2 / Play UGC), after phase 12.
+- **Going live is `docs/deployment.md`**: Hetzner CX22 + Laravel Forge + Cloudflare R2,
+  about €16/month, with the server files in `deploy/`. Two things there fail silently and
+  are the first place to look when the marketplace "just stops" — the queue worker and the
+  scheduler, which four jobs depend on and none of them complains about. The site's web
+  directory is `/api/public`, not `/public`: this is a monorepo and Laravel is a
+  subdirectory of it.
 - Before submitting anything, read `docs/store/pre-submission-checklist.md`. Two things still
   block a release: every credential in `PLACEHOLDERS.md` is a placeholder, and nothing has run
   on a real phone.

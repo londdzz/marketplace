@@ -1,0 +1,16 @@
+# The scheduler. WITHOUT THIS LINE FOUR THINGS SILENTLY NEVER HAPPEN:
+#
+#   hourly        listings past their expiry stay live for ever
+#   daily 09:00   sellers are never warned that a listing is about to expire
+#   daily 06:00   exchange rates are never refreshed
+#   every 15 min  saved searches never match and no alert is ever sent
+#
+# None of them fail loudly. The app looks fine and the marketplace quietly
+# stops working, so check this first when something "just stopped".
+#
+# Install:  sudo crontab -u forge -e   and paste the line below.
+# Forge:    it adds this itself when the site is created. Verify it is there.
+#
+# Laravel's scheduler is run every minute and decides for itself what is due.
+
+* * * * * cd /home/forge/api.autevo.mk/api && /usr/bin/php artisan schedule:run >> /dev/null 2>&1
