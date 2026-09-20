@@ -383,7 +383,15 @@ release, and update it whenever a placeholder is added or replaced.
   in the region. So the sell flow asks, in `sell/shape`, with the model's guess already
   chosen — one more screen inside step 2, which still reads "step 2 of 7". Once the seller
   has chosen, changing the model never overwrites them.
-- **The body shapes are drawn, not photographed.** A photograph of a car means one
+- **A body shape shows a cut-out car where there is one, and a drawing where there is
+  not.** `app/assets/shapes` holds one per shape — saloon, hatchback, estate, SUV and coupé
+  so far — trimmed to the car's own edges by `app/scripts/trim-cutout.php` so every tile
+  scales the same thing rather than whatever margin its canvas happened to have. They are
+  studio cut-outs, never scenes: at forty-four pixels tall a photograph of a car in a
+  street is unreadable, and one particular car cannot stand for every car of its shape.
+  A light car reads on the petrol card and a dark one does not, which is worth remembering
+  when a new one is chosen.
+- **The remaining shapes are drawn, not photographed.** A photograph of a car means one
   particular car, and each of these stands for every car of its shape, so
   `BodyTypeTile` holds ten silhouettes in one 64 x 26 box on a common ground line. Each
   has to be recognisable from its roofline alone at a third of a screen wide, which is

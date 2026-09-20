@@ -81,6 +81,10 @@ export function collectionArt(key: string): CollectionArt | null {
  */
 const SHAPE_ART: Record<string, number> = {
   sedan: require('../../assets/shapes/sedan.png'),
+  hatchback: require('../../assets/shapes/hatchback.png'),
+  estate: require('../../assets/shapes/estate.png'),
+  suv: require('../../assets/shapes/suv.png'),
+  coupe: require('../../assets/shapes/coupe.png'),
 };
 
 export function bodyTypeArt(shape: string): number | null {
