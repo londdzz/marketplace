@@ -166,3 +166,55 @@ it('serves everyone who has blocked nobody the same cached answer', function ():
     $shapes = collect($this->getJson('/api/v1/browse')->json('data.body_types'))->pluck('count', 'key');
     expect($shapes['suv'])->toBe(2);
 });
+
+it('puts a car actually in the collection on its card', function (): void {
+    $listing = browsable(['transmission' => Transmission::Automatic]);
+    $listing->photos()->create([
+        'path' => 'listings/a.jpg',
+        'thumb_path' => 'listings/a_thumb.jpg',
+        'position' => 0,
+        'width' => 1600,
+        'height' => 1200,
+    ]);
+
+    $automatic = collect($this->getJson('/api/v1/browse')->assertOk()->json('data.collections'))
+        ->firstWhere('key', 'automatic');
+
+    expect($automatic['photo_url'])->toContain('listings/a_thumb.jpg');
+});
+
+it('shows no photograph rather than one belonging to another category', function (): void {
+    // Every car listed without pictures: there is nothing honest to show.
+    browsable(['transmission' => Transmission::Automatic]);
+
+    $automatic = collect($this->getJson('/api/v1/browse')->assertOk()->json('data.collections'))
+        ->firstWhere('key', 'automatic');
+
+    expect($automatic['photo_url'])->toBeNull();
+});
+
+it('gives each card its own car when there is one to spare', function (): void {
+    foreach (['a', 'b'] as $index => $name) {
+        $listing = browsable([
+            'transmission' => Transmission::Automatic,
+            'body_type' => 'suv',
+            'published_at' => now()->subMinutes($index),
+        ]);
+        $listing->photos()->create([
+            'path' => "listings/{$name}.jpg",
+            'thumb_path' => "listings/{$name}_thumb.jpg",
+            'position' => 0,
+            'width' => 1600,
+            'height' => 1200,
+        ]);
+    }
+
+    $data = $this->getJson('/api/v1/browse')->assertOk()->json('data');
+
+    $collection = collect($data['collections'])->firstWhere('key', 'automatic');
+    $shape = collect($data['body_types'])->firstWhere('key', 'suv');
+
+    // Both categories hold both cars, so they take one each rather than
+    // drawing the same photograph twice in a row.
+    expect($collection['photo_url'])->not->toBe($shape['photo_url']);
+});

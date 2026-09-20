@@ -68,6 +68,45 @@ final class ListingSearchService
     }
 
     /**
+     * One live listing that matches, newest first, and only if it has a
+     * photograph.
+     *
+     * The home screen puts a face on each of its categories, and the honest
+     * face for "family cars" is a family car actually for sale here — not a
+     * studio render of a car nobody can buy. It changes as the catalogue
+     * changes and costs nothing to licence, because the seller took it.
+     *
+     * @param  array<string, mixed>  $filters
+     * @param  array<int, string>  $exclude  cars already showing on another
+     *                                       card, so a rail of categories is
+     *                                       not the same photograph six times
+     */
+    public function sample(array $filters, ?User $viewer = null, array $exclude = []): ?Listing
+    {
+        $query = Listing::query()
+            ->where('status', ListingStatus::Active)
+            ->with('photos')
+            ->has('photos');
+
+        $hidden = $this->blocks->hiddenFrom($viewer);
+
+        if ($hidden !== []) {
+            $query->whereNotIn('user_id', $hidden);
+        }
+
+        $this->applyVehicle($query, $filters);
+        $this->applyPlace($query, $filters);
+        $query->orderByDesc('published_at');
+
+        if ($exclude === []) {
+            return $query->first();
+        }
+
+        // A car of its own if there is one; otherwise a repeat beats a blank.
+        return (clone $query)->whereNotIn('id', $exclude)->first() ?? $query->first();
+    }
+
+    /**
      * How many live listings a set of filters would return.
      *
      * The home screen puts a number under every category it offers, and a

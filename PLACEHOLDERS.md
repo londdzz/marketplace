@@ -124,8 +124,21 @@ in section 2 has to be real before a purchase can ever add anything.
 
 ## 7. Content that is representative, not final
 
-- Listing photographs come from `DevListingSeeder`, which generates coloured panels rather
-  than photographs of real cars.
+- **Listing photographs in development are other people's.** `node scripts/fetch-car-photos.js`
+  from /api pulls a freely licensed photograph of each of the eight seeded cars from
+  Wikimedia Commons into `storage/app/dev-photos`, and `DevListingSeeder` publishes them
+  through the real upload path. `storage/app/dev-photos/CREDITS.json` names the
+  photographer and the licence of every one. Storage is not in the repository, so run the
+  script after a fresh checkout; without it the seeder falls back to generated coloured
+  panels and the app still seeds.
+
+  Most are CC0 or public domain, but some are **CC BY** or **CC BY-SA**, which carry
+  attribution and — for BY-SA — share-alike obligations. That is fine for a development
+  database. It is **not** fine for anything that leaves it: **store screenshots must be
+  taken against real seller photographs or artwork we have licensed**, never against
+  these. `app/scripts/store-screenshots.js` captures the running app, so this is a real
+  risk, not a theoretical one. In production a listing's pictures are the seller's own and
+  none of this runs.
 - **Manufacturer marks are generated, not committed.** `node scripts/fetch-make-logos.js`
   from /api pulls them from Simple Icons and renders flat PNGs into `storage/app/public/makes`,
   then `php artisan makes:logos` links them to the makes. Storage is not in the repository, so

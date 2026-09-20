@@ -29,11 +29,13 @@ class BrowseResource extends JsonResource
                 'key' => $entry['key'],
                 'filters' => (object) $entry['filters'],
                 'count' => $entry['count'],
+                'photo_url' => $entry['photo'],
             ], $this->resource['collections']),
 
             'body_types' => array_map(static fn (array $entry): array => [
                 'key' => $entry['key'],
                 'count' => $entry['count'],
+                'photo_url' => $entry['photo'],
             ], $this->resource['body_types']),
         ];
     }

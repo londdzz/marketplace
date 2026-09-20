@@ -30,9 +30,15 @@ const NEWEST = { sort: 'newest' } as const;
 /** Eight on the home screen. The rest are behind Show all. */
 const HOME_CARS = 8;
 
-/** Two collection cards to a row, and three shapes, on any width. */
-const COLLECTIONS_PER_ROW = 2;
-const SHAPES_PER_ROW = 3;
+/**
+ * Both browse rows scroll sideways rather than stacking.
+ *
+ * A card and a half in view is what says there are more: a grid showing all of
+ * them at once is a wall to read rather than a rack to flick through, and it
+ * pushes the cars themselves off the bottom of the screen.
+ */
+const COLLECTION_CARD = 244;
+const SHAPE_TILE = 112;
 
 export default function HomeTab() {
   const theme = useTheme();
@@ -83,8 +89,16 @@ export default function HomeTab() {
   const gap = theme.spacing.md;
   const row = width - theme.screenPadding * 2;
   const cardWidth = Math.floor((row - gap) / 2);
-  const collectionWidth = Math.floor((row - gap * (COLLECTIONS_PER_ROW - 1)) / COLLECTIONS_PER_ROW);
-  const shapeWidth = Math.floor((row - gap * (SHAPES_PER_ROW - 1)) / SHAPES_PER_ROW);
+
+  // The rails run to both edges of the display, so a card can sit half off the
+  // right of it and the first one still lines up with everything above.
+  const rail = {
+    marginHorizontal: -theme.screenPadding,
+  };
+  const railContent = {
+    paddingHorizontal: theme.screenPadding,
+    gap,
+  };
 
   /** Open a set of filters as a search, rather than carrying anything over. */
   const open = (filters: Parameters<typeof replace>[0]) => {
@@ -129,20 +143,30 @@ export default function HomeTab() {
           <View style={{ gap: theme.spacing.md }}>
             <Text variant="title">{t('home:browse_collections')}</Text>
 
-            <View style={[styles.grid, { gap }]}>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              decelerationRate="fast"
+              snapToInterval={COLLECTION_CARD + gap}
+              snapToAlignment="start"
+              style={rail}
+              contentContainerStyle={railContent}
+              testID="collections-rail"
+            >
               {collections.map((collection) => (
                 <CollectionCard
                   key={collection.key}
                   title={t(`home:collection_${collection.key}`, collection.key)}
                   count={t('search:offers', { count: collection.count })}
                   detail={detailFor(collection, t(`home:collection_${collection.key}`, collection.key))}
+                  photoUrl={collection.photoUrl}
                   icon={collectionIcon(collection.key) as never}
-                  width={collectionWidth}
+                  width={COLLECTION_CARD}
                   onPress={() => open(collection.filters)}
                   testID={`collection-${collection.key}`}
                 />
               ))}
-            </View>
+            </ScrollView>
           </View>
         ) : null}
 
@@ -150,19 +174,25 @@ export default function HomeTab() {
           <View style={{ gap: theme.spacing.md }}>
             <Text variant="title">{t('home:browse_body_types')}</Text>
 
-            <View style={[styles.grid, { gap }]}>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={rail}
+              contentContainerStyle={railContent}
+              testID="shapes-rail"
+            >
               {shapes.map((shape) => (
                 <BodyTypeTile
                   key={shape.key}
                   label={t(`listing:body_type.${shape.key}`, shape.key)}
                   count={t('search:offers', { count: shape.count })}
                   shape={shape.key}
-                  width={shapeWidth}
+                  width={SHAPE_TILE}
                   onPress={() => open({ bodyType: shape.key })}
                   testID={`shape-${shape.key}`}
                 />
               ))}
-            </View>
+            </ScrollView>
           </View>
         ) : null}
 

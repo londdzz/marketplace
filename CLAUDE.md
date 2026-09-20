@@ -335,6 +335,19 @@ release, and update it whenever a placeholder is added or replaced.
   search the search tab runs rather than the app keeping a second idea of what "a family
   car" means. The line under a collection's name is written from those same filters, so
   it can never describe something different from what it searches for.
+- **A category wears a car that is actually in it.** The photograph on a collection or a
+  shape card is the newest live listing matching those filters, taken by whoever is
+  selling it — not a studio render of a car nobody can buy. It costs nothing to licence,
+  it changes as the catalogue does, and a category whose cars were all listed without
+  pictures falls back to its mark rather than borrowing another category's car.
+  `BrowseService` hands each card a different car where there is one to spare, so a rail
+  is not the same photograph six times. In development the seeded cars' photographs come
+  from `api/scripts/fetch-car-photos.js` — see PLACEHOLDERS.md, and note that some are
+  CC BY-SA and must never appear in a store screenshot.
+- **Both browse rows scroll sideways.** A card and a half in view is what says there are
+  more; a grid showing all of them at once is a wall to read rather than a rack to flick
+  through, and it pushed the cars themselves off the bottom of the screen. The rails run
+  to both edges of the display while the first card still lines up with everything above.
 - **The body shapes are drawn, not photographed.** A photograph of a car means one
   particular car, and each of these stands for every car of its shape, so
   `BodyTypeTile` holds ten silhouettes in one 64 x 26 box on a common ground line. Each

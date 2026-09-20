@@ -21,6 +21,8 @@ export type BrowseCollection = {
   key: string;
   filters: SearchFilters;
   count: number;
+  /** A car actually in the collection, photographed by whoever is selling it. */
+  photoUrl: string | null;
 };
 
 /** The same three fields, in the spelling the API sends them. */
@@ -28,11 +30,19 @@ type BrowseCollectionRow = {
   key: string;
   filters: ApiFilters | null;
   count: number;
+  photo_url: string | null;
+};
+
+type BrowseBodyTypeRow = {
+  key: string;
+  count: number;
+  photo_url: string | null;
 };
 
 export type BrowseBodyType = {
   key: string;
   count: number;
+  photoUrl: string | null;
 };
 
 export type Browse = {
@@ -66,7 +76,7 @@ export const referenceApi = {
     api.get<ApiResource<Vocabularies>>('/vocabularies', { anonymous: true }).then((r) => r.data),
   browse: () =>
     api
-      .get<ApiResource<{ collections: BrowseCollectionRow[]; body_types: BrowseBodyType[] }>>(
+      .get<ApiResource<{ collections: BrowseCollectionRow[]; body_types: BrowseBodyTypeRow[] }>>(
         '/browse',
       )
       .then((response) => ({
@@ -74,8 +84,13 @@ export const referenceApi = {
           key: row.key,
           filters: fromApiFilters(row.filters),
           count: row.count,
+          photoUrl: row.photo_url,
         })),
-        body_types: response.data.body_types,
+        body_types: response.data.body_types.map((row) => ({
+          key: row.key,
+          count: row.count,
+          photoUrl: row.photo_url,
+        })),
       })),
   exchangeRates: () =>
     api.get<ApiResource<ExchangeRate[]>>('/exchange-rates', { anonymous: true }).then((r) => r.data),

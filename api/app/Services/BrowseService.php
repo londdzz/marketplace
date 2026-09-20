@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * The ways into the catalogue that are not a search box.
@@ -29,7 +30,7 @@ final class BrowseService
     /**
      * Collections and body shapes, each with what is actually in it.
      *
-     * @return array{collections: array<int, array{key: string, filters: array<string, mixed>, count: int}>, body_types: array<int, array{key: string, count: int}>}
+     * @return array{collections: array<int, array{key: string, filters: array<string, mixed>, count: int, photo: string|null}>, body_types: array<int, array{key: string, count: int, photo: string|null}>}
      */
     public function sections(?User $viewer = null): array
     {
@@ -48,20 +49,27 @@ final class BrowseService
     }
 
     /**
-     * @return array{collections: array<int, array{key: string, filters: array<string, mixed>, count: int}>, body_types: array<int, array{key: string, count: int}>}
+     * @return array{collections: array<int, array{key: string, filters: array<string, mixed>, count: int, photo: string|null}>, body_types: array<int, array{key: string, count: int, photo: string|null}>}
      */
     private function measure(?User $viewer): array
     {
         /** @var array<string, array<string, mixed>> $defined */
         $defined = config('listings.collections');
 
+        // Every card that can show a different car does.
+        $shown = [];
         $collections = [];
 
         foreach ($defined as $key => $filters) {
             $count = $this->search->count($filters, $viewer);
 
             if ($count > 0) {
-                $collections[] = ['key' => $key, 'filters' => $filters, 'count' => $count];
+                $collections[] = [
+                    'key' => $key,
+                    'filters' => $filters,
+                    'count' => $count,
+                    'photo' => $this->faceOf($filters, $viewer, $shown),
+                ];
             }
         }
 
@@ -75,12 +83,41 @@ final class BrowseService
             $count = $this->search->count(['body_type' => $key], $viewer);
 
             if ($count > 0) {
-                $bodyTypes[] = ['key' => (string) $key, 'count' => $count];
+                $bodyTypes[] = [
+                    'key' => (string) $key,
+                    'count' => $count,
+                    'photo' => $this->faceOf(['body_type' => $key], $viewer, $shown),
+                ];
             }
         }
 
         usort($bodyTypes, static fn (array $a, array $b): int => $b['count'] <=> $a['count']);
 
         return ['collections' => $collections, 'body_types' => $bodyTypes];
+    }
+
+    /**
+     * The newest matching car's own photograph, or nothing.
+     *
+     * Nothing is a real answer: a category whose cars were all listed without
+     * pictures gets no picture, rather than a borrowed one belonging to a car
+     * that is not in it.
+     *
+     * @param  array<string, mixed>  $filters
+     * @param  array<int, string>  $shown  cars already on a card, added to as
+     *                                     each one takes its own
+     */
+    private function faceOf(array $filters, ?User $viewer, array &$shown): ?string
+    {
+        $listing = $this->search->sample($filters, $viewer, $shown);
+        $photo = $listing?->photos->sortBy('position')->first();
+
+        if ($photo === null) {
+            return null;
+        }
+
+        $shown[] = $listing->id;
+
+        return Storage::disk((string) config('filesystems.default'))->url($photo->thumb_path);
     }
 }
