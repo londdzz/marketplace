@@ -20,7 +20,13 @@ import {
   TabHeader,
   Text,
 } from '../../components';
-import { collectionArt, collectionIcon, useBrowse, useCollectionChips } from '../../hooks/useBrowse';
+import {
+  bodyTypeArt,
+  collectionArt,
+  collectionIcon,
+  useBrowse,
+  useCollectionChips,
+} from '../../hooks/useBrowse';
 import { useExchangeRates } from '../../hooks/useExchangeRates';
 import { useListingCardMapper } from '../../hooks/useListingCard';
 import { useListingPage } from '../../hooks/useListingPage';
@@ -236,6 +242,7 @@ export default function HomeTab() {
                   label={t(`listing:body_type.${shape.key}`, shape.key)}
                   count={t('search:offers', { count: shape.count })}
                   shape={shape.key}
+                  image={bodyTypeArt(shape.key)}
                   width={SHAPE_TILE}
                   onPress={() => open({ bodyType: [shape.key] })}
                   testID={`shape-${shape.key}`}

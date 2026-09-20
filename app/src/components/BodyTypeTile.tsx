@@ -1,4 +1,5 @@
-import { Pressable, StyleSheet } from 'react-native';
+import { Image, type ImageSource } from 'expo-image';
+import { Pressable, StyleSheet, View } from 'react-native';
 import Svg, { Circle, Path } from 'react-native-svg';
 
 import { Text } from './Text';
@@ -9,6 +10,8 @@ export type BodyTypeTileProps = {
   /** How many live cars have this shape. From the API or it is not shown. */
   count: string;
   shape: string;
+  /** A cut-out of a car of this shape. Falls back to the drawing without one. */
+  image?: ImageSource | number | null;
   width: number;
   onPress: () => void;
   testID?: string;
@@ -18,12 +21,15 @@ export type BodyTypeTileProps = {
  * Each shape drawn side on: the body and its glass as one line, and the wheels
  * as two circles the body sits on.
  *
- * They are drawings rather than photographs, because a photograph of a car
- * means one particular car and each of these stands for every car of its
- * shape. All ten are drawn in the same 64 x 26 box, on the same ground line,
- * so a row of them lines up whatever it holds — and each one has to be
- * recognisable from its roofline alone at a third of a screen wide, which is
- * the only size it is ever drawn at.
+ * A shape with a cut-out car of its own shows that instead. The drawing is
+ * what every shape starts with, so a row is never half-finished: one with art
+ * and one without sit at the same height, because both are centred in a box of
+ * the same size.
+ *
+ * What the drawing must not be is a photograph of a car in a street. Each of
+ * these stands for every car of its shape, and a photograph means one
+ * particular car — which is why the fallback is a line and the art, when it
+ * comes, is a studio cut-out rather than a scene.
  */
 type Drawing = {
   d: string;
@@ -74,7 +80,15 @@ const SHAPES: Record<string, Drawing> = {
   },
 };
 
-export function BodyTypeTile({ label, count, shape, width, onPress, testID }: BodyTypeTileProps) {
+export function BodyTypeTile({
+  label,
+  count,
+  shape,
+  image,
+  width,
+  onPress,
+  testID,
+}: BodyTypeTileProps) {
   const theme = useTheme();
   const drawing = SHAPES[shape] ?? SHAPES.other;
 
@@ -97,26 +111,32 @@ export function BodyTypeTile({ label, count, shape, width, onPress, testID }: Bo
         },
       ]}
     >
-      <Svg width={78} height={32} viewBox="0 0 64 26" fill="none">
-        <Path
-          d={drawing.d}
-          stroke={theme.colors.text}
-          strokeWidth={1.4}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        {drawing.wheels.map(([cx, cy, r]) => (
-          <Circle
-            key={cx}
-            cx={cx}
-            cy={cy}
-            r={r}
-            stroke={theme.colors.text}
-            strokeWidth={1.4}
-            fill="none"
-          />
-        ))}
-      </Svg>
+      <View style={styles.art}>
+        {image ? (
+          <Image source={image} style={styles.photo} contentFit="contain" transition={140} />
+        ) : (
+          <Svg width={78} height={32} viewBox="0 0 64 26" fill="none">
+            <Path
+              d={drawing.d}
+              stroke={theme.colors.text}
+              strokeWidth={1.4}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            {drawing.wheels.map(([cx, cy, r]) => (
+              <Circle
+                key={cx}
+                cx={cx}
+                cy={cy}
+                r={r}
+                stroke={theme.colors.text}
+                strokeWidth={1.4}
+                fill="none"
+              />
+            ))}
+          </Svg>
+        )}
+      </View>
 
       <Text variant="label" numberOfLines={1} style={{ marginTop: theme.spacing.xs }}>
         {label}
@@ -128,8 +148,20 @@ export function BodyTypeTile({ label, count, shape, width, onPress, testID }: Bo
   );
 }
 
+/** Both a cut-out and a drawing sit in this, so a mixed row stays level. */
+const ART_HEIGHT = 44;
+
 const styles = StyleSheet.create({
   tile: {
     alignItems: 'center',
+  },
+  art: {
+    height: ART_HEIGHT,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  photo: {
+    width: '100%',
+    height: ART_HEIGHT,
   },
 });

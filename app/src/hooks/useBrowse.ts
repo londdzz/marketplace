@@ -72,6 +72,19 @@ export function collectionArt(key: string): CollectionArt | null {
   return ART[key] ?? null;
 }
 
+/**
+ * A cut-out car for a body shape, for the shapes that have one.
+ *
+ * A shape with nothing here keeps its line drawing, so the row is never half
+ * a rack of photographs and half a rack of sketches at different heights —
+ * `BodyTypeTile` centres both in a box of the same size.
+ */
+const SHAPE_ART: Record<string, number> = {};
+
+export function bodyTypeArt(shape: string): number | null {
+  return SHAPE_ART[shape] ?? null;
+}
+
 /** At most four, two to a row, as the card draws them. */
 const MAX_CHIPS = 4;
 
