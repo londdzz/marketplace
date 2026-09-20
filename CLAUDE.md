@@ -304,9 +304,16 @@ release, and update it whenever a placeholder is added or replaced.
   `php artisan makes:logos` links files dropped into `makes/` on the storage disk. A make
   with no file falls back to a monogram, so logos can be added a few at a time.
 - **The tab bar mirrors the reference app, not the specification's list.** The spec named
-  Search, Favorites, Sell, Messages and Profile. The tabs are Home, Search, My searches,
+  Search, Favorites, Sell, Messages and Profile. The tabs are Search, My searches, Home,
   Saved and Sell, with messages and the profile reached from the header, which is where
-  the reference app keeps them. The profile stays two taps away, so account deletion
+  the reference app keeps them. **Home sits in the middle, drawn as a raised azure disc**
+  that stands above the bar, so the way back to the front of the app is the one thing
+  down there the thumb cannot miss. Because the disc is azure, the other four mark
+  themselves active by going white against the muted rest — two azures in one bar and
+  neither would lead. `CENTRE_TAB_OVERHANG` is how far the disc reaches above the bar,
+  and anything pinned directly above it pads its own contents by that much. On Android
+  the part standing proud is not tappable, since a touch outside a parent's bounds is
+  not delivered; what is left is still a larger target than the other tabs. The profile stays two taps away, so account deletion
   inside it is the second tap and the App Store requirement still holds.
 - **The home screen follows the reference app closely**: header, search bar, a wide banner
   where their advertisement sits, a section header with a Show all link, and cards with a
@@ -342,7 +349,7 @@ release, and update it whenever a placeholder is added or replaced.
   label — on a phone with no bottom inset the label is drawn outside the item and cut in
   half, and `numberOfLines` clips it rather than letting it overflow. The item's margin is
   dropped, the label is `flexShrink: 0` so it is not the thing that gives, and the height is
-  52 plus whatever the device keeps below it. Every pinned bar — the sell footer, the Call
+  56 plus whatever the device keeps below it. Every pinned bar — the sell footer, the Call
   and Message bar, the composer, the Save search pill — takes the same inset from
   `useBottomInset`, and keeps its own background to the bottom edge rather than letting the
   page show through beneath it.

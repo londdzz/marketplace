@@ -9,7 +9,15 @@ import { ActivityIndicator, FlatList, Pressable, StyleSheet, View } from 'react-
 import { ApiError } from '../../api/client';
 import { sellApi } from '../../api/sell';
 import type { Listing } from '../../api/types';
-import { Badge, Button, EmptyState, Screen, TabHeader, Text } from '../../components';
+import {
+  Badge,
+  Button,
+  CENTRE_TAB_OVERHANG,
+  EmptyState,
+  Screen,
+  TabHeader,
+  Text,
+} from '../../components';
 import { PromoteSheet } from '../../sell/PromoteSheet';
 import { formatEur, formatKm, listingTitle } from '../../format';
 import { CreditsSheet } from '../../sell/CreditsSheet';
@@ -410,7 +418,10 @@ export default function MyListingsTab() {
             {
               paddingHorizontal: theme.screenPadding,
               paddingTop: theme.spacing.md,
-              paddingBottom: theme.spacing.md,
+              // The home tab's disc stands above the bar and would otherwise
+              // land on this button; the band keeps its background to the
+              // bottom edge and pads the button up out of the way.
+              paddingBottom: theme.spacing.md + CENTRE_TAB_OVERHANG,
               borderTopWidth: 1,
               borderTopColor: theme.colors.border,
               backgroundColor: theme.colors.surface,

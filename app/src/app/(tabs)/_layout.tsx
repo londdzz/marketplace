@@ -3,6 +3,7 @@ import { Tabs } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { CentreTabButton } from '../../components';
 import { useTheme } from '../../theme';
 
 /**
@@ -14,11 +15,16 @@ import { useTheme } from '../../theme';
  * cut in half. The item's margin is dropped below and this is the height the
  * contents actually need.
  */
-const TAB_CONTENT_HEIGHT = 52;
+const TAB_CONTENT_HEIGHT = 56;
 
 /**
- * Five tabs, mirroring the reference app: home, search, saved searches, saved
- * cars and selling.
+ * Five tabs: search, saved searches, home, saved cars and selling.
+ *
+ * Home sits in the middle rather than first, drawn as a raised azure disc, so
+ * the way back to the front of the app is the one thing in the bar the thumb
+ * cannot miss. Because that disc is azure, the other four mark themselves
+ * active by going white against the muted rest — two azures in one bar and
+ * neither would lead.
  *
  * Messages and the profile live in the header rather than down here, which is
  * also where the reference app keeps them. The profile stays two taps away, so
@@ -35,11 +41,23 @@ export default function TabsLayout() {
   // build is edge to edge.
   const bottomInset = Math.max(insets.bottom, theme.spacing.sm);
 
+  const labelStyle = {
+    fontFamily: theme.typography.caption.fontFamily,
+    fontSize: 11,
+    lineHeight: 14,
+    fontWeight: '600' as const,
+    marginTop: 3,
+    // The label is a flex child of a fixed-height item, so without this it is
+    // the thing that gives when the row is tight, and it is drawn cut in half
+    // rather than simply smaller.
+    flexShrink: 0,
+  };
+
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: theme.colors.accent,
+        tabBarActiveTintColor: theme.colors.text,
         tabBarInactiveTintColor: theme.colors.textMuted,
         // Without this the navigator decides for itself whether the label
         // goes below the icon or beside it, and on a short bar it drops the
@@ -57,31 +75,15 @@ export default function TabsLayout() {
           borderTopColor: theme.colors.border,
           borderTopWidth: 1,
           height: TAB_CONTENT_HEIGHT + bottomInset,
+          // The middle tab's disc stands above the bar, and a bar that clips
+          // would take the top off it.
+          overflow: 'visible',
           paddingTop: 0,
           paddingBottom: bottomInset,
         },
-        tabBarLabelStyle: {
-          fontFamily: theme.typography.caption.fontFamily,
-          fontSize: 11,
-          lineHeight: 14,
-          fontWeight: '600',
-          marginTop: 3,
-          // The label is a flex child of a fixed-height item, so without this
-          // it is the thing that gives when the row is tight, and it is drawn
-          // cut in half rather than simply smaller.
-          flexShrink: 0,
-        },
+        tabBarLabelStyle: labelStyle,
       }}
     >
-      <Tabs.Screen
-        name="home"
-        options={{
-          title: t('home'),
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons name={focused ? 'home' : 'home-outline'} size={22} color={color} />
-          ),
-        }}
-      />
       <Tabs.Screen
         name="search"
         options={{
@@ -95,6 +97,15 @@ export default function TabsLayout() {
           title: t('my_searches'),
           tabBarIcon: ({ color, focused }) => (
             <Ionicons name={focused ? 'star' : 'star-outline'} size={22} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="home"
+        options={{
+          title: t('home'),
+          tabBarButton: (props) => (
+            <CentreTabButton {...props} icon="home" label={t('home')} labelStyle={labelStyle} />
           ),
         }}
       />

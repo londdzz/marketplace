@@ -3,6 +3,11 @@ export { AppHeader, type AppHeaderProps } from './AppHeader';
 export { Badge, type BadgeProps } from './Badge';
 export { Button, type ButtonProps } from './Button';
 export { Card, type CardProps } from './Card';
+export {
+  CentreTabButton,
+  CENTRE_TAB_OVERHANG,
+  type CentreTabButtonProps,
+} from './CentreTabButton';
 export { Chip, type ChipProps } from './Chip';
 export { ConfirmDialog, type ConfirmDialogProps } from './ConfirmDialog';
 export { EmptyState, type EmptyStateProps } from './EmptyState';
