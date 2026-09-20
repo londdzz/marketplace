@@ -6,55 +6,68 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { useTheme } from '../theme';
 import { Text } from './Text';
 
+/**
+ * The bar's vertical geometry lives here, because the disc is drawn outside
+ * the bar and has to land exactly on the slot the bar left for it. Split the
+ * numbers across two files and they drift.
+ */
+
+/** Icon, label and the air around them; the device's own inset is added to it. */
+export const TAB_CONTENT_HEIGHT = 56;
+
+/** The slot an ordinary tab icon occupies, which the disc is centred on. */
+const SLOT = 22;
+
+/** The gap above a label and the line it is set on. */
+const LABEL_GAP = 3;
+const LABEL_LINE = 14;
+
+/** The disc itself, and the ring of bar colour that separates it. */
+const SIZE = 52;
+const RING = 3;
+
+/** What the bar centres in each item: a slot, a gap and a line of label. */
+const CONTENT = SLOT + LABEL_GAP + LABEL_LINE;
+
+/**
+ * How far above the bar's bottom edge the slot's foot sits, and so the disc's.
+ *
+ * The item is centred, so half the slack above the content is the slot's top,
+ * and the disc hangs its own bottom on the slot's.
+ */
+export const CENTRE_TAB_FOOT = (TAB_CONTENT_HEIGHT + CONTENT) / 2 - SLOT;
+
+/**
+ * How far the disc reaches above the top of the bar.
+ *
+ * Anything pinned directly above the bar keeps this much clear of its own
+ * contents, or the disc lands on them.
+ */
+export const CENTRE_TAB_OVERHANG = CENTRE_TAB_FOOT + SIZE - TAB_CONTENT_HEIGHT;
+
 export type CentreTabButtonProps = BottomTabBarButtonProps & {
-  icon: keyof typeof Ionicons.glyphMap;
   label: string;
   /** The bar's own label style, so this label cannot drift from the others. */
   labelStyle: StyleProp<TextStyle>;
 };
 
-/** The disc, and the icon-sized slot it grows upward out of. */
-const SIZE = 52;
-const SLOT = 22;
-
-/** A ring of the bar's own colour, so the disc cuts the hairline rather than
- *  sitting on it. */
-const RING = 3;
-
 /**
- * How far the disc reaches above the top of the bar.
+ * The middle tab's place in the bar: the slot the disc is drawn over, and the
+ * label beneath it.
  *
- * The bar gives each item 56 and centres 22 of slot, 3 of gap and 14 of label
- * in it, so the slot's foot — and with it the disc's — sits 30.5 down, leaving
- * 21.5 of a 52 disc standing proud. Anything pinned directly above the bar
- * keeps this much clear of its own contents, or the disc lands on them.
- */
-export const CENTRE_TAB_OVERHANG = 22;
-
-/**
- * The one tab drawn as a raised disc in the middle of the bar.
- *
- * It is the only azure thing down here, which is the whole point of it: the
- * other tabs mark themselves active by going white against the muted rest,
- * so nothing competes with the disc for the eye.
- *
- * The disc sits in a slot the size of an ordinary tab icon and grows upward
- * out of it, so its label lands on the same line as every other label however
- * big the disc gets.
- *
- * The top of it stands above the bar. On Android a touch outside a parent's
- * bounds is not delivered, so that part is not tappable there — the rest is,
- * which is a target larger than the other tabs' on its own.
+ * The disc is not drawn here. On Android a touch outside a parent's bounds is
+ * never delivered, so a disc standing above the bar would be dead along its
+ * top — it is drawn by `CentreTabDisc`, over the whole screen, instead. This
+ * still holds the tab's own hit area, its accessibility and its label, so the
+ * disc itself can stay out of the way of a screen reader.
  */
 export function CentreTabButton({
-  icon,
   label,
   labelStyle,
   style,
   accessibilityState,
   // The navigator hands down its own icon and label, and a ref typed for the
-  // pressable it would have rendered. This draws both itself, so neither is
-  // forwarded.
+  // pressable it would have rendered. This draws its own, so neither is used.
   children: _children,
   ref: _ref,
   ...rest
@@ -68,32 +81,60 @@ export function CentreTabButton({
       accessibilityState={accessibilityState}
       style={[style as StyleProp<ViewStyle>, styles.button]}
     >
-      <View style={styles.slot}>
-        <View
-          style={[
-            styles.disc,
-            theme.elevation.sheet,
-            {
-              borderRadius: theme.radius.full,
-              backgroundColor: theme.colors.accent,
-              borderWidth: RING,
-              borderColor: theme.colors.background,
-            },
-          ]}
-        >
-          <Ionicons name={icon} size={24} color={theme.colors.textOnAccent} />
-        </View>
-      </View>
+      <View style={styles.slot} />
 
       <Text
         numberOfLines={1}
-        style={[
-          labelStyle,
-          { color: focused ? theme.colors.text : theme.colors.textMuted },
-        ]}
+        style={[labelStyle, { color: focused ? theme.colors.text : theme.colors.textMuted }]}
       >
         {label}
       </Text>
+    </Pressable>
+  );
+}
+
+export type CentreTabDiscProps = {
+  icon: keyof typeof Ionicons.glyphMap;
+  /** Whatever the device keeps below the bar, which the bar sits on top of. */
+  bottomInset: number;
+  onPress: () => void;
+};
+
+/**
+ * The raised disc in the middle of the bar, drawn over the whole screen.
+ *
+ * It is a sibling of the navigator rather than a child of the bar, so every
+ * part of it is inside its own parent's bounds and Android delivers a touch
+ * anywhere on it. It lands on the slot `CentreTabButton` leaves in the bar,
+ * and that button is the accessible control, so this one stays hidden from a
+ * screen reader rather than announcing the same tab twice.
+ *
+ * It is the only azure thing down here, which is the whole point of it: the
+ * other tabs mark themselves active by going white against the muted rest, so
+ * nothing competes with the disc for the eye.
+ */
+export function CentreTabDisc({ icon, bottomInset, onPress }: CentreTabDiscProps) {
+  const theme = useTheme();
+
+  return (
+    <Pressable
+      accessibilityElementsHidden
+      importantForAccessibility="no-hide-descendants"
+      onPress={onPress}
+      testID="centre-tab-disc"
+      style={[
+        styles.disc,
+        theme.elevation.sheet,
+        {
+          bottom: bottomInset + CENTRE_TAB_FOOT,
+          borderRadius: theme.radius.full,
+          backgroundColor: theme.colors.accent,
+          borderWidth: RING,
+          borderColor: theme.colors.background,
+        },
+      ]}
+    >
+      <Ionicons name={icon} size={24} color={theme.colors.textOnAccent} />
     </Pressable>
   );
 }
@@ -106,11 +147,10 @@ const styles = StyleSheet.create({
   slot: {
     width: SLOT,
     height: SLOT,
-    alignItems: 'center',
   },
   disc: {
     position: 'absolute',
-    bottom: 0,
+    alignSelf: 'center',
     width: SIZE,
     height: SIZE,
     alignItems: 'center',

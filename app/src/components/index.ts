@@ -5,8 +5,11 @@ export { Button, type ButtonProps } from './Button';
 export { Card, type CardProps } from './Card';
 export {
   CentreTabButton,
+  CentreTabDisc,
   CENTRE_TAB_OVERHANG,
+  TAB_CONTENT_HEIGHT,
   type CentreTabButtonProps,
+  type CentreTabDiscProps,
 } from './CentreTabButton';
 export { Chip, type ChipProps } from './Chip';
 export { ConfirmDialog, type ConfirmDialogProps } from './ConfirmDialog';

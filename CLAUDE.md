@@ -310,10 +310,16 @@ release, and update it whenever a placeholder is added or replaced.
   that stands above the bar, so the way back to the front of the app is the one thing
   down there the thumb cannot miss. Because the disc is azure, the other four mark
   themselves active by going white against the muted rest — two azures in one bar and
-  neither would lead. `CENTRE_TAB_OVERHANG` is how far the disc reaches above the bar,
-  and anything pinned directly above it pads its own contents by that much. On Android
-  the part standing proud is not tappable, since a touch outside a parent's bounds is
-  not delivered; what is left is still a larger target than the other tabs. The profile stays two taps away, so account deletion
+  neither would lead. **The disc is drawn outside the navigator**, as a
+  sibling of it in the tabs layout, because Android never delivers a touch to a child
+  drawn outside its parent's bounds — drawn inside the bar, the part standing proud
+  would be dead there. Its parent is the whole screen instead, so every pixel of it
+  is live. `CentreTabButton` keeps the bar's own slot, hit area, accessibility and
+  label, and the disc hides itself from a screen reader rather than announcing the
+  same tab twice. `CentreTabButton.tsx` owns the bar's vertical geometry — the height,
+  the slot, the label metrics — since the disc has to land exactly on a slot it is no
+  longer inside of; `CENTRE_TAB_OVERHANG` falls out of it, and anything pinned
+  directly above the bar pads its own contents by that much. The profile stays two taps away, so account deletion
   inside it is the second tap and the App Store requirement still holds.
 - **The home screen follows the reference app closely**: header, search bar, a wide banner
   where their advertisement sits, a section header with a Show all link, and cards with a
