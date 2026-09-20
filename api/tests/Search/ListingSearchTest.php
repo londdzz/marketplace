@@ -181,7 +181,7 @@ it('narrows by every filter it offers', function (array $query, int $expected): 
     'one fuel' => [['fuel' => ['petrol']], 1],
     'both fuels' => [['fuel' => ['petrol', 'diesel']], 2],
     'transmission' => [['transmission' => 'automatic'], 1],
-    'body type' => [['body_type' => 'suv'], 1],
+    'body type' => [['body_type' => ['suv']], 1],
     'one country' => [['countries' => ['BG']], 1],
     'both countries' => [['countries' => ['BG', 'XK']], 2],
 ]);
@@ -343,7 +343,7 @@ it('rejects filter values outside the vocabularies', function (string $query, st
 })->with([
     ['fuel[]=nuclear', 'fuel.0'],
     ['transmission=cvt', 'transmission'],
-    ['body_type=spaceship', 'body_type'],
+    ['body_type[]=spaceship', 'body_type.0'],
     ['countries[]=ZZ', 'countries.0'],
     ['make_id=999999', 'make_id'],
     ['radius_km=9999&lat=42&lng=21', 'radius_km'],

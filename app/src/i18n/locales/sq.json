@@ -64,8 +64,6 @@
     "collection_family": "Vetura familjare",
     "collection_first_car": "Vetura e parë",
     "collection_premium": "Premium",
-    "collection_low_mileage": "Kilometrazh i ulët",
-    "collection_automatic": "Automatik",
     "collection_electrified": "Elektrike dhe hibride",
     "filter_from_year": "nga {{year}}",
     "filter_to_year": "deri {{year}}",
@@ -73,7 +71,16 @@
     "filter_to_price": "deri {{price}}",
     "filter_to_mileage": "deri {{mileage}} km",
     "filter_automatic": "Automatik",
-    "filter_manual": "Manual"
+    "filter_manual": "Manual",
+    "collection_city": "Vetura qyteti",
+    "rate_title": "Si po ia dalim?",
+    "rate_body": "Një prekje. Na tregon nëse ia vlen të ndërtojmë mbi këtë.",
+    "rate_1": "Dobët",
+    "rate_5": "Shkëlqyeshëm",
+    "rate_thanks": "Faleminderit",
+    "rate_thanks_low": "E shënuam. Më mirë ta dimë tani sesa pasi të largoheni.",
+    "rate_thanks_high": "Na vjen mirë që po ju shërben.",
+    "rate_failed": "Nuk u dërgua. Provoni sërish pas pak."
   },
   "search": {
     "results": "{{count}} makina",

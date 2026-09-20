@@ -149,7 +149,7 @@ return [
 
     'collections' => [
         'family' => [
-            'body_type' => 'estate',
+            'body_type' => ['estate', 'suv', 'minivan'],
             'year_min' => 2014,
             'price_max' => 20000,
         ],
@@ -161,9 +161,8 @@ return [
             'price_min' => 15000,
             'year_min' => 2018,
         ],
-        'low_mileage' => [
-            'mileage_max' => 120000,
-            'year_min' => 2016,
+        'city' => [
+            'body_type' => ['hatchback', 'coupe'],
         ],
         'electrified' => [
             'fuel' => ['electric', 'hybrid'],

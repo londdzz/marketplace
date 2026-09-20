@@ -340,13 +340,25 @@ release, and update it whenever a placeholder is added or replaced.
   the join between the scene and the card, then the name and the filters as chips. The art
   lives in `app/assets/collections` and is listed in `collectionArt()`; each entry carries
   its cut-out's proportions, because a low saloon drawn at an SUV's is a squashed saloon.
-  Family cars and First car have art. Every collection without it — and every body shape —
+  Family cars, First car, Premium and City cars have art. Every collection without it — and every body shape —
   shows the newest live listing matching those filters instead, photographed by whoever is
   selling it, and the card is the same height either way: without a car standing on it the
   scene simply takes the space the car would have overlapped.
-- **Automatic was removed as a collection.** Its only chip repeated its own name, which is
-  what a category that is one filter looks like. A collection has to describe a kind of
-  buyer, not a checkbox.
+- **Automatic was removed as a collection**, and Low mileage became City cars. Automatic's
+  only chip repeated its own name, which is what a category that is one filter looks like;
+  a collection has to describe a kind of buyer, not a checkbox. City cars is hatchbacks and
+  coupés, which is why **`body_type` is a list now**, like `fuel` — somebody after a city
+  car means either shape, not one of them.
+- **The home screen reads: browse by need, the newest cars, browse by shape, then the one
+  question.** Categories first for a buyer with nothing to type, cars next because they are
+  what people came for, shapes after that, and the question last, at the bottom where it
+  interrupts nothing.
+- **"How are we doing?" is a real question with a real answer.** Five faces posting to
+  `POST /feedback`, one row per account, which sets `users.rated_at` so it is never asked
+  twice — on any device that account signs in on. A score that fails to send says so and
+  leaves the faces tappable; a card that swallowed the answer would be worse than not
+  asking. Nothing about it is decorative, which is the only reason it is allowed on the
+  screen at all.
 - **A category wears a car that is actually in it.** Where there is no commissioned art,
   the photograph on a collection or a shape card is the newest live listing matching those
   filters, taken by whoever is selling it — not a studio render of a car nobody can buy. It costs nothing to licence,

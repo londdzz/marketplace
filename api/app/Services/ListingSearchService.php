@@ -176,13 +176,14 @@ final class ListingSearchService
             ->when($filters['price_min'] ?? null, fn (Builder $q, $price) => $q->where('price_eur', '>=', $price))
             ->when($filters['price_max'] ?? null, fn (Builder $q, $price) => $q->where('price_eur', '<=', $price))
             ->when($filters['mileage_max'] ?? null, fn (Builder $q, $km) => $q->where('mileage_km', '<=', $km))
-            ->when($filters['transmission'] ?? null, fn (Builder $q, $t) => $q->where('transmission', $t))
-            ->when($filters['body_type'] ?? null, fn (Builder $q, $b) => $q->where('body_type', $b));
+            ->when($filters['transmission'] ?? null, fn (Builder $q, $t) => $q->where('transmission', $t));
 
-        $fuel = array_filter((array) ($filters['fuel'] ?? []));
+        foreach (['fuel', 'body_type'] as $column) {
+            $chosen = array_filter((array) ($filters[$column] ?? []));
 
-        if ($fuel !== []) {
-            $query->whereIn('fuel', $fuel);
+            if ($chosen !== []) {
+                $query->whereIn($column, $chosen);
+            }
         }
     }
 

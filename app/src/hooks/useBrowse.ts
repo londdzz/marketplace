@@ -28,7 +28,7 @@ const ICONS: Record<string, string> = {
   family: 'people-outline',
   first_car: 'school-outline',
   premium: 'diamond-outline',
-  low_mileage: 'speedometer-outline',
+  city: 'business-outline',
   automatic: 'options-outline',
   electrified: 'flash-outline',
 };
@@ -55,6 +55,16 @@ const ART: Record<string, CollectionArt> = {
     background: require('../../assets/collections/first-car-bg.jpg'),
     car: require('../../assets/collections/first-car.png'),
     carRatio: 0.503,
+  },
+  premium: {
+    background: require('../../assets/collections/premium-bg.jpg'),
+    car: require('../../assets/collections/premium-car.png'),
+    carRatio: 0.453,
+  },
+  city: {
+    background: require('../../assets/collections/city-bg.jpg'),
+    car: require('../../assets/collections/city-car.png'),
+    carRatio: 0.59,
   },
 };
 
@@ -103,8 +113,10 @@ export function useCollectionChips() {
       chips.push(t(`filter_${filters.transmission}`));
     }
 
-    if (filters.bodyType) {
-      chips.push(t(`listing:body_type.${filters.bodyType}`, { ns: 'listing' }));
+    if (filters.bodyType?.length) {
+      chips.push(
+        ...filters.bodyType.map((shape) => t(`listing:body_type.${shape}`, { ns: 'listing' })),
+      );
     }
 
     if (filters.fuel?.length) {

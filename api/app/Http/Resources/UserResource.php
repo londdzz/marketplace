@@ -32,6 +32,9 @@ class UserResource extends JsonResource
             // Not null in the database, so a model that has not read the
             // column back still reports the truthful zero.
             'credits' => (int) $this->credits,
+            // Set once the home screen's one question has been answered, so
+            // it knows not to ask again.
+            'rated_at' => $this->rated_at?->toIso8601String(),
             'created_at' => $this->created_at?->toIso8601String(),
         ];
     }

@@ -53,7 +53,7 @@ export type ApiFilters = {
   mileage_max?: number;
   fuel?: string[];
   transmission?: string;
-  body_type?: string;
+  body_type?: string[];
   countries?: string[];
   city_id?: number;
   sort?: SearchFilters['sort'];

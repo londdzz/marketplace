@@ -1,9 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
 
+import { authApi } from '../../api/auth';
 import { listingsApi } from '../../api/listings';
 import { referenceApi } from '../../api/reference';
 import type { Listing } from '../../api/types';
@@ -11,6 +13,7 @@ import {
   BodyTypeTile,
   CollectionCard,
   ListingCard,
+  RateCard,
   PromoBanner,
   Screen,
   SearchBar,
@@ -21,6 +24,7 @@ import { collectionArt, collectionIcon, useBrowse, useCollectionChips } from '..
 import { useExchangeRates } from '../../hooks/useExchangeRates';
 import { useListingCardMapper } from '../../hooks/useListingCard';
 import { useListingPage } from '../../hooks/useListingPage';
+import { useAuth } from '../../auth/AuthProvider';
 import { useFilters } from '../../search/FiltersProvider';
 import { useTheme } from '../../theme';
 
@@ -47,6 +51,12 @@ export default function HomeTab() {
   const { t } = useTranslation(['home', 'search', 'listing', 'common']);
   const queryClient = useQueryClient();
   const { replace } = useFilters();
+  const { user, apply } = useAuth();
+
+  // Answering sets rated_at on the account, which is what stops the card being
+  // drawn on the next launch. It must not take it off the screen mid-tap,
+  // though, or the thank-you is never seen — so this keeps it for the session.
+  const [rated, setRated] = useState(false);
 
   // The newest cars across all five markets, which is what a home screen is
   // for: something to look at before anyone has searched for anything.
@@ -167,32 +177,6 @@ export default function HomeTab() {
           </View>
         ) : null}
 
-        {shapes.length > 0 ? (
-          <View style={{ gap: theme.spacing.md }}>
-            <Text variant="title">{t('home:browse_body_types')}</Text>
-
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              style={rail}
-              contentContainerStyle={railContent}
-              testID="shapes-rail"
-            >
-              {shapes.map((shape) => (
-                <BodyTypeTile
-                  key={shape.key}
-                  label={t(`listing:body_type.${shape.key}`, shape.key)}
-                  count={t('search:offers', { count: shape.count })}
-                  shape={shape.key}
-                  width={SHAPE_TILE}
-                  onPress={() => open({ bodyType: shape.key })}
-                  testID={`shape-${shape.key}`}
-                />
-              ))}
-            </ScrollView>
-          </View>
-        ) : null}
-
         <View style={styles.sectionHeader}>
           <Text variant="title">{t('home:newest')}</Text>
           <Pressable
@@ -235,6 +219,45 @@ export default function HomeTab() {
             ))}
           </View>
         )}
+        {shapes.length > 0 ? (
+          <View style={{ gap: theme.spacing.md }}>
+            <Text variant="title">{t('home:browse_body_types')}</Text>
+
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={rail}
+              contentContainerStyle={railContent}
+              testID="shapes-rail"
+            >
+              {shapes.map((shape) => (
+                <BodyTypeTile
+                  key={shape.key}
+                  label={t(`listing:body_type.${shape.key}`, shape.key)}
+                  count={t('search:offers', { count: shape.count })}
+                  shape={shape.key}
+                  width={SHAPE_TILE}
+                  onPress={() => open({ bodyType: [shape.key] })}
+                  testID={`shape-${shape.key}`}
+                />
+              ))}
+            </ScrollView>
+          </View>
+        ) : null}
+
+
+        {/* The one question, at the bottom where it interrupts nothing, and
+            only until it has been answered. */}
+        {user && (!user.rated_at || rated) ? (
+          <RateCard
+            onRate={async (score) => {
+              await authApi.rate(score);
+              setRated(true);
+              apply({ ...user, rated_at: new Date().toISOString() });
+            }}
+          />
+        ) : null}
+
       </ScrollView>
     </Screen>
   );

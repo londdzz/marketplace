@@ -55,6 +55,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'phone_verified_at' => 'datetime',
             'blocked_at' => 'datetime',
+            'rated_at' => 'datetime',
             'password' => 'hashed',
             'seller_type' => SellerType::class,
             'credits' => 'integer',

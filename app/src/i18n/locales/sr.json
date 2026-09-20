@@ -64,8 +64,6 @@
     "collection_family": "Породични аутомобили",
     "collection_first_car": "Први аутомобил",
     "collection_premium": "Премијум",
-    "collection_low_mileage": "Мала километража",
-    "collection_automatic": "Аутоматик",
     "collection_electrified": "Електрични и хибридни",
     "filter_from_year": "од {{year}}",
     "filter_to_year": "до {{year}}",
@@ -73,7 +71,16 @@
     "filter_to_price": "до {{price}}",
     "filter_to_mileage": "до {{mileage}} км",
     "filter_automatic": "Аутоматик",
-    "filter_manual": "Ручни"
+    "filter_manual": "Ручни",
+    "collection_city": "Градски аутомобили",
+    "rate_title": "Како нам иде?",
+    "rate_body": "Један додир. Говори нам да ли вреди градити на овоме.",
+    "rate_1": "Лоше",
+    "rate_5": "Одлично",
+    "rate_thanks": "Хвала",
+    "rate_thanks_low": "Забележено. Боље да сазнамо сада него након што одете.",
+    "rate_thanks_high": "Драго нам је што вам ради.",
+    "rate_failed": "Није послато. Покушајте поново за тренутак."
   },
   "search": {
     "results": "{{count}} аутомобила",

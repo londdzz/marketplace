@@ -36,7 +36,10 @@ final class ListingFilterRules
             $key('fuel') => ['sometimes', 'nullable', 'array'],
             $key('fuel').'.*' => [Rule::enum(FuelType::class)],
             $key('transmission') => ['sometimes', 'nullable', Rule::enum(Transmission::class)],
-            $key('body_type') => ['sometimes', 'nullable', Rule::in(config('listings.body_types'))],
+            // A list, like fuel: a buyer looking for a city car means a
+            // hatchback or a coupé, not one or the other.
+            $key('body_type') => ['sometimes', 'nullable', 'array'],
+            $key('body_type').'.*' => [Rule::in(config('listings.body_types'))],
             $key('countries') => ['sometimes', 'nullable', 'array'],
             $key('countries').'.*' => ['string', 'size:2', Rule::exists('countries', 'code')],
             $key('city_id') => ['sometimes', 'nullable', 'integer', Rule::exists('cities', 'id')],

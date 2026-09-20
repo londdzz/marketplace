@@ -43,6 +43,10 @@ export const authApi = {
     dealer_name?: string | null;
   }) => api.patch<ApiResource<User>>('/me', patch).then((response) => response.data),
 
+  /** How the app is doing, from 1 to 5, with anything they want to add. */
+  rate: (score: number, note?: string) =>
+    api.post<ApiResource<{ rated_at: string | null }>>('/feedback', { score, note }).then((r) => r.data),
+
   /**
    * Delete the account and everything attached to it, for good. Apple requires
    * this to be reachable from inside the app, and it is not reversible.

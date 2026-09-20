@@ -64,8 +64,6 @@
     "collection_family": "Family cars",
     "collection_first_car": "First car",
     "collection_premium": "Premium",
-    "collection_low_mileage": "Low mileage",
-    "collection_automatic": "Automatic",
     "collection_electrified": "Electric & hybrid",
     "filter_from_year": "from {{year}}",
     "filter_to_year": "to {{year}}",
@@ -73,7 +71,16 @@
     "filter_to_price": "to {{price}}",
     "filter_to_mileage": "to {{mileage}} km",
     "filter_automatic": "Automatic",
-    "filter_manual": "Manual"
+    "filter_manual": "Manual",
+    "collection_city": "City cars",
+    "rate_title": "How are we doing?",
+    "rate_body": "One tap. It tells us whether this is worth building on.",
+    "rate_1": "Poor",
+    "rate_5": "Great",
+    "rate_thanks": "Thank you",
+    "rate_thanks_low": "Noted. We would rather know now than after you leave.",
+    "rate_thanks_high": "Glad it is working for you.",
+    "rate_failed": "That did not send. Try again in a moment."
   },
   "search": {
     "results": "{{count}} cars",

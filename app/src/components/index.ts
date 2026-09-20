@@ -25,6 +25,7 @@ export { MakeTile, type MakeTileProps } from './MakeTile';
 export { OptionRow, type OptionRowProps } from './OptionRow';
 export { Pager, type PagerProps } from './Pager';
 export { PromoBanner, type PromoBannerProps } from './PromoBanner';
+export { RateCard, type RateCardProps } from './RateCard';
 export { Screen, type ScreenProps } from './Screen';
 export { SearchBar, type SearchBarProps } from './SearchBar';
 export { SearchField, type SearchFieldProps } from './SearchField';

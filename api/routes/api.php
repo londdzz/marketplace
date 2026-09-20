@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\ProfileController;
 use App\Http\Controllers\Auth\SessionController;
 use App\Http\Controllers\Credit\CreditController;
 use App\Http\Controllers\Device\DeviceTokenController;
+use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\Listing\ListingController;
 use App\Http\Controllers\Listing\ListingLifecycleController;
 use App\Http\Controllers\Listing\ListingPhotoController;
@@ -66,6 +67,8 @@ Route::get('listings', ListingSearchController::class)->name('listings.index');
 Route::get('listings/{listing}', [ListingController::class, 'show'])->name('listings.show');
 
 Route::middleware(['auth:sanctum', 'blocked'])->group(function (): void {
+    Route::post('feedback', [FeedbackController::class, 'store'])->name('feedback.store');
+
     Route::get('my/listings', [MyListingController::class, 'index'])->name('my.listings.index');
 
     Route::post('listings', [ListingController::class, 'store'])->name('listings.store');

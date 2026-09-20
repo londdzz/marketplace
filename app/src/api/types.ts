@@ -31,6 +31,8 @@ export type User = {
   seller_type: SellerType;
   dealer_name: string | null;
   credits: number;
+  /** Set once the home screen's one question has been answered. */
+  rated_at: string | null;
   created_at: string | null;
 };
 
@@ -189,7 +191,7 @@ export type SearchFilters = {
   mileageMax?: number;
   fuel?: string[];
   transmission?: string;
-  bodyType?: string;
+  bodyType?: string[];
   countries?: string[];
   cityId?: number;
   sort?: SortOption;

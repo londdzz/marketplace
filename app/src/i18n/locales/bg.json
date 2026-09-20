@@ -64,8 +64,6 @@
     "collection_family": "Семейни автомобили",
     "collection_first_car": "Първи автомобил",
     "collection_premium": "Премиум",
-    "collection_low_mileage": "Малък пробег",
-    "collection_automatic": "Автоматик",
     "collection_electrified": "Електрически и хибридни",
     "filter_from_year": "от {{year}}",
     "filter_to_year": "до {{year}}",
@@ -73,7 +71,16 @@
     "filter_to_price": "до {{price}}",
     "filter_to_mileage": "до {{mileage}} км",
     "filter_automatic": "Автоматик",
-    "filter_manual": "Ръчен"
+    "filter_manual": "Ръчен",
+    "collection_city": "Градски автомобили",
+    "rate_title": "Как се справяме?",
+    "rate_body": "Едно докосване. Казва ни дали си струва да градим върху това.",
+    "rate_1": "Зле",
+    "rate_5": "Отлично",
+    "rate_thanks": "Благодарим ви",
+    "rate_thanks_low": "Отбелязано. По-добре да знаем сега, отколкото след като си тръгнете.",
+    "rate_thanks_high": "Радваме се, че работи за вас.",
+    "rate_failed": "Не се изпрати. Опитайте пак след малко."
   },
   "search": {
     "results": "{{count}} коли",
