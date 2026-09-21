@@ -1,9 +1,11 @@
+import { useQueryClient } from '@tanstack/react-query';
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 
 import { authApi } from '../api/auth';
 import { ApiError } from '../api/client';
 import { tokenStorage } from '../api/storage';
 import type { AuthSession, User } from '../api/types';
+import { mergeGuestData } from '../guest/merge';
 import i18n, { SUPPORTED_LANGUAGES, type Language } from '../i18n';
 import { registerForPush, unregisterFromPush } from '../push';
 
@@ -42,16 +44,35 @@ const AuthContext = createContext<AuthState | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [restoring, setRestoring] = useState(true);
+  const queryClient = useQueryClient();
+
+  /**
+   * Everything cached belonged to whoever was signed in a moment ago, so all
+   * of it goes when that changes. Not only the obviously personal screens: a
+   * search result depends on who is asking too, because blocking hides cars
+   * as well as people, and a guest's results are not a signed-in buyer's.
+   *
+   * The cost is one refetch of reference data that is cached for an hour
+   * anyway, at a moment when the person is already waiting.
+   */
+  const forgetEverything = useCallback(() => queryClient.clear(), [queryClient]);
 
   const signIn = useCallback(async (session: AuthSession) => {
     await tokenStorage.save(session.token);
+
+    // Before the user is set, so the token is already stored and the upload
+    // below is authenticated, and so the saved tabs never render the empty
+    // account list for a moment before the phone's copy arrives on it.
+    await mergeGuestData().catch(() => undefined);
+
+    forgetEverything();
     setUser(session.user);
     followAccountLanguage(session.user);
 
     // Asked for once the account exists, so the prompt arrives with something
     // to explain it rather than on a cold first launch.
     void registerForPush().catch(() => undefined);
-  }, []);
+  }, [forgetEverything]);
 
   const signOut = useCallback(async () => {
     // Before the token goes, so the API knows which device to stop sending to.
@@ -64,8 +85,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     await tokenStorage.clear();
+    forgetEverything();
     setUser(null);
-  }, []);
+  }, [forgetEverything]);
 
   const apply = useCallback((updated: User) => {
     setUser(updated);
@@ -76,8 +98,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await unregisterFromPush();
     await authApi.deleteAccount();
     await tokenStorage.clear();
+    forgetEverything();
     setUser(null);
-  }, []);
+  }, [forgetEverything]);
 
   const refresh = useCallback(async () => {
     try {

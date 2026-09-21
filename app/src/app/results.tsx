@@ -22,6 +22,9 @@ import { formatEur, formatKm, formatLocal, listingLocation, listingTitle } from 
 import { SHOW_LOCAL_CURRENCY } from '../market';
 import { useBottomInset } from '../hooks/useBottomInset';
 import { useExchangeRates } from '../hooks/useExchangeRates';
+import { useFavorites } from '../hooks/useFavorites';
+import { useSavedSearches } from '../hooks/useSavedSearches';
+import { useRequireAccount } from '../auth/useRequireAccount';
 import { useListingCardMapper } from '../hooks/useListingCard';
 import { useListingPage } from '../hooks/useListingPage';
 import { useFilters } from '../search/FiltersProvider';
@@ -56,26 +59,17 @@ export default function ResultsScreen() {
   }
   const { byCurrency } = useExchangeRates();
   const countries = useQuery({ queryKey: ['countries'], queryFn: referenceApi.countries });
-  const favorites = useQuery({ queryKey: ['favorites'], queryFn: listingsApi.favorites });
+  // Keeping a car and keeping a search need no account; ringing the seller
+  // does. Both stores answer the same way, so nothing below knows which.
+  const favorites = useFavorites();
+  const savedSearches = useSavedSearches();
+  const { require: requireAccount, signedIn } = useRequireAccount();
 
-  const favoriteIds = new Set((favorites.data?.data ?? []).map((listing) => listing.id));
-
-  const park = useMutation({
-    mutationFn: (listing: Listing) =>
-      favoriteIds.has(listing.id)
-        ? listingsApi.removeFavorite(listing.id)
-        : listingsApi.addFavorite(listing.id),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['favorites'] }),
-  });
+  const favoriteIds = favorites.ids;
 
   const saveSearch = useMutation({
-    mutationFn: () => listingsApi.saveSearch(filters),
-    onSuccess: async () => {
-      setSaved(true);
-      // The Searches tab stays mounted behind this screen, so it only learns
-      // about the new search if its query is put out of date here.
-      await queryClient.invalidateQueries({ queryKey: ['saved-searches'] });
-    },
+    mutationFn: () => savedSearches.save.mutateAsync({ name: null, filters }),
+    onSuccess: () => setSaved(true),
   });
 
   const listings = search.data?.data ?? [];
@@ -210,7 +204,7 @@ export default function ResultsScreen() {
                   compact
                   width={cardWidth}
                   onPress={() => router.push(`/listing/${item.id}`)}
-                  onToggleFavorite={() => park.mutate(item)}
+                  onToggleFavorite={() => favorites.toggle(item)}
                 />
               );
             }
@@ -237,15 +231,20 @@ export default function ResultsScreen() {
                   negotiableLabel: t('listing:negotiable'),
                   favorited: favoriteIds.has(item.id),
                 }}
-                contactLabel={t('search:contact')}
+                contactLabel={signedIn ? t('search:contact') : t('listing:sign_in_to_call')}
                 parkLabel={t('search:park')}
                 onPress={() => router.push(`/listing/${item.id}`)}
-                onContact={() => {
-                  if (item.seller?.phone) {
-                    void Linking.openURL(`tel:${item.seller.phone}`);
-                  }
-                }}
-                onPark={() => park.mutate(item)}
+                // A guest sees the button and it does something: it explains
+                // what signing in is for. The API does not send them a phone
+                // number, so there is nothing to dial either way.
+                onContact={() =>
+                  requireAccount('call', () => {
+                    if (item.seller?.phone) {
+                      void Linking.openURL(`tel:${item.seller.phone}`);
+                    }
+                  })
+                }
+                onPark={() => favorites.toggle(item)}
               />
             );
           }}

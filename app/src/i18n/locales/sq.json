@@ -11,7 +11,8 @@
     "error_loading": "Nuk u ngarkua dot",
     "done": "U krye",
     "optional": "Opsionale",
-    "save": "Ruaj"
+    "save": "Ruaj",
+    "sign_in": "Hyr"
   },
   "tabs": {
     "search": "Kërko",
@@ -40,7 +41,15 @@
     "change_number": "Ndrysho numrin",
     "invalid_phone": "Shkruaj një numër telefoni të vlefshëm.",
     "invalid_code": "Kodi duhet të ketë 6 shifra.",
-    "signed_in_as": "I kyçur si"
+    "signed_in_as": "I kyçur si",
+    "browse_instead": "Shiko më parë",
+    "why": {
+      "sell": "Hyr për ta publikuar makinën. Shitësve u duhet një numër që blerësit t’i kontaktojnë.",
+      "message": "Hyr për t’i shkruar shitësit, që të mund të të përgjigjet.",
+      "call": "Hyr për ta parë numrin e shitësit.",
+      "report": "Hyr për ta raportuar këtë shpallje.",
+      "block": "Hyr për të bllokuar dikë."
+    }
   },
   "home": {
     "search_placeholder": "Kërko…",
@@ -146,7 +155,8 @@
     "saved_delete_title": "Ta fshijmë këtë kërkim?",
     "previous": "Prapa",
     "next": "Tjetra",
-    "page_of": "Faqja {{page}} nga {{total}}"
+    "page_of": "Faqja {{page}} nga {{total}}",
+    "guest_alerts_off": "Ruajtur në këtë telefon. Hyr që të njoftohesh kur shfaqet një përputhje."
   },
   "listing": {
     "fuel": {
@@ -246,7 +256,8 @@
     "block_confirm": "Blloko",
     "unavailable": "Kjo makinë nuk është më këtu",
     "unavailable_body": "Mund të jetë shitur, hequr, ose është e dikujt që e ke bllokuar.",
-    "back_to_search": "Kthehu te kërkimi"
+    "back_to_search": "Kthehu te kërkimi",
+    "sign_in_to_call": "Hyr për të telefonuar"
   },
   "sell": {
     "step": "Hapi {{current}} nga {{total}}",
@@ -385,7 +396,9 @@
     "promote_less": "Më pak kredi",
     "promote_more": "Më shumë kredi",
     "promote": "Promovo",
-    "promoted_until": "Në krye deri më {{date}}"
+    "promoted_until": "Në krye deri më {{date}}",
+    "guest_title": "Shit makinën në Autevo",
+    "guest_body": "Hyr për të publikuar një makinë. Blerësit të kontaktojnë në numrin me të cilin hyn, ndaj shpallja ka nevojë për një numër."
   },
   "messages": {
     "title": "Mesazhet",
@@ -430,6 +443,9 @@
     "unblock": "Zhblloko",
     "blocked_someone": "Dikush",
     "blocked_empty": "Askush nuk është i bllokuar",
-    "blocked_empty_body": "Blloko dikë nga shpallja ose nga një bisedë dhe shfaqet këtu."
+    "blocked_empty_body": "Blloko dikë nga shpallja ose nga një bisedë dhe shfaqet këtu.",
+    "guest_title": "Po shfleton si vizitor",
+    "guest_body": "Makinat dhe kërkimet e ruajtura mbahen në këtë telefon. Hyr për të shitur një makinë, për t’i shkruar një shitësi dhe për t’i mbajtur në llogarinë tënde.",
+    "guest_saved_note": "Ruajtur në këtë telefon"
   }
 }

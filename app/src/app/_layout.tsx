@@ -31,9 +31,20 @@ const queryClient = new QueryClient({
 });
 
 /**
- * Sends people to the sign-in step until they have an account, and into the
- * tabs once they do. Nothing in the app is reachable before verifying a phone
- * number.
+ * Opens the app, signed in or not.
+ *
+ * Browsing needs no account: a buyer can search, open a car, keep a shortlist
+ * and save a search before they have given us a telephone number, and what
+ * they keep lives on the phone until they do. Asking for a number at the door
+ * is asking somebody to prove they are serious about a marketplace they have
+ * not been allowed to look at yet.
+ *
+ * What does need an account is anything that involves another person —
+ * selling, messaging, reporting, and seeing a seller's number — and each of
+ * those asks at the point it is needed, with the reason in front of them.
+ *
+ * The only redirect left is the other way round: somebody already signed in
+ * has no business on the sign-in screen.
  */
 function AuthGate() {
   const { user, restoring } = useAuth();
@@ -50,11 +61,7 @@ function AuthGate() {
       return;
     }
 
-    const inAuthFlow = segments[0] === '(auth)';
-
-    if (!user && !inAuthFlow) {
-      router.replace('/(auth)/phone');
-    } else if (user && inAuthFlow) {
+    if (user && segments[0] === '(auth)') {
       router.replace('/(tabs)/home');
     }
 

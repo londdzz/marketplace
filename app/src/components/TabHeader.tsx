@@ -1,5 +1,6 @@
 import { useRouter } from 'expo-router';
 
+import { useRequireAccount } from '../auth/useRequireAccount';
 import { AppHeader } from './AppHeader';
 
 export type TabHeaderProps = {
@@ -17,13 +18,17 @@ export type TabHeaderProps = {
  */
 export function TabHeader({ accountBadge, unreadMessages }: TabHeaderProps) {
   const router = useRouter();
+  const { require: requireAccount } = useRequireAccount();
 
   return (
     <AppHeader
       accountBadge={accountBadge}
       unreadMessages={unreadMessages}
+      // The profile works either way: for a guest it is where signing in
+      // lives, and the language switcher works without an account.
       onAccount={() => router.push('/(tabs)/profile')}
-      onMessages={() => router.push('/(tabs)/messages')}
+      // Messages do not. A thread needs somebody to reply to.
+      onMessages={() => requireAccount('message', () => router.push('/(tabs)/messages'))}
     />
   );
 }

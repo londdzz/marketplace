@@ -11,7 +11,8 @@
     "error_loading": "Није могло да се учита",
     "done": "Готово",
     "optional": "Опционо",
-    "save": "Сачувај"
+    "save": "Сачувај",
+    "sign_in": "Prijavi se"
   },
   "tabs": {
     "search": "Претрага",
@@ -40,7 +41,15 @@
     "change_number": "Промени број",
     "invalid_phone": "Унеси исправан број телефона.",
     "invalid_code": "Код има шест цифара.",
-    "signed_in_as": "Пријављен као"
+    "signed_in_as": "Пријављен као",
+    "browse_instead": "Prvo pogledaj",
+    "why": {
+      "sell": "Prijavi se da objaviš automobil. Prodavcima treba broj da bi ih kupci kontaktirali.",
+      "message": "Prijavi se da pišeš prodavcu, kako bi mogao da ti odgovori.",
+      "call": "Prijavi se da vidiš broj prodavca.",
+      "report": "Prijavi se da prijaviš ovaj oglas.",
+      "block": "Prijavi se da blokiraš nekoga."
+    }
   },
   "home": {
     "search_placeholder": "Претражи…",
@@ -146,7 +155,8 @@
     "saved_delete_title": "Обрисати ову претрагу?",
     "previous": "Назад",
     "next": "Следећа",
-    "page_of": "Страница {{page}} од {{total}}"
+    "page_of": "Страница {{page}} од {{total}}",
+    "guest_alerts_off": "Sačuvano na ovom telefonu. Prijavi se da te obavestimo kada se pojavi podudaranje."
   },
   "listing": {
     "fuel": {
@@ -246,7 +256,8 @@
     "block_confirm": "Блокирај",
     "unavailable": "Овог аутомобила више нема",
     "unavailable_body": "Можда је продат, уклоњен или припада некоме кога си блокирао.",
-    "back_to_search": "Назад на претрагу"
+    "back_to_search": "Назад на претрагу",
+    "sign_in_to_call": "Prijavi se za poziv"
   },
   "sell": {
     "step": "Корак {{current}} од {{total}}",
@@ -385,7 +396,9 @@
     "promote_less": "Мање кредита",
     "promote_more": "Више кредита",
     "promote": "Промовиши",
-    "promoted_until": "На врху до {{date}}"
+    "promoted_until": "На врху до {{date}}",
+    "guest_title": "Prodaj automobil na Autevo",
+    "guest_body": "Prijavi se da objaviš automobil. Kupci te kontaktiraju na broj sa kojim si prijavljen, pa oglas traži broj."
   },
   "messages": {
     "title": "Поруке",
@@ -430,6 +443,9 @@
     "unblock": "Одблокирај",
     "blocked_someone": "Неко",
     "blocked_empty": "Нико није блокиран",
-    "blocked_empty_body": "Блокирај некога са огласа или из разговора и појавиће се овде."
+    "blocked_empty_body": "Блокирај некога са огласа или из разговора и појавиће се овде.",
+    "guest_title": "Pregledaš kao gost",
+    "guest_body": "Sačuvani automobili i pretrage čuvaju se na ovom telefonu. Prijavi se da prodaš automobil, pišeš prodavcu i zadržiš ih na svom nalogu.",
+    "guest_saved_note": "Sačuvano na ovom telefonu"
   }
 }

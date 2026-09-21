@@ -10,6 +10,7 @@ import { referenceApi } from '../../api/reference';
 import type { SavedSearch } from '../../api/types';
 import { ConfirmDialog, EmptyState, ListGroup, Screen, TabHeader, Text } from '../../components';
 import { formatEur, formatKm } from '../../format';
+import { useSavedSearches } from '../../hooks/useSavedSearches';
 import { useFilters } from '../../search/FiltersProvider';
 import { useTheme } from '../../theme';
 
@@ -29,7 +30,9 @@ export default function MySearchesTab() {
   const { t } = useTranslation(['search', 'listing', 'tabs', 'common']);
   const [pendingDelete, setPendingDelete] = useState<SavedSearch | null>(null);
 
-  const searches = useQuery({ queryKey: ['saved-searches'], queryFn: listingsApi.savedSearches });
+  // On the account when there is one, on this phone when there is not.
+  const saved = useSavedSearches();
+  const searches = saved;
   const makes = useQuery({ queryKey: ['makes'], queryFn: referenceApi.makes });
 
   // A tab screen is mounted once and never unmounted, so without this the list
@@ -42,11 +45,8 @@ export default function MySearchesTab() {
   );
 
   const remove = useMutation({
-    mutationFn: (id: string) => listingsApi.deleteSavedSearch(id),
-    onSuccess: async () => {
-      setPendingDelete(null);
-      await queryClient.invalidateQueries({ queryKey: ['saved-searches'] });
-    },
+    mutationFn: (id: string) => saved.remove.mutateAsync(id),
+    onSuccess: () => setPendingDelete(null),
   });
 
   /** The criteria in words, in the order the search builder asks for them. */
@@ -97,7 +97,7 @@ export default function MySearchesTab() {
     router.push('/results');
   };
 
-  const list = searches.data ?? [];
+  const list = searches.searches;
 
   return (
     <Screen flush edges={['top']}>
@@ -181,6 +181,13 @@ export default function MySearchesTab() {
                         {t('search:saved_alerts_on')}
                       </Text>
                     </View>
+                  ) : !saved.canNotify ? (
+                    // The one real difference between a search kept on the
+                    // phone and one kept on an account. Saying it beats a
+                    // missing bell nobody can explain.
+                    <Text variant="caption" tone="muted" style={{ marginTop: theme.spacing.xs }}>
+                      {t('search:guest_alerts_off')}
+                    </Text>
                   ) : null}
                 </Pressable>
 

@@ -404,6 +404,34 @@ release, and update it whenever a placeholder is added or replaced.
   the only size it is ever drawn at — they were drawn against a rendered contact sheet
   rather than by eye, because the first pass made a saloon, a hatchback and an estate
   that were the same picture.
+- **The app opens without an account.** Browsing, keeping a shortlist and saving a search
+  involve nobody else, so none of them asks for a telephone number: the root layout no longer
+  redirects a signed-out person to sign-in, and the sign-in screen has a way out. What a guest
+  keeps lives on the phone (`src/guest/store.ts`, AsyncStorage) and `mergeGuestData()` uploads
+  it to the account the first time they sign in, clearing the local copy only once each row is
+  safely across — an interrupted merge leaves everything it did not send still on the phone.
+  **A saved car keeps a copy of the card, not just its id**, because reading a listing counts a
+  view against it, and a buyer opening their own shortlist must not inflate the view count of
+  every car in it. `useFavorites()` and `useSavedSearches()` hide which of the two stores is
+  answering, so no screen knows. `AuthProvider` empties the whole query cache whenever the
+  account changes, including the public queries — a search result depends on who is asking too,
+  because blocking hides cars as well as people.
+- **What needs an account is what involves another person**: selling, messaging, calling and
+  reporting. `useRequireAccount()` gates each one at the point it is needed and says why on the
+  sign-in screen (`auth:why.*`), rather than hiding the control or letting it fail. Nothing a
+  guest can see is inert: the Call button reads "Sign in to call", because the API does not send
+  a guest the number and a button should say what pressing it will do.
+- **A seller's telephone number needs an account to see.** Search is public and carries the
+  seller on every row, so without this one walk of the pages harvested every seller in the
+  country. `SellerResource` gates only the number; the name and kind of seller still show, so a
+  card says who is selling. It is also the reason the signed-out rate limit can afford to be the
+  loosest of them.
+- **Every route is rate limited** (`config/rate_limits.php`). Laravel 11 applies no throttle by
+  default and none was added until this, so only the two OTP routes and starting a conversation
+  had a ceiling. Counted against the account where there is one and the address where there is
+  not, in separate buckets, because a mobile carrier puts thousands of subscribers behind one
+  address. The RevenueCat webhook is exempt: a dropped delivery is a purchase that granted
+  nothing, and the shared secret already guards it.
 - **The home screen's app bar gives up the top, and the search bar takes it.** Scrolling
   fades and lifts `TabHeader` away, and the search bar — child zero of the scroll view,
   pinned by `stickyHeaderIndices` rather than by anything we animate — settles at the top.

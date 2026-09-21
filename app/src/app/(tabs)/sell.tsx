@@ -18,6 +18,7 @@ import {
   TabHeader,
   Text,
 } from '../../components';
+import { useRequireAccount } from '../../auth/useRequireAccount';
 import { PromoteSheet } from '../../sell/PromoteSheet';
 import { formatEur, formatKm, listingTitle } from '../../format';
 import { CreditsSheet } from '../../sell/CreditsSheet';
@@ -61,6 +62,11 @@ export default function MyListingsTab() {
   const credits = useCredits();
   const balance = credits.data?.balance ?? 0;
 
+  // Selling is the one thing a guest genuinely cannot do: a listing has to
+  // carry a way for a buyer to reach the seller, and that is the number this
+  // screen would be asking for anyway.
+  const { signedIn } = useRequireAccount();
+
   const [sheetOpen, setSheetOpen] = useState(false);
   const [confirming, setConfirming] = useState<string | null>(null);
   const [promoting, setPromoting] = useState<Listing | null>(null);
@@ -69,6 +75,7 @@ export default function MyListingsTab() {
   const listings = useQuery({
     queryKey: ['my-listings'],
     queryFn: () => sellApi.myListings(),
+    enabled: signedIn,
   });
 
   const refresh = () => {
@@ -330,6 +337,26 @@ export default function MyListingsTab() {
   };
 
   const data = listings.data?.data ?? [];
+
+  // Nothing on this screen means anything without an account — there are no
+  // listings to show and no balance to spend — so it says so plainly and
+  // offers the one thing that would change that, rather than drawing an empty
+  // version of itself.
+  if (!signedIn) {
+    return (
+      <Screen flush edges={['top']}>
+        <TabHeader />
+
+        <EmptyState
+          glyph="🔑"
+          title={t('sell:guest_title')}
+          description={t('sell:guest_body')}
+          actionLabel={t('common:sign_in')}
+          onAction={() => router.push({ pathname: '/(auth)/phone', params: { reason: 'sell' } })}
+        />
+      </Screen>
+    );
+  }
 
   return (
     <Screen flush edges={['top']}>

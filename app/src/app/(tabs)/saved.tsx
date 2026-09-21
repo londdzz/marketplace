@@ -3,10 +3,10 @@ import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, FlatList, useWindowDimensions } from 'react-native';
 
-import { listingsApi } from '../../api/listings';
 import { referenceApi } from '../../api/reference';
 import { EmptyState, ListingCard, Screen, TabHeader, Text } from '../../components';
 import { useExchangeRates } from '../../hooks/useExchangeRates';
+import { useFavorites } from '../../hooks/useFavorites';
 import { useListingCardMapper } from '../../hooks/useListingCard';
 import { useTheme } from '../../theme';
 
@@ -19,7 +19,8 @@ export default function SavedTab() {
   const { width } = useWindowDimensions();
   const { t } = useTranslation(['home', 'tabs', 'search', 'common']);
 
-  const favorites = useQuery({ queryKey: ['favorites'], queryFn: listingsApi.favorites });
+  // On the account when there is one, on this phone when there is not.
+  const favorites = useFavorites();
   const { byCurrency } = useExchangeRates();
   const countries = useQuery({ queryKey: ['countries'], queryFn: referenceApi.countries });
 
@@ -30,7 +31,7 @@ export default function SavedTab() {
 
   const gap = theme.spacing.md;
   const cardWidth = Math.floor((width - theme.screenPadding * 2 - gap) / 2);
-  const listings = favorites.data?.data ?? [];
+  const listings = favorites.listings;
 
   return (
     <Screen flush edges={['top']}>

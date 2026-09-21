@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -22,9 +22,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { authApi } from '../../api/auth';
-import { listingsApi } from '../../api/listings';
 import { referenceApi } from '../../api/reference';
-import type { Listing } from '../../api/types';
 import {
   BodyTypeTile,
   CollectionCard,
@@ -44,6 +42,7 @@ import {
   useCollectionChips,
 } from '../../hooks/useBrowse';
 import { useExchangeRates } from '../../hooks/useExchangeRates';
+import { useFavorites } from '../../hooks/useFavorites';
 import { useListingCardMapper } from '../../hooks/useListingCard';
 import { useListingPage } from '../../hooks/useListingPage';
 import { useAuth } from '../../auth/AuthProvider';
@@ -79,7 +78,6 @@ export default function HomeTab() {
   const router = useRouter();
   const { width } = useWindowDimensions();
   const { t } = useTranslation(['home', 'search', 'listing', 'common']);
-  const queryClient = useQueryClient();
   const { replace } = useFilters();
   const { user, apply } = useAuth();
 
@@ -129,22 +127,15 @@ export default function HomeTab() {
   const browse = useBrowse();
   const chipsFor = useCollectionChips();
 
-  const favorites = useQuery({ queryKey: ['favorites'], queryFn: listingsApi.favorites });
-  const favoriteIds = new Set((favorites.data?.data ?? []).map((listing) => listing.id));
-
-  // The heart on a card does what a heart does, here as well as in the results.
-  const save = useMutation({
-    mutationFn: (listing: Listing) =>
-      favoriteIds.has(listing.id)
-        ? listingsApi.removeFavorite(listing.id)
-        : listingsApi.addFavorite(listing.id),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['favorites'] }),
-  });
+  // The heart on a card does what a heart does, here as well as in the
+  // results — and for a guest as well as an account, since keeping a
+  // shortlist involves nobody but the person keeping it.
+  const favorites = useFavorites();
 
   const toCard = useListingCardMapper(
     byCurrency,
     (code) => countries.data?.find((country) => country.code === code)?.currency ?? 'EUR',
-    favoriteIds,
+    favorites.ids,
   );
 
   const listings = (newest.data?.data ?? []).slice(0, HOME_CARS);
@@ -280,7 +271,7 @@ export default function HomeTab() {
                   compact
                   width={cardWidth}
                   onPress={() => router.push(`/listing/${listing.id}`)}
-                  onToggleFavorite={() => save.mutate(listing)}
+                  onToggleFavorite={() => favorites.toggle(listing)}
                 />
               ))}
             </View>

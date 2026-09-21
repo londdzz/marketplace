@@ -11,7 +11,8 @@
     "error_loading": "That could not be loaded",
     "done": "Done",
     "optional": "Optional",
-    "save": "Save"
+    "save": "Save",
+    "sign_in": "Sign in"
   },
   "tabs": {
     "search": "Search",
@@ -40,7 +41,15 @@
     "change_number": "Change number",
     "invalid_phone": "Enter a valid phone number.",
     "invalid_code": "The code has six digits.",
-    "signed_in_as": "Signed in as"
+    "signed_in_as": "Signed in as",
+    "browse_instead": "Look around first",
+    "why": {
+      "sell": "Sign in to list your car. Sellers need a number so buyers can reach them.",
+      "message": "Sign in to message the seller, so they can reply to you.",
+      "call": "Sign in to see the seller's number.",
+      "report": "Sign in to report this listing.",
+      "block": "Sign in to block someone."
+    }
   },
   "home": {
     "search_placeholder": "Search for…",
@@ -146,7 +155,8 @@
     "saved_delete_title": "Delete this search?",
     "previous": "Back",
     "next": "Next",
-    "page_of": "Page {{page}} of {{total}}"
+    "page_of": "Page {{page}} of {{total}}",
+    "guest_alerts_off": "Saved on this phone. Sign in to be told when a match appears."
   },
   "listing": {
     "fuel": {
@@ -246,7 +256,8 @@
     "block_confirm": "Block",
     "unavailable": "This car is no longer here",
     "unavailable_body": "It may have been sold, taken down, or belong to someone you blocked.",
-    "back_to_search": "Back to search"
+    "back_to_search": "Back to search",
+    "sign_in_to_call": "Sign in to call"
   },
   "sell": {
     "step": "Step {{current}} of {{total}}",
@@ -385,7 +396,9 @@
     "promote_less": "Fewer credits",
     "promote_more": "More credits",
     "promote": "Promote",
-    "promoted_until": "On top until {{date}}"
+    "promoted_until": "On top until {{date}}",
+    "guest_title": "Sell your car on Autevo",
+    "guest_body": "Sign in to list a car. Buyers contact you on the number you sign in with, so a listing needs one."
   },
   "messages": {
     "title": "Messages",
@@ -430,6 +443,9 @@
     "unblock": "Unblock",
     "blocked_someone": "Someone",
     "blocked_empty": "Nobody is blocked",
-    "blocked_empty_body": "Block someone from their listing or from a conversation, and they appear here."
+    "blocked_empty_body": "Block someone from their listing or from a conversation, and they appear here.",
+    "guest_title": "You are browsing as a guest",
+    "guest_body": "Saved cars and searches are kept on this phone. Sign in to sell a car, message a seller, and keep them on your account.",
+    "guest_saved_note": "Kept on this phone"
   }
 }

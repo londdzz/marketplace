@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
@@ -34,6 +34,12 @@ export default function PhoneScreen() {
   const theme = useTheme();
   const router = useRouter();
   const { t } = useTranslation(['auth', 'common']);
+
+  // Set when something sent them here — selling a car, messaging a seller,
+  // calling one. Saying which is the difference between a demand and an
+  // explanation, and it is the only reason they are looking at this screen.
+  const { reason } = useLocalSearchParams<{ reason?: string }>();
+  const why = reason ? t(`auth:why.${reason}`, { defaultValue: '' }) : '';
 
   const markets = useQuery({
     queryKey: ['countries'],
@@ -84,7 +90,7 @@ export default function PhoneScreen() {
       <View style={{ marginTop: theme.spacing.xxxl }}>
         <Text variant="display">{t('auth:phone_title')}</Text>
         <Text variant="body" tone="muted" style={{ marginTop: theme.spacing.sm }}>
-          {t('auth:phone_subtitle')}
+          {why || t('auth:phone_subtitle')}
         </Text>
       </View>
 
@@ -144,6 +150,20 @@ export default function PhoneScreen() {
         onPress={onSubmit}
         style={{ marginTop: theme.spacing.xl }}
         testID="send-code"
+      />
+
+      {/* The way out. Everything a buyer does before contacting anybody works
+          without an account, so nobody is made to hand over a number to look
+          around — and what they keep while browsing follows them onto the
+          account if they do sign in later. */}
+      <Button
+        label={t('auth:browse_instead')}
+        variant="ghost"
+        size="lg"
+        block
+        onPress={() => router.replace('/(tabs)/home')}
+        style={{ marginTop: theme.spacing.sm }}
+        testID="browse-instead"
       />
 
       <Text variant="caption" tone="subtle" style={{ marginTop: theme.spacing.lg, textAlign: 'center' }}>

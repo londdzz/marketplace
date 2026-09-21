@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { listingsApi } from '../api/listings';
 import { referenceApi } from '../api/reference';
 import type { ListingPage } from '../api/types';
+import { guestFavorites } from '../guest/store';
 import { BROWSE_KEY } from '../hooks/useBrowse';
 import { listingPageKey } from '../hooks/useListingPage';
 
@@ -35,7 +36,9 @@ const NEWEST = { sort: 'newest' } as const;
  *
  * @param waitFor pass false while something earlier is still resolving, such
  *                as the stored token being read
- * @param signedIn fetches the signed-in screens' data too
+ * @param signedIn whether there is an account, which decides only where the
+ *                 saved cars are read from — the home screen itself is warmed
+ *                 either way, because a guest opens on it too
  */
 export function useWarmUp(waitFor: boolean, signedIn: boolean): boolean {
   const queryClient = useQueryClient();
@@ -77,29 +80,25 @@ export function useWarmUp(waitFor: boolean, signedIn: boolean): boolean {
       }),
     ];
 
-    // The home screen's own two requests, so it opens with cars on it.
-    const mine = signedIn
-      ? [
-          queryClient.prefetchQuery({
-            queryKey: listingPageKey(NEWEST, 1),
-            queryFn: () => listingsApi.search(NEWEST, 1),
-          }),
-          queryClient.prefetchQuery({
-            queryKey: ['favorites'],
-            queryFn: listingsApi.favorites,
-          }),
-        ]
-      : [];
+    // The home screen's own requests, so it opens with cars on it. The cars
+    // are public, so this runs for a guest as well — they land on the same
+    // screen and it should be as finished for them as for anybody.
+    const mine = [
+      queryClient.prefetchQuery({
+        queryKey: listingPageKey(NEWEST, 1),
+        queryFn: () => listingsApi.search(NEWEST, 1),
+      }),
+      queryClient.prefetchQuery({
+        queryKey: ['favorites'],
+        queryFn: async () => (signedIn ? (await listingsApi.favorites()).data : guestFavorites.read()),
+      }),
+    ];
 
     // The card's text arrives with the listing, but its photograph is a
     // separate request that would otherwise only start once the card drew —
     // so the home screen would come up complete except for six grey boxes
     // filling in. Only what is on screen before a scroll is worth waiting for.
     const photos = Promise.all(mine).then(async () => {
-      if (!signedIn) {
-        return;
-      }
-
       const cached = queryClient.getQueryData<ListingPage>(listingPageKey(NEWEST, 1));
 
       const urls = (cached?.data ?? [])

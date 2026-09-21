@@ -1,6 +1,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { creditsApi, type CreditBalance } from '../api/sell';
+import { useAuth } from '../auth/AuthProvider';
 
 export const CREDITS_KEY = ['credits'];
 
@@ -12,10 +13,14 @@ export const CREDITS_KEY = ['credits'];
  * credits, and this is how the app finds out that it did.
  */
 export function useCredits() {
+  const { user } = useAuth();
+
   return useQuery({
     queryKey: CREDITS_KEY,
     queryFn: creditsApi.read,
     staleTime: 15_000,
+    // A guest has no balance to read, and asking would only earn a 401.
+    enabled: Boolean(user),
   });
 }
 

@@ -39,6 +39,14 @@ export default function ProfileTab() {
   const chooseLanguage = async (language: Language) => {
     await i18n.changeLanguage(language);
 
+    // A guest has no account to remember the choice on, so the switch simply
+    // changes the app and there is nothing to save. It follows them onto the
+    // account the first time they sign in, because the account takes the
+    // device's language when it is created.
+    if (!user) {
+      return;
+    }
+
     try {
       apply(await authApi.updateMe({ preferred_language: language }));
     } catch (error) {
@@ -70,7 +78,36 @@ export default function ProfileTab() {
         }}
         showsVerticalScrollIndicator={false}
       >
+        {/* A guest has no identity to show, so the card says where they stand
+            and what signing in would change. Everything they have kept so far
+            follows them onto the account, which is the part worth saying. */}
+        {!user ? (
+          <View
+            style={{
+              padding: theme.spacing.lg,
+              gap: theme.spacing.md,
+              borderRadius: theme.radius.lg,
+              borderWidth: 1,
+              borderColor: theme.colors.accentBorder,
+              backgroundColor: theme.colors.accentMuted,
+            }}
+            testID="profile-guest"
+          >
+            <Text variant="bodyStrong">{t('profile:guest_title')}</Text>
+            <Text variant="meta" tone="muted">
+              {t('profile:guest_body')}
+            </Text>
+            <Button
+              label={t('common:sign_in')}
+              block
+              onPress={() => router.push('/(auth)/phone')}
+              testID="profile-sign-in"
+            />
+          </View>
+        ) : null}
+
         {/* Who this account is, and the one thing a seller checks most. */}
+        {user ? (
         <Pressable
           accessibilityRole="button"
           onPress={() => router.push('/profile/edit')}
@@ -122,8 +159,10 @@ export default function ProfileTab() {
 
           <Ionicons name="chevron-forward" size={16} color={theme.colors.textSubtle} />
         </Pressable>
+        ) : null}
 
         {/* Credits, because this is where a seller comes looking for them. */}
+        {user ? (
         <View
           style={[
             styles.credits,
@@ -156,7 +195,12 @@ export default function ProfileTab() {
             testID="profile-credits"
           />
         </View>
+        ) : null}
 
+        {/* Selling and messaging both need an account, so neither is drawn
+            for somebody who has not got one. */}
+        {user ? (
+          <>
         <Text variant="overline" tone="muted" style={sectionLabel}>
           {t('profile:selling')}
         </Text>
@@ -175,7 +219,10 @@ export default function ProfileTab() {
             testID="profile-messages"
           />
         </ListGroup>
+          </>
+        ) : null}
 
+        {/* The one section that works either way. */}
         <Text variant="overline" tone="muted" style={sectionLabel}>
           {t('profile:language')}
         </Text>
@@ -196,6 +243,8 @@ export default function ProfileTab() {
           ))}
         </ListGroup>
 
+        {user ? (
+          <>
         <Text variant="overline" tone="muted" style={sectionLabel}>
           {t('profile:account')}
         </Text>
@@ -226,6 +275,8 @@ export default function ProfileTab() {
             testID="delete-account"
           />
         </ListGroup>
+          </>
+        ) : null}
 
         {confirmingDelete ? (
           <View

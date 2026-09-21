@@ -24,6 +24,8 @@ import { Button, Chip, ConfirmDialog, EmptyState, Screen, StackHeader, Text } fr
 import { formatEur, formatKm, formatLocal, listingLocation, listingTitle } from '../../format';
 import { useBottomInset } from '../../hooks/useBottomInset';
 import { useExchangeRates } from '../../hooks/useExchangeRates';
+import { useFavorites } from '../../hooks/useFavorites';
+import { useRequireAccount } from '../../auth/useRequireAccount';
 import { SHOW_LOCAL_CURRENCY } from '../../market';
 import { useTheme } from '../../theme';
 
@@ -49,14 +51,15 @@ export default function ListingDetail() {
   const { byCurrency } = useExchangeRates();
   const countries = useQuery({ queryKey: ['countries'], queryFn: referenceApi.countries });
 
-  // The heart saves the car rather than only colouring itself in.
-  const favorites = useQuery({ queryKey: ['favorites'], queryFn: listingsApi.favorites });
-  const favorited = (favorites.data?.data ?? []).some((saved) => saved.id === id);
+  // The heart saves the car rather than only colouring itself in — on the
+  // account, or on this phone for somebody who has not signed in. Keeping a
+  // shortlist involves nobody else, so it asks for nothing.
+  const favorites = useFavorites();
+  const favorited = favorites.ids.has(id);
 
-  const save = useMutation({
-    mutationFn: () => (favorited ? listingsApi.removeFavorite(id) : listingsApi.addFavorite(id)),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['favorites'] }),
-  });
+  // Everything below does involve somebody else, so each asks at the point it
+  // is needed rather than being hidden or failing quietly.
+  const { require: requireAccount, signedIn } = useRequireAccount();
 
   /**
    * Messaging the seller opens the thread for this listing, or reopens the one
@@ -161,7 +164,7 @@ export default function ListingDetail() {
             <Pressable
               accessibilityRole="button"
               testID="favorite-toggle"
-              onPress={() => save.mutate()}
+              onPress={() => favorites.toggle(car)}
             >
               <Ionicons
                 name={favorited ? 'heart' : 'heart-outline'}
@@ -309,7 +312,7 @@ export default function ListingDetail() {
           <View style={{ flexDirection: 'row', gap: theme.spacing.xl, marginTop: theme.spacing.xl }}>
             <Pressable
               accessibilityRole="button"
-              onPress={() => router.push(`/report/${car.id}`)}
+              onPress={() => requireAccount('report', () => router.push(`/report/${car.id}`))}
               testID="report-listing"
             >
               <Text variant="meta" tone="muted">
@@ -320,7 +323,7 @@ export default function ListingDetail() {
             {car.seller ? (
               <Pressable
                 accessibilityRole="button"
-                onPress={() => setConfirmingBlock(true)}
+                onPress={() => requireAccount('block', () => setConfirmingBlock(true))}
                 testID="block-seller"
               >
                 <Text variant="meta" tone="muted">
@@ -370,16 +373,21 @@ export default function ListingDetail() {
         ]}
       >
         <Button
-          label={t('listing:call')}
+          // A guest is never sent the number by the API, so the button says
+          // what pressing it will actually do rather than promising a call
+          // it cannot place.
+          label={signedIn ? t('listing:call') : t('listing:sign_in_to_call')}
           size="lg"
           icon="call"
           variant="secondary"
           style={{ flex: 1 }}
-          onPress={() => {
-            if (car.seller?.phone) {
-              void Linking.openURL(`tel:${car.seller.phone}`);
-            }
-          }}
+          onPress={() =>
+            requireAccount('call', () => {
+              if (car.seller?.phone) {
+                void Linking.openURL(`tel:${car.seller.phone}`);
+              }
+            })
+          }
           testID="call-seller"
         />
         <Button
@@ -388,7 +396,7 @@ export default function ListingDetail() {
           icon="mail"
           style={{ flex: 1 }}
           loading={contact.isPending}
-          onPress={() => contact.mutate()}
+          onPress={() => requireAccount('message', () => contact.mutate())}
           testID="message-seller"
         />
       </View>
