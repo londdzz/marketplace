@@ -42,7 +42,7 @@
     "invalid_phone": "Shkruaj një numër telefoni të vlefshëm.",
     "invalid_code": "Kodi duhet të ketë 6 shifra.",
     "signed_in_as": "I kyçur si",
-    "browse_instead": "Shiko më parë",
+    "browse_instead": "Jo tani",
     "why": {
       "sell": "Hyr për ta publikuar makinën. Shitësve u duhet një numër që blerësit t’i kontaktojnë.",
       "message": "Hyr për t’i shkruar shitësit, që të mund të të përgjigjet.",

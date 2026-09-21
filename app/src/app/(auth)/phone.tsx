@@ -3,7 +3,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
-import { View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { z } from 'zod';
 
 import { authApi } from '../../api/auth';
@@ -156,15 +156,21 @@ export default function PhoneScreen() {
           without an account, so nobody is made to hand over a number to look
           around — and what they keep while browsing follows them onto the
           account if they do sign in later. */}
-      <Button
-        label={t('auth:browse_instead')}
-        variant="ghost"
-        size="lg"
-        block
+      {/* Quiet rather than azure. The ghost variant draws its label in the
+          accent, which would put two azure things on a screen whose one
+          action is Send code — and then neither leads. It is still obvious:
+          a centred line directly under the primary button is where a way out
+          belongs. */}
+      <Pressable
+        accessibilityRole="button"
         onPress={() => router.replace('/(tabs)/home')}
-        style={{ marginTop: theme.spacing.sm }}
+        style={{ paddingVertical: theme.spacing.lg, alignItems: 'center' }}
         testID="browse-instead"
-      />
+      >
+        <Text variant="label" tone="muted">
+          {t('auth:browse_instead')}
+        </Text>
+      </Pressable>
 
       <Text variant="caption" tone="subtle" style={{ marginTop: theme.spacing.lg, textAlign: 'center' }}>
         {t('auth:terms')}

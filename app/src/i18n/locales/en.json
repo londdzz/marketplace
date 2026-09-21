@@ -42,7 +42,7 @@
     "invalid_phone": "Enter a valid phone number.",
     "invalid_code": "The code has six digits.",
     "signed_in_as": "Signed in as",
-    "browse_instead": "Look around first",
+    "browse_instead": "Not now",
     "why": {
       "sell": "Sign in to list your car. Sellers need a number so buyers can reach them.",
       "message": "Sign in to message the seller, so they can reply to you.",
