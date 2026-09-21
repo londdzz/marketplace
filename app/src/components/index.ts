@@ -13,6 +13,7 @@ export {
   type CentreTabDiscProps,
 } from './CentreTabButton';
 export { Chip, type ChipProps } from './Chip';
+export { CodeField, type CodeFieldProps } from './CodeField';
 export { CollectionCard, type CollectionCardProps } from './CollectionCard';
 export { ConfirmDialog, type ConfirmDialogProps } from './ConfirmDialog';
 export { EmptyState, type EmptyStateProps } from './EmptyState';

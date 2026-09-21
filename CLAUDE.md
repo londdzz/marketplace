@@ -432,6 +432,21 @@ release, and update it whenever a placeholder is added or replaced.
   not, in separate buckets, because a mobile carrier puts thousands of subscribers behind one
   address. The RevenueCat webhook is exempt: a dropped delivery is a purchase that granted
   nothing, and the shared secret already guards it.
+- **The sign-in code has no Confirm button.** It is checked the moment the sixth digit
+  lands, so nobody hunts for a button after typing something they just read off a
+  notification. `CodeField` draws one box per digit over **one** real text field, not six:
+  six fields each own a digit and have to hand focus back and forth, which breaks on paste,
+  on held backspace and on the phone filling it in — most of how a code is actually
+  entered. The caret is hidden because the lit box is the caret. A refused code turns the
+  boxes red and clears them; a connection that failed keeps the digits and shows a retry,
+  because throwing away six digits somebody typed correctly is not their mistake. The row
+  under the boxes keeps the height the button used to take, so the screen never jumps
+  between checking, failed and neither.
+- **Both auth screens wear the mark.** They were the only screens in the app without it —
+  every other one carries it in a header — and a bare form on a black page could belong to
+  anybody. Mark at the top, form under it: centring the pair put a third of a screen of
+  nothing above the mark, and on a phone a form wants to be near the thumb and clear of
+  the keyboard. The terms hold the floor so the page is anchored at both ends.
 - **The home screen's app bar gives up the top, and the search bar takes it.** Scrolling
   fades and lifts `TabHeader` away, and the search bar — child zero of the scroll view,
   pinned by `stickyHeaderIndices` rather than by anything we animate — settles at the top.
