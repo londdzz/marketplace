@@ -445,7 +445,10 @@
     "blocked_empty": "Нико није блокиран",
     "blocked_empty_body": "Блокирај некога са огласа или из разговора и појавиће се овде.",
     "guest_title": "Pregledaš kao gost",
-    "guest_body": "Sačuvani automobili i pretrage čuvaju se na ovom telefonu. Prijavi se da prodaš automobil, pišeš prodavcu i zadržiš ih na svom nalogu.",
-    "guest_saved_note": "Sačuvano na ovom telefonu"
+    "guest_body": "Sačuvani automobili i pretrage čuvaju se na ovom telefonu.",
+    "guest_saved_note": "Sačuvano na ovom telefonu",
+    "guest_benefit_sell": "Prodaj svoj automobil",
+    "guest_benefit_message": "Piši prodavcima direktno",
+    "guest_benefit_keep": "Zadrži sačuvano na svom nalogu"
   }
 }

@@ -444,8 +444,11 @@
     "blocked_someone": "Someone",
     "blocked_empty": "Nobody is blocked",
     "blocked_empty_body": "Block someone from their listing or from a conversation, and they appear here.",
-    "guest_title": "You are browsing as a guest",
-    "guest_body": "Saved cars and searches are kept on this phone. Sign in to sell a car, message a seller, and keep them on your account.",
-    "guest_saved_note": "Kept on this phone"
+    "guest_title": "Browsing as a guest",
+    "guest_body": "Saved cars and searches are kept on this phone.",
+    "guest_saved_note": "Kept on this phone",
+    "guest_benefit_sell": "Sell your car",
+    "guest_benefit_message": "Message sellers directly",
+    "guest_benefit_keep": "Keep what you saved on your account"
   }
 }

@@ -15,6 +15,13 @@ import { CreditsSheet } from '../../sell/CreditsSheet';
 import { useCredits } from '../../sell/credits';
 import { useTheme } from '../../theme';
 
+/** What an account adds, in the order it matters to somebody still deciding. */
+const GUEST_BENEFITS = [
+  { key: 'guest_benefit_sell', icon: 'pricetag-outline' },
+  { key: 'guest_benefit_message', icon: 'chatbubble-ellipses-outline' },
+  { key: 'guest_benefit_keep', icon: 'heart-outline' },
+] as const satisfies readonly { key: string; icon: keyof typeof Ionicons.glyphMap }[];
+
 export default function ProfileTab() {
   const theme = useTheme();
   const router = useRouter();
@@ -75,6 +82,9 @@ export default function ProfileTab() {
         contentContainerStyle={{
           paddingHorizontal: theme.screenPadding,
           paddingBottom: theme.spacing.huge,
+          // So the version below can be pushed to the bottom of the screen
+          // rather than sitting wherever the content above it happened to end.
+          flexGrow: 1,
         }}
         showsVerticalScrollIndicator={false}
       >
@@ -85,22 +95,69 @@ export default function ProfileTab() {
           <View
             style={{
               padding: theme.spacing.lg,
-              gap: theme.spacing.md,
               borderRadius: theme.radius.lg,
               borderWidth: 1,
-              borderColor: theme.colors.accentBorder,
-              backgroundColor: theme.colors.accentMuted,
+              borderColor: theme.colors.border,
+              backgroundColor: theme.colors.surface,
             }}
             testID="profile-guest"
           >
-            <Text variant="bodyStrong">{t('profile:guest_title')}</Text>
-            <Text variant="meta" tone="muted">
-              {t('profile:guest_body')}
-            </Text>
+            {/* The same shape the signed-in card has — disc, then two lines —
+                so this reads as the same screen in a different state rather
+                than a different screen. */}
+            <View style={{ flexDirection: 'row', gap: theme.spacing.lg, alignItems: 'center' }}>
+              <View
+                style={{
+                  width: 46,
+                  height: 46,
+                  borderRadius: theme.radius.full,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: theme.colors.accentMuted,
+                }}
+              >
+                <Ionicons name="person" size={22} color={theme.colors.accent} />
+              </View>
+
+              <View style={{ flex: 1, gap: 2 }}>
+                <Text variant="bodyStrong">{t('profile:guest_title')}</Text>
+                <Text variant="meta" tone="muted">
+                  {t('profile:guest_body')}
+                </Text>
+              </View>
+            </View>
+
+            {/* What signing in actually buys, as three things rather than a
+                sentence. It reads in a glance, and it fills the card with the
+                answer to the only question this screen raises. */}
+            <View
+              style={{
+                marginTop: theme.spacing.lg,
+                paddingTop: theme.spacing.lg,
+                borderTopWidth: StyleSheet.hairlineWidth,
+                borderTopColor: theme.colors.border,
+                gap: theme.spacing.md,
+              }}
+            >
+              {GUEST_BENEFITS.map(({ key, icon }) => (
+                <View
+                  key={key}
+                  style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.md }}
+                >
+                  <Ionicons name={icon} size={17} color={theme.colors.textMuted} />
+                  <Text variant="meta" style={{ flex: 1 }}>
+                    {t(`profile:${key}`)}
+                  </Text>
+                </View>
+              ))}
+            </View>
+
             <Button
               label={t('common:sign_in')}
+              size="lg"
               block
               onPress={() => router.push('/(auth)/phone')}
+              style={{ marginTop: theme.spacing.lg }}
               testID="profile-sign-in"
             />
           </View>
@@ -329,7 +386,11 @@ export default function ProfileTab() {
           </Text>
         ) : null}
 
-        <Text variant="caption" tone="subtle" style={{ marginTop: theme.spacing.xxl, textAlign: 'center' }}>
+        <Text
+          variant="caption"
+          tone="subtle"
+          style={{ marginTop: 'auto', paddingTop: theme.spacing.xxl, textAlign: 'center' }}
+        >
           Autevo {Constants.expoConfig?.version ?? ''}
         </Text>
       </ScrollView>

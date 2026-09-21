@@ -445,7 +445,10 @@
     "blocked_empty": "Askush nuk është i bllokuar",
     "blocked_empty_body": "Blloko dikë nga shpallja ose nga një bisedë dhe shfaqet këtu.",
     "guest_title": "Po shfleton si vizitor",
-    "guest_body": "Makinat dhe kërkimet e ruajtura mbahen në këtë telefon. Hyr për të shitur një makinë, për t’i shkruar një shitësi dhe për t’i mbajtur në llogarinë tënde.",
-    "guest_saved_note": "Ruajtur në këtë telefon"
+    "guest_body": "Makinat dhe kërkimet e ruajtura mbahen në këtë telefon.",
+    "guest_saved_note": "Ruajtur në këtë telefon",
+    "guest_benefit_sell": "Shit makinën tënde",
+    "guest_benefit_message": "Shkruaji drejtpërdrejt shitësve",
+    "guest_benefit_keep": "Mbaji të ruajturat në llogarinë tënde"
   }
 }
