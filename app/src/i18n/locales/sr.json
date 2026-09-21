@@ -257,7 +257,7 @@
     "unavailable": "Овог аутомобила више нема",
     "unavailable_body": "Можда је продат, уклоњен или припада некоме кога си блокирао.",
     "back_to_search": "Назад на претрагу",
-    "sign_in_to_call": "Prijavi se za poziv"
+    "sign_in_to_call": "Prijavi se"
   },
   "sell": {
     "step": "Корак {{current}} од {{total}}",

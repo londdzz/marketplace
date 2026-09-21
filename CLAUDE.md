@@ -457,7 +457,18 @@ release, and update it whenever a placeholder is added or replaced.
   small thumbnail on the left rather than a full-width photo. The banner carries a deep
   brand blue in both schemes, because a full-width block of the light accent is glaring
   against a near-black page.
-- **The identity is Autevo: petrol and azure, Sora, dark only.** The mark is a leaning
+- **Onest sets the app; Sora sets the wordmark.** Sora contains **no Cyrillic at all** —
+  not an unloaded subset, no glyphs — so every screen in Macedonian, the launch language,
+  fell back to the phone's own face, and any Latin beside it (a make, a price) stayed in
+  Sora: one line, two typefaces. Onest covers both scripts, was drawn with Cyrillic as a
+  first-class script, and sits within a couple of percent of Sora on the two measurements
+  that decide apparent size — x-height 527 against 534, cap height 707 against 730 — so the
+  12 · 13 · 15 · 17 · 22 scale carried over untouched. Sora stays for the word AUTEVO, which
+  is always Latin and is the brand rather than the interface; the mark beside it is SVG
+  paths and never needed a font. Check a candidate before trusting it: read the font's own
+  cmap, because "supports Cyrillic" on a foundry page and 0 mapped codepoints in the file
+  is exactly the gap this fell into.
+- **The identity is Autevo: petrol and azure, Onest with Sora for the wordmark, dark only.** The mark is a leaning
   A with three azure motion wedges running into it, drawn by a designer and handed over
   as flattened paths — the letter already carries its nine degrees, so nothing
   transforms it. The wedges thin out as it shrinks: all three at 32 and above, two from

@@ -109,7 +109,16 @@ export function Button({
       ) : (
         <View style={[styles.label, { gap: theme.spacing.sm }]}>
           {icon ? <Ionicons name={icon} size={size === 'sm' ? 15 : 17} color={contentColor} /> : null}
-          <Text variant={textVariant} style={{ color: contentColor }} numberOfLines={1}>
+          {/* flexShrink is what lets numberOfLines actually do its job. A row
+              child sizes to its content by default, so without this a label
+              too long for its button does not ellipsise — it overflows and is
+              clipped by the button's edge. Every language but English is
+              longer than English, so this is not a rare case. */}
+          <Text
+            variant={textVariant}
+            style={{ color: contentColor, flexShrink: 1 }}
+            numberOfLines={1}
+          >
             {label}
           </Text>
         </View>
