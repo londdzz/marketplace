@@ -182,11 +182,14 @@ it('takes a listing down without erasing it', function (): void {
 it('shows a published listing to anyone', function (): void {
     $listing = Listing::factory()->active()->create(['user_id' => $this->seller->id]);
 
+    // The seller's telephone number is not in this list on purpose: reading a
+    // listing needs no account, but seeing the number does.
+    // SellerPhonePrivacyTest covers that rule on its own.
     $this->getJson("/api/v1/listings/{$listing->id}")
         ->assertOk()
         ->assertJsonPath('data.id', $listing->id)
         ->assertJsonPath('data.seller.id', $this->seller->id)
-        ->assertJsonStructure(['data' => ['id', 'price_eur', 'photos', 'seller' => ['id', 'display_name', 'phone']]]);
+        ->assertJsonStructure(['data' => ['id', 'price_eur', 'photos', 'seller' => ['id', 'display_name']]]);
 });
 
 it('hides a draft from everyone but its seller', function (): void {

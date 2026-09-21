@@ -63,7 +63,9 @@ Route::get('browse', [ReferenceController::class, 'browse'])->name('browse.index
 /*
  * A published listing is public. Everything that changes one needs the seller.
  */
-Route::get('listings', ListingSearchController::class)->name('listings.index');
+Route::get('listings', ListingSearchController::class)
+    ->middleware('throttle:search')
+    ->name('listings.index');
 Route::get('listings/{listing}', [ListingController::class, 'show'])->name('listings.show');
 
 Route::middleware(['auth:sanctum', 'blocked'])->group(function (): void {
@@ -71,7 +73,9 @@ Route::middleware(['auth:sanctum', 'blocked'])->group(function (): void {
 
     Route::get('my/listings', [MyListingController::class, 'index'])->name('my.listings.index');
 
-    Route::post('listings', [ListingController::class, 'store'])->name('listings.store');
+    Route::post('listings', [ListingController::class, 'store'])
+        ->middleware('throttle:create-draft')
+        ->name('listings.store');
     Route::patch('listings/{listing}', [ListingController::class, 'update'])->name('listings.update');
     Route::delete('listings/{listing}', [ListingController::class, 'destroy'])->name('listings.destroy');
 
@@ -88,7 +92,9 @@ Route::middleware(['auth:sanctum', 'blocked'])->group(function (): void {
 
     Route::get('conversations', [ConversationController::class, 'index'])->name('conversations.index');
     Route::get('conversations/{conversation}/messages', [ConversationController::class, 'messages'])->name('conversations.messages');
-    Route::post('conversations/{conversation}/messages', [ConversationController::class, 'send'])->name('conversations.send');
+    Route::post('conversations/{conversation}/messages', [ConversationController::class, 'send'])
+        ->middleware('throttle:send-message')
+        ->name('conversations.send');
     Route::post('conversations/{conversation}/read', [ConversationController::class, 'read'])->name('conversations.read');
 
     Route::post('listings/{listing}/conversations', [ConversationController::class, 'store'])
@@ -109,9 +115,13 @@ Route::middleware(['auth:sanctum', 'blocked'])->group(function (): void {
     Route::post('saved-searches', [SavedSearchController::class, 'store'])->name('saved-searches.store');
     Route::delete('saved-searches/{savedSearch}', [SavedSearchController::class, 'destroy'])->name('saved-searches.destroy');
 
-    Route::post('listings/{listing}/report', [ReportController::class, 'store'])->name('listings.report');
+    Route::post('listings/{listing}/report', [ReportController::class, 'store'])
+        ->middleware('throttle:report-listing')
+        ->name('listings.report');
 
-    Route::post('listings/{listing}/photos', [ListingPhotoController::class, 'store'])->name('listings.photos.store');
+    Route::post('listings/{listing}/photos', [ListingPhotoController::class, 'store'])
+        ->middleware('throttle:upload-photos')
+        ->name('listings.photos.store');
     Route::patch('listings/{listing}/photos/order', [ListingPhotoController::class, 'order'])->name('listings.photos.order');
     Route::delete('listings/{listing}/photos/{photo}', [ListingPhotoController::class, 'destroy'])->name('listings.photos.destroy');
 });
@@ -123,4 +133,9 @@ Route::middleware(['auth:sanctum', 'blocked'])->group(function (): void {
  */
 Route::post('webhooks/revenuecat', RevenueCatWebhookController::class)
     ->middleware('revenuecat')
+    // Exempt from the global throttle on purpose. A dropped delivery is a
+    // purchase that granted nothing until RevenueCat retries, and the shared
+    // secret already means only RevenueCat can reach the handler at all — a
+    // caller without it never gets past the middleware above.
+    ->withoutMiddleware('throttle:api')
     ->name('webhooks.revenuecat');

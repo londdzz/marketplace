@@ -61,12 +61,86 @@ class AppServiceProvider extends ServiceProvider
     }
 
     /**
+     * Who a request counts against.
+     *
+     * An account where there is one, the address where there is not, and never
+     * the same bucket for both — otherwise one scraper signed in from a
+     * carrier network would spend the allowance of everyone browsing from
+     * behind the same address, which on a mobile network is thousands of
+     * people.
+     */
+    private static function signature(Request $request, string $bucket): string
+    {
+        $user = $request->user();
+
+        return $user !== null
+            ? $bucket.':user:'.$user->getAuthIdentifier()
+            : $bucket.':ip:'.$request->ip();
+    }
+
+    /**
+     * A limit from the pair in config, picking the signed-in or signed-out
+     * ceiling to match who is asking.
+     *
+     * @param  array{signed_in_per_minute: int, signed_out_per_minute: int}  $limits
+     */
+    private static function perMinuteFor(Request $request, array $limits, string $bucket): Limit
+    {
+        $allowance = $request->user() !== null
+            ? $limits['signed_in_per_minute']
+            : $limits['signed_out_per_minute'];
+
+        return Limit::perMinute($allowance)->by(self::signature($request, $bucket));
+    }
+
+    /**
      * Three codes per phone number every fifteen minutes and ten per IP address
      * per hour, so neither a single number nor a single machine can be used to
      * pump out messages we pay for.
+     *
+     * Everything else is limited too. Laravel 11 throttles nothing by default,
+     * so a route not named here has no ceiling at all: `api` is the backstop
+     * under every one of them, and the rest are the handful worth holding
+     * tighter than that.
      */
     private function configureRateLimiters(): void
     {
+        RateLimiter::for('api', static fn (Request $request): Limit => self::perMinuteFor(
+            $request,
+            config('rate_limits.global'),
+            'api',
+        ));
+
+        RateLimiter::for('search', static fn (Request $request): Limit => self::perMinuteFor(
+            $request,
+            config('rate_limits.search'),
+            'search',
+        ));
+
+        // Two windows together: the minute stops a burst, the day stops a
+        // patient sender who stays under it all afternoon.
+        RateLimiter::for('send-message', static function (Request $request): array {
+            $limits = config('rate_limits.messages');
+            $key = self::signature($request, 'send-message');
+
+            return [
+                Limit::perMinute($limits['per_minute'])->by($key),
+                Limit::perDay($limits['per_day'])->by($key),
+            ];
+        });
+
+        RateLimiter::for('upload-photos', static fn (Request $request): Limit => Limit::perHour(
+            (int) config('rate_limits.photos.per_hour'),
+        )->by(self::signature($request, 'upload-photos')));
+
+        RateLimiter::for('create-draft', static fn (Request $request): Limit => Limit::perHour(
+            (int) config('rate_limits.drafts.per_hour'),
+        )->by(self::signature($request, 'create-draft')));
+
+        RateLimiter::for('report-listing', static fn (Request $request): Limit => Limit::perHour(
+            (int) config('rate_limits.reports.per_hour'),
+        )->by(self::signature($request, 'report-listing')));
+
         RateLimiter::for('otp-request', static function (Request $request): array {
             $phone = PhoneNumber::normalize((string) $request->input('phone', '')) ?? 'unparsable';
             $perPhone = config('otp.rate_limits.per_phone');

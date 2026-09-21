@@ -24,9 +24,14 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->api(prepend: [
             // Before SetLocale, which also wants to know whose language to
-            // answer in.
+            // answer in, and before the throttle, which counts a request
+            // against the account rather than the address when there is one.
             ResolveOptionalUser::class,
             SetLocale::class,
+            // Laravel 11 throttles nothing by default. Prepended rather than
+            // appended so a flood is turned away before route model binding
+            // has gone to the database on its behalf.
+            'throttle:api',
         ]);
 
         $middleware->alias([
