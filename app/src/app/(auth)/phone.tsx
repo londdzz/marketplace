@@ -11,7 +11,9 @@ import { useQuery } from '@tanstack/react-query';
 
 import { ApiError } from '../../api/client';
 import { referenceApi } from '../../api/reference';
-import { Button, Chip, Input, Screen, Text } from '../../components';
+import { Ionicons } from '@expo/vector-icons';
+
+import { Button, Chip, Input, Screen, Text, Wordmark } from '../../components';
 import { useTheme } from '../../theme';
 
 /**
@@ -23,6 +25,20 @@ import { useTheme } from '../../theme';
  * arrives, and on a phone with no connection.
  */
 const FALLBACK_PREFIXES = [{ code: 'MK', prefix: '+389' }];
+
+/**
+ * The mark beside the reason, matching the control that sent them here — the
+ * handset from the Call button, the tag from Sell. It is the same icon they
+ * just pressed, which is what makes the line read as an answer rather than a
+ * demand.
+ */
+const REASON_ICONS: Record<string, keyof typeof Ionicons.glyphMap> = {
+  sell: 'pricetag-outline',
+  message: 'chatbubble-ellipses-outline',
+  call: 'call-outline',
+  report: 'flag-outline',
+  block: 'person-remove-outline',
+};
 
 const schema = z.object({
   phone: z.string().min(6),
@@ -86,13 +102,53 @@ export default function PhoneScreen() {
   });
 
   return (
-    <Screen scroll>
-      <View style={{ marginTop: theme.spacing.xxxl }}>
+    <Screen scroll contentStyle={{ flexGrow: 1 }}>
+      {/* The mark, because this is the one screen in the app that was not
+          wearing it. Every other screen carries it in a header; a bare form on
+          a black page could belong to anything.
+
+          It sits at the top with the form under it rather than the pair being
+          centred on the page. Centring them put a third of a screen of nothing
+          above the mark, and on a phone the form wants to be near the thumb
+          and clear of the keyboard, not in the middle. The terms hold the
+          floor, so the page is anchored at both ends. */}
+      <View style={{ alignItems: 'center', marginTop: theme.spacing.xl }}>
+        <Wordmark size={26} />
+      </View>
+
+      <View style={{ marginTop: theme.spacing.xxl }}>
         <Text variant="display">{t('auth:phone_title')}</Text>
+        {/* Always says where the code arrives. The reason below is extra
+            context, not a replacement — somebody sent here by the Call button
+            still needs to know to go and look at WhatsApp. */}
         <Text variant="body" tone="muted" style={{ marginTop: theme.spacing.sm }}>
-          {why || t('auth:phone_subtitle')}
+          {t('auth:phone_subtitle')}
         </Text>
       </View>
+
+      {why ? (
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: theme.spacing.md,
+            marginTop: theme.spacing.lg,
+            padding: theme.spacing.md,
+            borderRadius: theme.radius.sm,
+            backgroundColor: theme.colors.surfaceMuted,
+          }}
+          testID="auth-reason"
+        >
+          <Ionicons
+            name={REASON_ICONS[reason as string] ?? 'lock-closed-outline'}
+            size={18}
+            color={theme.colors.textMuted}
+          />
+          <Text variant="meta" style={{ flex: 1 }}>
+            {why}
+          </Text>
+        </View>
+      ) : null}
 
       {/* One open market needs no chooser: the field carries its prefix. */}
       {prefixes.length > 1 ? (
@@ -163,7 +219,10 @@ export default function PhoneScreen() {
           belongs. */}
       <Pressable
         accessibilityRole="button"
-        onPress={() => router.replace('/(tabs)/home')}
+        // Back where they were, not to the front of the app. Somebody who
+        // pressed Call on a car and thought better of it wants that car
+        // again, not the home screen.
+        onPress={() => (router.canGoBack() ? router.back() : router.replace('/(tabs)/home'))}
         style={{ paddingVertical: theme.spacing.lg, alignItems: 'center' }}
         testID="browse-instead"
       >
@@ -172,7 +231,13 @@ export default function PhoneScreen() {
         </Text>
       </Pressable>
 
-      <Text variant="caption" tone="subtle" style={{ marginTop: theme.spacing.lg, textAlign: 'center' }}>
+      {/* At the foot of the screen rather than trailing the form, so the
+          page is anchored top and bottom instead of drifting off into black. */}
+      <Text
+        variant="caption"
+        tone="subtle"
+        style={{ marginTop: 'auto', paddingTop: theme.spacing.xxl, textAlign: 'center' }}
+      >
         {t('auth:terms')}
       </Text>
     </Screen>
