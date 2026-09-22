@@ -668,6 +668,14 @@ release, and update it whenever a placeholder is added or replaced.
 
 ## Local development notes
 
+- **PHP 8.4 is the floor, not 8.2.** The specification says 8.2+, and `composer.json` said
+  `^8.2`, but the lock file pins Symfony 8, which requires 8.4.1 — so the promise could not
+  be kept and nobody on 8.2 or 8.3 could `composer install`. `require.php` is `^8.4` now,
+  and `config.platform.php` is pinned to 8.4.1 so a future `composer update` resolves
+  against what production runs rather than whatever PHP the machine doing the update
+  happens to have. That drift is exactly how `^8.2` came to be locked to packages needing
+  8.4.1 in the first place.
+
 - The dev/test database is MySQL-compatible. In this container MariaDB is used; start it with
   `mysqld_safe --skip-syslog &`. Databases: `marketplace` (dev) and `marketplace_test` (Pest).
 - `/api/.env.testing` points the test suite at `marketplace_test`.

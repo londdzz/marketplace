@@ -27,13 +27,16 @@ Windows is far less painful than three separate ones.
 
 1. **laragon.org** → download **Laragon Full** → install with the defaults.
 2. Open Laragon → **Start All**. Apache and MySQL go green.
-3. Check the PHP version — Laragon → Menu → PHP → Version. **It must be 8.2 or newer.**
-   If it is older, Menu → PHP → Version has the newer ones to switch to.
+3. Check the PHP version — Laragon → Menu → PHP → Version. **It must be 8.4 or newer.**
+   Laragon often installs 8.3, which is not enough: the lock file pins Symfony 8, which
+   needs 8.4.1. On 8.3 `composer install` refuses with a wall of "requires php >=8.4.1".
+   Menu → PHP → Version switches it; if no 8.4 is listed, Laragon → Tools → Quick add →
+   PHP fetches one.
 
 Open a terminal (Laragon → **Terminal**, which already has PHP and Composer on the path):
 
 ```
-php -v          # 8.2 or newer
+php -v          # 8.4 or newer, not 8.3
 composer -V     # any version
 mysql --version # any 8.x, or MariaDB
 ```
