@@ -1,6 +1,15 @@
 #!/usr/bin/env node
 /**
- * Make expo-modules-jsi compile under Xcode 26.3.
+ * Make expo-modules-jsi compile on the Xcode the CI runner actually has.
+ *
+ * No version installed there builds it as shipped. Swift 6.2.0 and 6.2.1
+ * (Xcode 26.0, 26.1) reject `weak let`, which the package uses; 6.2.3
+ * (Xcode 26.2, 26.3) accepts it but raises a dozen strict-concurrency errors
+ * in JavaScriptRuntime.swift, and 26.3 adds a C++ interop one on top. The
+ * band the package was written for is not on the image.
+ *
+ * So the build runs on 26.1 — the newest that does not raise the concurrency
+ * errors — and the one thing 26.1 cannot swallow is fixed here.
  *
  * Its RuntimeScheduler.h marks the two constructors SWIFT_RETURNS_RETAINED.
  * From 26.3 clang rejects that:
@@ -31,11 +40,10 @@
 const fs = require('fs');
 const path = require('path');
 
+const ROOT = path.join(__dirname, '..', 'node_modules', 'expo-modules-jsi');
+
 const HEADER = path.join(
-  __dirname,
-  '..',
-  'node_modules',
-  'expo-modules-jsi',
+  ROOT,
   'apple',
   'Sources',
   'ExpoModulesJSI-Cxx',
@@ -43,25 +51,57 @@ const HEADER = path.join(
   'RuntimeScheduler.h',
 );
 
-/** Only on a constructor — never on anything else that may be annotated. */
-const PATTERN = /SWIFT_RETURNS_RETAINED\s+(RuntimeScheduler\s*\()/g;
+const ACTOR = path.join(
+  ROOT,
+  'apple',
+  'Sources',
+  'ExpoModulesJSI',
+  'Runtime',
+  'JavaScriptActor.swift',
+);
+
+/**
+ * Each fix: the file, what to find, what to put, and why it is safe.
+ *
+ * @type {{file: string, find: RegExp, put: string, note: string}[]}
+ */
+const FIXES = [
+  {
+    file: ACTOR,
+    // `weak let` is sugar a later Swift 6.2 point release added. The property
+    // is assigned once in init and never again, so `weak var` is the same
+    // reference with the same lifetime — only the reassignment ban is lifted.
+    find: /\bweak let\b/g,
+    put: 'weak var',
+    note: "weak let -> weak var, which Swift 6.2.1 and earlier require",
+  },
+  {
+    file: HEADER,
+    // Only on a constructor — never on anything else that may be annotated.
+    // Redundant: Swift imports a constructor of a shared-reference type as
+    // returning +1 already, which the class's refCount starting at 1 expects.
+    find: /SWIFT_RETURNS_RETAINED\s+(RuntimeScheduler\s*\()/g,
+    put: '$1',
+    note: 'dropped a redundant SWIFT_RETURNS_RETAINED that Xcode 26.3 rejects',
+  },
+];
 
 function main() {
-  if (!fs.existsSync(HEADER)) {
-    return; // Not installed, or the package moved it.
+  for (const { file, find, put, note } of FIXES) {
+    if (!fs.existsSync(file)) {
+      continue; // Not installed, or the package moved it.
+    }
+
+    const source = fs.readFileSync(file, 'utf8');
+    const patched = source.replace(find, put);
+
+    if (patched === source) {
+      continue; // Already done, or fixed upstream.
+    }
+
+    fs.writeFileSync(file, patched, 'utf8');
+    console.log(`[patch-expo-jsi] ${note}.`);
   }
-
-  const source = fs.readFileSync(HEADER, 'utf8');
-  const patched = source.replace(PATTERN, '$1');
-
-  if (patched === source) {
-    return; // Already done, or fixed upstream.
-  }
-
-  fs.writeFileSync(HEADER, patched, 'utf8');
-
-  const count = (source.match(PATTERN) ?? []).length;
-  console.log(`[patch-expo-jsi] Removed ${count} redundant SWIFT_RETURNS_RETAINED for Xcode 26.3.`);
 }
 
 main();
