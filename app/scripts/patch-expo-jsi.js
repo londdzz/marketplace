@@ -4,26 +4,34 @@
  *
  * No Xcode on the image builds it as shipped. Every one was tried:
  *
+ *   16.4  Swift tools too old — SwiftPM cannot even resolve the package
  *   26.0  Swift 6.2.0  — rejects `weak let`
  *   26.1  Swift 6.2.1  — rejects `weak let`
- *   26.2  Swift 6.2.3  — takes `weak let`, but Swift 6 language mode raises
- *                        eight "sending '…Ptr' risks causing data races" in
- *                        JavaScriptRuntime.swift
+ *   26.2  Swift 6.2.3  — takes `weak let`, but the package's Swift 6 language
+ *                        mode raises eight "sending '…Ptr' risks causing data
+ *                        races" in JavaScriptRuntime.swift
  *   26.3  Swift 6.2.x  — the same, plus a C++ interop error
  *
  * `weak let` cannot simply become `weak var`: these classes conform to
  * Sendable, which requires immutable stored properties, so `var` trades one
  * compile error for another ("stored property 'runtime' of
- * 'Sendable'-conforming class is mutable"). It is load-bearing. That rules
+ * 'Sendable'-conforming class is mutable"). It is load-bearing, which rules
  * out 26.0 and 26.1 entirely.
  *
- * So the build runs on 26.2, and what it cannot swallow is the package's
- * Swift 6 language mode. Dropping to v5 turns the data-race diagnostics back
- * into warnings. It is a real loosening — those checks exist for a reason —
- * but the alternative is annotating pointer handoffs inside a JS bridging
- * layer on a guess, which is a worse thing to get wrong. The upcoming
- * features the package opts into explicitly are untouched, so actor
- * isolation still applies.
+ * So the build runs on 26.2, and what it cannot swallow is the language mode.
+ * Dropping to v5 turns the data-race diagnostics back into warnings.
+ *
+ * Dropping the mode also switches off every other feature Swift 6 turns on by
+ * default, and the package uses two of them. Both are put back explicitly, so
+ * the only thing v5 actually loosens here is the data-race checking:
+ *
+ *   BareSlashRegexLiterals   the `/^[a-zA-Z_$]…$/` guarding createClass()
+ *                            against injection via eval, which v5 reads as
+ *                            division: "'$' is not a valid digit"
+ *   IsolatedDefaultValues    JavaScriptPromise's `let longLivedState =
+ *                            LongLivedState()`, whose initialiser is
+ *                            @JavaScriptActor-isolated and which v5 evaluates
+ *                            in a nonisolated context
  *
  * All of this is Expo's to fix; 57.1.0 is the newest inside SDK 57 and still
  * has it. Every edit below is idempotent, silent when there is nothing to do,
@@ -45,6 +53,9 @@ const HEADER = path.join(
   'include',
   'RuntimeScheduler.h',
 );
+
+/** The features Swift 6 would have enabled, and which the sources rely on. */
+const RESTORED = ['BareSlashRegexLiterals', 'IsolatedDefaultValues'];
 
 /** Applies one replacement to one file, reporting only when it changed it. */
 function edit(file, find, put, note) {
@@ -70,6 +81,21 @@ function main() {
     'swiftLanguageModes: [.v5]',
     'Swift language mode v6 -> v5, so the data-race checks warn instead of failing.',
   );
+
+  // Anchored on the last feature the package enables itself, so the restored
+  // ones land inside the right target's swiftSettings and nowhere else.
+  const anchor = '.enableUpcomingFeature("InferIsolatedConformances"),';
+
+  for (const feature of RESTORED) {
+    edit(
+      PACKAGE,
+      new RegExp(
+        `${anchor.replace(/[.()"]/g, '\\$&')}(?![\\s\\S]*?${feature})`,
+      ),
+      `${anchor}\n        .enableUpcomingFeature("${feature}"),`,
+      `put ${feature} back, which v5 would otherwise switch off.`,
+    );
+  }
 
   edit(
     HEADER,
