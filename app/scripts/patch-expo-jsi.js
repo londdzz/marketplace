@@ -51,57 +51,79 @@ const HEADER = path.join(
   'RuntimeScheduler.h',
 );
 
-const ACTOR = path.join(
-  ROOT,
-  'apple',
-  'Sources',
-  'ExpoModulesJSI',
-  'Runtime',
-  'JavaScriptActor.swift',
-);
+const SOURCES = path.join(ROOT, 'apple', 'Sources');
+
+/** `weak let` is sugar a later Swift 6.2 point release added. */
+const WEAK_LET = /\bweak let\b/g;
+
+/** Every .swift under a directory. */
+function swiftFilesIn(dir) {
+  if (!fs.existsSync(dir)) {
+    return [];
+  }
+
+  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const full = path.join(dir, entry.name);
+
+    if (entry.isDirectory()) {
+      return swiftFilesIn(full);
+    }
+
+    return entry.isFile() && entry.name.endsWith('.swift') ? [full] : [];
+  });
+}
 
 /**
- * Each fix: the file, what to find, what to put, and why it is safe.
+ * Swift 6.2.1 and earlier require `weak var`. Every one of these properties
+ * is assigned in an initialiser and never again, so `var` is the same
+ * reference with the same lifetime — it only lifts the reassignment ban.
  *
- * @type {{file: string, find: RegExp, put: string, note: string}[]}
+ * Swept rather than listed by name: the first pass named one file and the
+ * build then failed on a second, in a different directory.
  */
-const FIXES = [
-  {
-    file: ACTOR,
-    // `weak let` is sugar a later Swift 6.2 point release added. The property
-    // is assigned once in init and never again, so `weak var` is the same
-    // reference with the same lifetime — only the reassignment ban is lifted.
-    find: /\bweak let\b/g,
-    put: 'weak var',
-    note: "weak let -> weak var, which Swift 6.2.1 and earlier require",
-  },
-  {
-    file: HEADER,
-    // Only on a constructor — never on anything else that may be annotated.
-    // Redundant: Swift imports a constructor of a shared-reference type as
-    // returning +1 already, which the class's refCount starting at 1 expects.
-    find: /SWIFT_RETURNS_RETAINED\s+(RuntimeScheduler\s*\()/g,
-    put: '$1',
-    note: 'dropped a redundant SWIFT_RETURNS_RETAINED that Xcode 26.3 rejects',
-  },
-];
+function fixWeakLet() {
+  let files = 0;
+
+  for (const file of swiftFilesIn(SOURCES)) {
+    const source = fs.readFileSync(file, 'utf8');
+
+    if (!WEAK_LET.test(source)) {
+      WEAK_LET.lastIndex = 0;
+      continue;
+    }
+
+    WEAK_LET.lastIndex = 0;
+    fs.writeFileSync(file, source.replace(WEAK_LET, 'weak var'), 'utf8');
+    files += 1;
+  }
+
+  if (files > 0) {
+    console.log(`[patch-expo-jsi] weak let -> weak var in ${files} file(s), for Swift 6.2.1.`);
+  }
+}
+
+/**
+ * Redundant on a constructor: Swift imports a constructor of a
+ * shared-reference type as returning +1 already, which the class's refCount
+ * starting at 1 expects. Xcode 26.3 rejects it outright.
+ */
+function fixReturnsRetained() {
+  if (!fs.existsSync(HEADER)) {
+    return;
+  }
+
+  const source = fs.readFileSync(HEADER, 'utf8');
+  const patched = source.replace(/SWIFT_RETURNS_RETAINED\s+(RuntimeScheduler\s*\()/g, '$1');
+
+  if (patched !== source) {
+    fs.writeFileSync(HEADER, patched, 'utf8');
+    console.log('[patch-expo-jsi] dropped a redundant SWIFT_RETURNS_RETAINED.');
+  }
+}
 
 function main() {
-  for (const { file, find, put, note } of FIXES) {
-    if (!fs.existsSync(file)) {
-      continue; // Not installed, or the package moved it.
-    }
-
-    const source = fs.readFileSync(file, 'utf8');
-    const patched = source.replace(find, put);
-
-    if (patched === source) {
-      continue; // Already done, or fixed upstream.
-    }
-
-    fs.writeFileSync(file, patched, 'utf8');
-    console.log(`[patch-expo-jsi] ${note}.`);
-  }
+  fixWeakLet();
+  fixReturnsRetained();
 }
 
 main();
