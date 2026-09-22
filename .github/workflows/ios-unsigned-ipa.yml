@@ -47,6 +47,23 @@ jobs:
           cache: npm
           cache-dependency-path: app/package-lock.json
 
+      # The runner defaults to an older Xcode than this project needs. Expo
+      # SDK 57's Swift packages declare tools version 6.2, which ships with
+      # Xcode 26; on 16.4 the build dies with "Could not resolve package
+      # dependencies", which says nothing about the real cause. So pick the
+      # newest Xcode installed and print it, and if none is new enough, say
+      # so here rather than three minutes later in a wall of Swift noise.
+      - name: Use the newest Xcode on the runner
+        run: |
+          set -euo pipefail
+          echo "Xcodes on this runner:"
+          ls -d /Applications/Xcode*.app
+          NEWEST=$(ls -d /Applications/Xcode*.app | sort -V | tail -1)
+          echo "Selecting $NEWEST"
+          sudo xcode-select -s "$NEWEST/Contents/Developer"
+          xcodebuild -version
+          swift --version
+
       - name: Install dependencies
         run: npm ci
 
