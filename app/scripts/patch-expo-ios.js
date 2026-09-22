@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Make expo-modules-jsi compile on the Xcode the CI runner actually has.
+ * Make Expo's iOS sources compile on the Xcode the CI runner actually has.
  *
  * No Xcode on the image builds it as shipped. Every one was tried:
  *
@@ -41,7 +41,17 @@
 const fs = require('fs');
 const path = require('path');
 
-const ROOT = path.join(__dirname, '..', 'node_modules', 'expo-modules-jsi');
+const MODULES = path.join(__dirname, '..', 'node_modules');
+const ROOT = path.join(MODULES, 'expo-modules-jsi');
+
+const EVENT_EMITTER = path.join(
+  MODULES,
+  'expo-modules-core',
+  'ios',
+  'Core',
+  'Events',
+  'EventEmitter.swift',
+);
 
 const PACKAGE = path.join(ROOT, 'apple', 'Package.swift');
 
@@ -71,7 +81,7 @@ function edit(file, find, put, note) {
   }
 
   fs.writeFileSync(file, patched, 'utf8');
-  console.log(`[patch-expo-jsi] ${note}`);
+  console.log(`[patch-expo-ios] ${note}`);
 }
 
 function main() {
@@ -95,6 +105,77 @@ function main() {
       `${anchor}\n        .enableUpcomingFeature("${feature}"),`,
       `put ${feature} back, which v5 would otherwise switch off.`,
     );
+  }
+
+  // expo-modules-core, built from source now that the prebuilt xcframeworks are
+  // off, fails the same Swift 6.2 region-isolation check in two places:
+  //
+  //   EventEmitter.swift:52  sending 'emitter' risks causing data races
+  //   EventEmitter.swift:79  the same
+  //
+  // Both are `nonisolated(unsafe) weak let emitter = self` captured by the
+  // @JavaScriptActor closure `runtime.schedule` takes. The compiler's note says
+  // exactly why the annotation does not help: "task-isolated 'emitter' is
+  // captured by a global actor 'JavaScriptActor'-isolated closure".
+  // `nonisolated(unsafe)` says a value is not actor-isolated; it does not make
+  // it Sendable, and region isolation will not let a task-isolated
+  // non-Sendable value cross into an actor-isolated closure whatever it is
+  // annotated with.
+  //
+  // Expo's own reasoning there is unchanged and still holds — the closure only
+  // reaches @JavaScriptActor-isolated or Sendable state through the emitter,
+  // never the module's own mutable state — so the promise is simply moved to
+  // the one place the compiler accepts it: a type. The reference stays weak, so
+  // scheduling an event still cannot keep a module alive.
+  edit(
+    EVENT_EMITTER,
+    /nonisolated\(unsafe\) weak let emitter = self/g,
+    'let emitter = UncheckedWeakRef(self)',
+    'boxed EventEmitter\'s weak self so it can cross into the JS actor.',
+  );
+
+  edit(
+    EVENT_EMITTER,
+    /guard let emitter else \{/g,
+    'guard let emitter = emitter.value else {',
+    'unwrapped the boxed emitter.',
+  );
+
+  edit(
+    EVENT_EMITTER,
+    /guard let emitter, let appContext else \{/g,
+    'guard let emitter = emitter.value, let appContext else {',
+    'unwrapped the boxed emitter beside appContext.',
+  );
+
+  // Appended rather than inserted, so it cannot land inside a declaration.
+  if (fs.existsSync(EVENT_EMITTER)) {
+    const source = fs.readFileSync(EVENT_EMITTER, 'utf8');
+
+    if (source.includes('UncheckedWeakRef(') && !source.includes('final class UncheckedWeakRef')) {
+      fs.appendFileSync(
+        EVENT_EMITTER,
+        [
+          '',
+          '/**',
+          ' A weak reference that region isolation will let cross into a',
+          ' `@JavaScriptActor`-isolated closure. See the notes on `emit` above: what is',
+          ' reached through the emitter there is `@JavaScriptActor`-isolated or `Sendable`,',
+          ' never the module\'s own mutable state.',
+          ' */',
+          'private final class UncheckedWeakRef<T: AnyObject>: @unchecked Sendable {',
+          '  weak var value: T?',
+          '',
+          '  init(_ value: T?) {',
+          '    self.value = value',
+          '  }',
+          '}',
+          '',
+        ].join('\n'),
+        'utf8',
+      );
+      console.log('[patch-expo-ios] added the weak box EventEmitter now uses.');
+    }
   }
 
   edit(
