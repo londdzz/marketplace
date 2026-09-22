@@ -23,6 +23,10 @@ on:
         description: 'API the build starts out talking to, e.g. http://192.168.1.20:8000/api/v1'
         required: true
         default: 'https://api.autevo.mk/api/v1'
+      xcode:
+        description: 'Xcode to build with. 26.0 is too old (no weak let), 26.3 too strict (Swift 6 concurrency). 26.2 is the band.'
+        required: false
+        default: '26.2'
       settable_api:
         description: 'Let the address be changed on the phone (Profile > Server). For testing against a PC only — never for a build anyone else will hold.'
         type: boolean
@@ -47,31 +51,30 @@ jobs:
           cache: npm
           cache-dependency-path: app/package-lock.json
 
-      # Expo SDK 57 needs a narrow band of Xcode, and the runner carries
-      # everything from 16.0 to 26.3, defaulting to one at neither end.
+      # Expo SDK 57 builds in a narrow band of Xcode, and the runner carries
+      # everything from 16.0 to 26.3. Both ends fail, each in its own way:
       #
-      #   16.4  too old — its Swift packages declare tools version 6.2, and
-      #         the build dies with "Could not resolve package dependencies"
-      #   26.3  too new — its C++ interop rejects Expo's own RuntimeScheduler.h,
-      #         and Swift 6 concurrency checking rejects JavaScriptRuntime.swift
-      #         with a dozen "sending '…Ptr' risks causing data races"
+      #   16.4    no Swift tools 6.2 — "Could not resolve package dependencies"
+      #   26.0    Swift 6.2.0 has no `weak let`, so JavaScriptActor.swift fails
+      #           with "'weak' must be a mutable variable"
+      #   26.3    C++ interop rejects RuntimeScheduler.h, and Swift 6 concurrency
+      #           checking rejects JavaScriptRuntime.swift with a dozen
+      #           "sending '…Ptr' risks causing data races"
       #
-      # Swift tools 6.2 arrives with Xcode 26.0, so take the OLDEST 26 rather
-      # than the newest anything: the lowest version that clears the floor is
-      # the furthest from the ceiling. Pinning an exact build instead would
-      # break the day the image drops it.
-      - name: Use the oldest Xcode 26 on the runner
+      # So it is an input rather than a rule: the band moves whenever Expo or
+      # the runner image does, and finding it again should not need a commit.
+      - name: Choose Xcode
         run: |
           set -euo pipefail
           echo "Xcodes on this runner:"
           ls -d /Applications/Xcode*.app
-          CHOSEN=$(ls -d /Applications/Xcode_26*.app 2>/dev/null | sort -V | head -1 || true)
-          if [ -z "$CHOSEN" ]; then
-            echo "No Xcode 26 here; falling back to the newest installed."
-            CHOSEN=$(ls -d /Applications/Xcode*.app | sort -V | tail -1)
+          WANT="/Applications/Xcode_${{ inputs.xcode }}.app"
+          if [ ! -d "$WANT" ]; then
+            echo "::error::Xcode ${{ inputs.xcode }} is not on this runner. Pick one from the list above."
+            exit 1
           fi
-          echo "Selecting $CHOSEN"
-          sudo xcode-select -s "$CHOSEN/Contents/Developer"
+          echo "Selecting $WANT"
+          sudo xcode-select -s "$WANT/Contents/Developer"
           xcodebuild -version
           swift --version
 
