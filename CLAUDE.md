@@ -218,6 +218,18 @@ deleted — all of it is closed rather than removed:
   drawn and any saved value is ignored — an app anyone could point at another server
   would be a way to harvest sign-in codes.
 
+- **The iOS build works, on Xcode 26.2 and nothing else.** Expo SDK 57's
+  `expo-modules-jsi` does not compile as shipped on any Xcode the runner carries: 26.0
+  and 26.1 reject `weak let`, which the package needs because those classes are Sendable
+  and the property cannot be a `var`; 26.2 takes it but rejects the package's own Swift 6
+  language mode with eight data-race errors; 26.3 adds a C++ interop error on top.
+  `app/scripts/patch-expo-jsi.js` runs from `postinstall` and drops the package to
+  language mode v5 — then puts back `BareSlashRegexLiterals` and `IsolatedDefaultValues`,
+  because v5 switches off *everything* Swift 6 turns on and the sources use those two
+  (a regex guarding `eval`, and a stored-property default calling an actor-isolated
+  initialiser). So the only thing loosened is the data-race checking. Every edit is
+  idempotent and stops applying the day Expo fixes it upstream.
+
 Development happens on Windows, where no iOS code can be compiled and the simulator does
 not exist. `docs/device-testing.md` is the way round it: `.github/workflows/ios-unsigned-ipa.yml`
 builds an unsigned `.ipa` on a GitHub macOS runner, and Sideloadly or AltStore signs it
