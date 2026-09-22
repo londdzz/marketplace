@@ -24,9 +24,9 @@ on:
         required: true
         default: 'https://api.autevo.mk/api/v1'
       xcode:
-        description: 'Xcode to build with. 26.1 is the one that works; 26.2 and 26.3 add strict-concurrency errors in Expo.'
+        description: 'Xcode to build with. 26.2 is the only one that can: 26.0 and 26.1 reject `weak let`, which Expo needs for Sendable.'
         required: false
-        default: '26.1'
+        default: '26.2'
       settable_api:
         description: 'Let the address be changed on the phone (Profile > Server). For testing against a PC only — never for a build anyone else will hold.'
         type: boolean
@@ -55,12 +55,11 @@ jobs:
       # everything from 16.0 to 26.3. Both ends fail, each in its own way:
       #
       #   16.4    no Swift tools 6.2 — "Could not resolve package dependencies"
-      #   26.0    Swift 6.2.0 has no `weak let`, so JavaScriptActor.swift fails
-      #           with "'weak' must be a mutable variable". So does 26.1 —
-      #           scripts/patch-expo-jsi.js is what makes 26.1 usable
-      #   26.2    takes `weak let`, but Swift 6.2.3 raises a dozen
-      #           "sending '…Ptr' risks causing data races" in
-      #           JavaScriptRuntime.swift
+      #   26.0    Swift 6.2.0 has no `weak let`, and Expo needs it: those
+      #           classes are Sendable, so the property cannot be a var
+      #   26.1    Swift 6.2.1, the same
+      #   26.2    takes `weak let`. Its data-race errors are handled by
+      #           scripts/patch-expo-jsi.js, so this is the one that works
       #   26.3    the same, plus a C++ interop error on RuntimeScheduler.h
       #
       # So it is an input rather than a rule: the band moves whenever Expo or
