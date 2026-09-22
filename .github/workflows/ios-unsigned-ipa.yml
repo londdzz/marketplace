@@ -47,20 +47,31 @@ jobs:
           cache: npm
           cache-dependency-path: app/package-lock.json
 
-      # The runner defaults to an older Xcode than this project needs. Expo
-      # SDK 57's Swift packages declare tools version 6.2, which ships with
-      # Xcode 26; on 16.4 the build dies with "Could not resolve package
-      # dependencies", which says nothing about the real cause. So pick the
-      # newest Xcode installed and print it, and if none is new enough, say
-      # so here rather than three minutes later in a wall of Swift noise.
-      - name: Use the newest Xcode on the runner
+      # Expo SDK 57 needs a narrow band of Xcode, and the runner carries
+      # everything from 16.0 to 26.3, defaulting to one at neither end.
+      #
+      #   16.4  too old — its Swift packages declare tools version 6.2, and
+      #         the build dies with "Could not resolve package dependencies"
+      #   26.3  too new — its C++ interop rejects Expo's own RuntimeScheduler.h,
+      #         and Swift 6 concurrency checking rejects JavaScriptRuntime.swift
+      #         with a dozen "sending '…Ptr' risks causing data races"
+      #
+      # Swift tools 6.2 arrives with Xcode 26.0, so take the OLDEST 26 rather
+      # than the newest anything: the lowest version that clears the floor is
+      # the furthest from the ceiling. Pinning an exact build instead would
+      # break the day the image drops it.
+      - name: Use the oldest Xcode 26 on the runner
         run: |
           set -euo pipefail
           echo "Xcodes on this runner:"
           ls -d /Applications/Xcode*.app
-          NEWEST=$(ls -d /Applications/Xcode*.app | sort -V | tail -1)
-          echo "Selecting $NEWEST"
-          sudo xcode-select -s "$NEWEST/Contents/Developer"
+          CHOSEN=$(ls -d /Applications/Xcode_26*.app 2>/dev/null | sort -V | head -1 || true)
+          if [ -z "$CHOSEN" ]; then
+            echo "No Xcode 26 here; falling back to the newest installed."
+            CHOSEN=$(ls -d /Applications/Xcode*.app | sort -V | tail -1)
+          fi
+          echo "Selecting $CHOSEN"
+          sudo xcode-select -s "$CHOSEN/Contents/Developer"
           xcodebuild -version
           swift --version
 
