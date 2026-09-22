@@ -76,11 +76,18 @@ the pictures. Put your PC's address there. Part 3 says how to find it.
 Then:
 
 ```
+php artisan storage:link
 php artisan migrate --seed
 php artisan db:seed --class=DevListingSeeder
 ```
 
-The second one puts eight cars with photographs in, so the app has something to show.
+`storage:link` is the one nobody thinks of. Photos are written to
+`storage\app\public` and served through a symbolic link that a fresh clone does not
+have, so without it the cars load and every photograph is a 404 — the same grey boxes
+`APP_URL` gives you, from a different cause. On Windows a symbolic link needs an
+**Administrator** terminal, or Developer Mode switched on in Settings.
+
+The last one puts eight cars with photographs in, so the app has something to show.
 
 ---
 
@@ -114,15 +121,31 @@ New-NetFirewallRule -DisplayName "Autevo API" -Direction Inbound -LocalPort 8000
 From `marketplace\api`:
 
 ```
+set PHP_CLI_SERVER_WORKERS=10
 php artisan serve --host=0.0.0.0 --port=8000
 ```
 
-**`--host=0.0.0.0` matters.** The default only listens to the PC itself, so the phone
-gets nothing.
+**`--host=0.0.0.0` matters.** It is not where the server is, it is which addresses it
+will answer on, and `0.0.0.0` means all of them — which includes your PC's. The default
+answers only the PC itself, so the phone gets nothing. Your own address never goes here;
+it goes in the app, in part 6.
+
+**`PHP_CLI_SERVER_WORKERS` matters too.** PHP's built-in server takes one request at a
+time, and the app opens by asking for reference data, a page of cars and then every
+thumbnail. On one worker they queue behind each other and the app looks broken for a
+reason that has nothing to do with your setup.
 
 Check it from the PC's browser: `http://192.168.1.20:8000/api/v1/countries` should
-print JSON with North Macedonia in it. Then check the same address **in Safari on the
-phone**. If the phone cannot load it, the app will not either — it is the firewall or
+print JSON with North Macedonia in it. Note the `/countries` on the end — `/api/v1` on
+its own is a prefix, not a route, and answers 404.
+
+Then check the same address **in Safari on the phone** — and type the `http://`
+yourself. Safari silently upgrades a bare address to `https://`, which this server does
+not speak: you get a failure in Safari and
+`Invalid request (Unsupported SSL request)` in the terminal. That line is good news
+rather than bad — it means the phone reached the PC, which is the only thing this test
+was for. (Safari → Settings → Apps → Safari → Advanced → **Use Secure Connections** off
+stops it happening.) If the phone cannot load it, the app will not either — it is the firewall or
 the two devices are on different networks (a "guest" wifi is a different network).
 
 Leave that terminal running. Closing it stops the API.
@@ -135,6 +158,13 @@ The build is made with **Profile → Server** switched on, so the address lives 
 phone and is not baked into the binary.
 
 On the phone: **Profile → Server** → type `http://192.168.1.20:8000/api/v1` → **Save**.
+
+The first time the app reaches your PC, iOS asks whether *Autevo may find and connect to
+devices on your local network*. **Allow it.** Refuse and every request fails from then
+on with nothing on screen explaining why; Settings → Autevo → Local Network turns it
+back on. Plain HTTP to an address like this is allowed because `app.json` sets
+`NSAllowsLocalNetworking`, which permits it to private addresses only — a released build
+still cannot talk to an unencrypted server on the open internet.
 
 It checks the address before keeping it. If nothing answers it says so and puts the old
 one back, rather than leaving the app pointed at nothing and looking broken.
@@ -162,7 +192,10 @@ The last one is yours.
 |---|---|
 | App opens, no cars, everything fails | The phone cannot reach the PC. Test the URL in Safari on the phone first. |
 | Cars load, photographs are grey boxes | `APP_URL` in `.env` is not your PC's address. Change it, then `php artisan config:clear`. |
-| Safari on the phone times out | Firewall (part 4), or the devices are on different wifi networks. |
+| Safari on the phone times out | Firewall (part 4), or the devices are on different wifi networks (a "guest" wifi is a different network). |
+| Safari fails and the terminal says `Unsupported SSL request` | Safari upgraded it to `https://`. Type `http://` yourself. The phone *is* reaching the PC. |
+| Cars load, photographs are 404 | `php artisan storage:link` was never run, or it failed for want of an Administrator terminal. |
+| App shows nothing and no prompt appeared | The local network permission was refused. Settings → Autevo → Local Network. |
 | Works, then stops after a while | The `php artisan serve` terminal was closed, or the PC slept. |
 | Sign-in code never arrives | It is in the log, not on WhatsApp. See above. |
 | Changed `.env`, nothing happened | `php artisan config:clear` |
