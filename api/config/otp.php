@@ -37,6 +37,27 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | A code that lets anybody in
+    |--------------------------------------------------------------------------
+    |
+    | For handing a test build to people without relaying a code to each of
+    | them. Set it and that code verifies any number, creating the account the
+    | same way a real one does.
+    |
+    | It is exactly as dangerous as it sounds: anyone who can reach the API can
+    | sign in as any number, and a seller's telephone number is behind an
+    | account. It is refused outright when APP_ENV is production, every use is
+    | logged as a warning, and it must be empty before anybody real uses this.
+    | Make it something unguessable rather than 123456 — the code field takes
+    | six digits, so that is a million tries against the rate limiter, and a
+    | memorable number is the first thing tried.
+    |
+    */
+
+    'universal_code' => env('OTP_UNIVERSAL_CODE'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Request rate limits
     |--------------------------------------------------------------------------
     |

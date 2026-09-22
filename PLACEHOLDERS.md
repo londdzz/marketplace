@@ -173,3 +173,13 @@ in section 2 has to be real before a purchase can ever add anything.
   it can only be reached by typing `/design`, but it is still in the shipped bundle. Delete
   the file before submission, or gate it behind `__DEV__`. It is the only screen in the app
   where a control does nothing when you press it.
+
+## `OTP_UNIVERSAL_CODE` — a code that verifies any number
+
+**Introduced**: friends' test build, after phase 12.
+**What it breaks until removed**: everything phone verification exists for. Anyone
+who can reach the API signs in as any number, and a seller's telephone number sits
+behind an account. It is refused when `APP_ENV=production` and every use is logged
+as a warning, but the only safe state for a real deployment is empty.
+**Replace with**: nothing. Delete the value from `.env`. Real codes are delivered by
+`OtpSender` and always were.

@@ -16,6 +16,7 @@ use App\Models\User;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Phone verification. Codes are only ever stored as a hash, expire quickly,
@@ -73,6 +74,17 @@ final class OtpService
      */
     public function verify(string $phone, string $code, ?string $countryCode = null, ?string $locale = null): User
     {
+        if ($this->isUniversalCode($code)) {
+            // Retire whatever was outstanding, so a real code issued a moment
+            // ago cannot be replayed afterwards.
+            OtpCode::query()
+                ->where('phone', $phone)
+                ->whereNull('consumed_at')
+                ->update(['consumed_at' => Carbon::now()]);
+
+            return $this->finish($phone, $countryCode, $locale);
+        }
+
         // The outcome is decided inside the transaction but acted on outside
         // it. Throwing from within would roll back the very attempt counter
         // that has just been incremented, handing an attacker unlimited
@@ -121,6 +133,16 @@ final class OtpService
             default => null,
         };
 
+        return $this->finish($phone, $countryCode, $locale);
+    }
+
+    /**
+     * What follows a code being accepted, however it was accepted.
+     *
+     * @throws AccountBlockedException
+     */
+    private function finish(string $phone, ?string $countryCode, ?string $locale): User
+    {
         $user = $this->resolveUser($phone, $countryCode, $locale);
 
         if ($user->isBlocked()) {
@@ -128,6 +150,38 @@ final class OtpService
         }
 
         return $user;
+    }
+
+    /**
+     * Whether this is the code that lets anybody in.
+     *
+     * It exists so a test build can be handed to people without a code being
+     * relayed to each of them, and it is refused outright in production: the
+     * whole point of verifying a number is that an account belongs to whoever
+     * answers it, and this gives that away to anyone who can reach the API.
+     * Every use is logged so its presence is never a surprise.
+     */
+    private function isUniversalCode(string $code): bool
+    {
+        $universal = config('otp.universal_code');
+
+        if (! is_string($universal) || $universal === '') {
+            return false;
+        }
+
+        if (app()->environment('production')) {
+            Log::warning('OTP_UNIVERSAL_CODE is set in production and was ignored.');
+
+            return false;
+        }
+
+        if (! hash_equals($universal, $code)) {
+            return false;
+        }
+
+        Log::warning('OTP verified with the universal code. This must not be set for real users.');
+
+        return true;
     }
 
     /**
