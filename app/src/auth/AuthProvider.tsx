@@ -1,22 +1,14 @@
-import { useQueryClient } from "@tanstack/react-query";
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-  type ReactNode,
-} from "react";
+import { useQueryClient } from '@tanstack/react-query';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 
-import { authApi } from "../api/auth";
-import { ApiError } from "../api/client";
-import { loadApiUrlOverride } from "../api/config";
-import { tokenStorage } from "../api/storage";
-import type { AuthSession, User } from "../api/types";
-import { mergeGuestData } from "../guest/merge";
-import i18n, { SUPPORTED_LANGUAGES, type Language } from "../i18n";
-import { registerForPush, unregisterFromPush } from "../push";
+import { authApi } from '../api/auth';
+import { ApiError } from '../api/client';
+import { loadApiUrlOverride } from '../api/config';
+import { tokenStorage } from '../api/storage';
+import type { AuthSession, User } from '../api/types';
+import { mergeGuestData } from '../guest/merge';
+import i18n, { SUPPORTED_LANGUAGES, type Language } from '../i18n';
+import { registerForPush, unregisterFromPush } from '../push';
 
 /**
  * The account's chosen language wins over the device's, so signing in on a new
@@ -64,30 +56,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
    * The cost is one refetch of reference data that is cached for an hour
    * anyway, at a moment when the person is already waiting.
    */
-  const forgetEverything = useCallback(
-    () => queryClient.clear(),
-    [queryClient],
-  );
+  const forgetEverything = useCallback(() => queryClient.clear(), [queryClient]);
 
-  const signIn = useCallback(
-    async (session: AuthSession) => {
-      await tokenStorage.save(session.token);
+  const signIn = useCallback(async (session: AuthSession) => {
+    await tokenStorage.save(session.token);
 
-      // Before the user is set, so the token is already stored and the upload
-      // below is authenticated, and so the saved tabs never render the empty
-      // account list for a moment before the phone's copy arrives on it.
-      await mergeGuestData().catch(() => undefined);
+    // Before the user is set, so the token is already stored and the upload
+    // below is authenticated, and so the saved tabs never render the empty
+    // account list for a moment before the phone's copy arrives on it.
+    await mergeGuestData().catch(() => undefined);
 
-      forgetEverything();
-      setUser(session.user);
-      followAccountLanguage(session.user);
+    forgetEverything();
+    setUser(session.user);
+    followAccountLanguage(session.user);
 
-      // Asked for once the account exists, so the prompt arrives with something
-      // to explain it rather than on a cold first launch.
-      void registerForPush().catch(() => undefined);
-    },
-    [forgetEverything],
-  );
+    // Asked for once the account exists, so the prompt arrives with something
+    // to explain it rather than on a cold first launch.
+    void registerForPush().catch(() => undefined);
+  }, [forgetEverything]);
 
   const signOut = useCallback(async () => {
     // Before the token goes, so the API knows which device to stop sending to.
@@ -146,11 +132,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // request must already know.
       //
       // Both of these read device storage, and the keychain in particular can
-      // refuse — a sideloaded build is signed by a different team than the one
-      // that wrote the entry, and the entitlement no longer matches. Letting
-      // that throw here left the launch screen up for ever, because nothing
-      // below it ever ran. Not being able to read a token is the same as not
-      // having one: the app opens signed out, which it is built to do.
+      // refuse: a sideloaded build is signed by a different team than the one
+      // that wrote the entry, so the entitlement no longer matches. Letting
+      // that throw left the launch screen up for ever, because nothing below
+      // it ever ran. Not being able to read a token is the same as not having
+      // one, so the app opens signed out, which it is built to do.
       let token: string | null = null;
 
       try {
@@ -200,7 +186,7 @@ export function useAuth(): AuthState {
   const context = useContext(AuthContext);
 
   if (!context) {
-    throw new Error("useAuth was called outside AuthProvider.");
+    throw new Error('useAuth was called outside AuthProvider.');
   }
 
   return context;

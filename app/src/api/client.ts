@@ -96,6 +96,20 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
 /**
  * A multipart upload, for photographs.
  *
+ * This one goes through XMLHttpRequest rather than `fetch`, which everything
+ * else uses. Expo installs a WinterCG `fetch` as the global, and its multipart
+ * encoder takes a string, a real `Blob`, or anything with `bytes()` — never
+ * React Native's `{uri, name, type}`, which it refuses with "Unsupported
+ * FormDataPart implementation". Its own source says as much: "`uri` is not
+ * supported for React Native's FormData."
+ *
+ * XMLHttpRequest is what that shape was written for. The native layer opens the
+ * file and streams it, so a photograph never becomes a base64 string in
+ * JavaScript on the way out — fifteen of those at 1600px is memory a phone
+ * should not have to find. It is also why `uploadable()` reads the blob back
+ * out of the picker's uri on web and not here: a browser has no idea what a uri
+ * is, and XHR there takes the `File` it builds instead.
+ *
  * Content-Type is deliberately left unset: the runtime has to add the multipart
  * boundary itself, and setting it by hand produces a body the server cannot
  * parse.
@@ -112,15 +126,31 @@ export async function upload<T>(path: string, form: FormData): Promise<T> {
     headers.Authorization = `Bearer ${token}`;
   }
 
-  const response = await fetch(`${apiUrl()}${path}`, { method: 'POST', headers, body: form });
+  const { status, text } = await new Promise<{ status: number; text: string }>((resolve, reject) => {
+    const request = new XMLHttpRequest();
 
-  const text = await response.text();
+    request.open('POST', `${apiUrl()}${path}`);
+
+    for (const [name, value] of Object.entries(headers)) {
+      request.setRequestHeader(name, value);
+    }
+
+    request.onload = () => resolve({ status: request.status, text: request.responseText ?? '' });
+
+    // The shape `fetch` fails with, so a screen that already handles a dropped
+    // connection does not have to learn a second one.
+    request.onerror = () => reject(new TypeError('Network request failed'));
+    request.onabort = () => reject(new TypeError('Network request failed'));
+
+    request.send(form);
+  });
+
   const payload = text ? (JSON.parse(text) as unknown) : undefined;
 
-  if (!response.ok) {
+  if (status < 200 || status >= 300) {
     const errorBody = (payload ?? {}) as ApiErrorBody;
 
-    throw new ApiError(response.status, errorBody.message ?? `Upload failed (${response.status})`, errorBody);
+    throw new ApiError(status, errorBody.message ?? `Upload failed (${status})`, errorBody);
   }
 
   return payload as T;
