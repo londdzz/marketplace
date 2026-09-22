@@ -90,7 +90,28 @@ jobs:
           EXPO_PUBLIC_ALLOW_API_OVERRIDE: ${{ inputs.settable_api && '1' || '0' }}
         run: npx expo prebuild --platform ios --clean
 
+      # Build every Expo module from source rather than downloading Expo's
+      # prebuilt xcframeworks.
+      #
+      # ExpoModulesJSI is always built from source — it is the one package with
+      # no prebuilt artifact — while ExpoModulesCore, ExpoImage, ExpoFont,
+      # ExpoFileSystem, ExpoImageManipulator and ExpoModulesWorklets arrive as
+      # binaries. That mix only works while our JSI build is ABI-identical to
+      # the one Expo compiled those against, and scripts/patch-expo-jsi.js
+      # makes it not: changing the Swift language mode changes symbol mangling,
+      # so the prebuilt ExpoModulesCore asked for
+      # `JavaScriptActor.runIsolated` under its Swift 6 name and the framework
+      # we built no longer exported it. Nothing failed until the phone launched
+      # it — the link defers every React and JSI symbol to load time — and then
+      # dyld killed it: "Symbol missing".
+      #
+      # Compiled together, there is nothing left to disagree. The template
+      # Podfile does `ENV[...] ||= '1'`, and Ruby's ||= only fills in an unset
+      # variable, so exporting it here wins. It costs build time and buys a
+      # whole class of crash not happening.
       - name: Install pods
+        env:
+          EXPO_USE_PRECOMPILED_MODULES: '0'
         run: cd ios && pod install
 
       # CODE_SIGNING_ALLOWED=NO is what makes this possible without an Apple

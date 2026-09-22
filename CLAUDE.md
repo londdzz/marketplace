@@ -229,6 +229,18 @@ deleted — all of it is closed rather than removed:
   (a regex guarding `eval`, and a stored-property default calling an actor-isolated
   initialiser). So the only thing loosened is the data-race checking. Every edit is
   idempotent and stops applying the day Expo fixes it upstream.
+- **Because of that patch, the iOS build takes `EXPO_USE_PRECOMPILED_MODULES=0`.**
+  Expo ships six modules as prebuilt xcframeworks — ExpoModulesCore, ExpoImage,
+  ExpoFont, ExpoFileSystem, ExpoImageManipulator, ExpoModulesWorklets — while
+  ExpoModulesJSI is the one package always built from source. That mix only holds while
+  our JSI build is ABI-identical to the one Expo compiled those binaries against, and
+  changing the Swift language mode changes **symbol mangling**: prebuilt
+  ExpoModulesCore asked for `JavaScriptActor.runIsolated` under its Swift 6 name, the
+  framework we built exported the Swift 5 one, and nothing noticed until the phone
+  launched it, because `-undefined dynamic_lookup` defers every React and JSI symbol to
+  load time. dyld killed it at launch: `Symbol missing`. Compiling everything together
+  removes the coupling. **A build that compiles is not a build that runs** — this one
+  linked clean and died on the device, and only the `.ips` crash log said why.
 
 Development happens on Windows, where no iOS code can be compiled and the simulator does
 not exist. `docs/device-testing.md` is the way round it: `.github/workflows/ios-unsigned-ipa.yml`
