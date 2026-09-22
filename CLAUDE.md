@@ -240,7 +240,19 @@ deleted — all of it is closed rather than removed:
   launched it, because `-undefined dynamic_lookup` defers every React and JSI symbol to
   load time. dyld killed it at launch: `Symbol missing`. Compiling everything together
   removes the coupling. **A build that compiles is not a build that runs** — this one
-  linked clean and died on the device, and only the `.ips` crash log said why.
+  linked clean and died on the device, and only the `.ips` crash log said why. The
+  workflow now resolves every Expo symbol in the packaged `.app` against what the
+  bundle exports and fails the build when one is missing, so that class of crash is a
+  red build rather than a red herring. Source-building also means the Expo modules are
+  linked into the main binary: `Frameworks/` holds only ExpoModulesJSI, React,
+  ReactNativeDependencies and hermesvm.
+- **expo-modules-core needed a patch too**, for the same Swift 6.2 region-isolation
+  tightening: `EventEmitter.swift` captures `nonisolated(unsafe) weak let emitter =
+  self` in the `@JavaScriptActor` closure `runtime.schedule` takes.
+  `nonisolated(unsafe)` says a value is not actor-isolated; it does not make it
+  `Sendable`, so region isolation refuses it. `patch-expo-ios.js` boxes it in an
+  `@unchecked Sendable` type holding the reference weakly, which keeps Expo's own
+  reasoning and its lifetime behaviour.
 
 Development happens on Windows, where no iOS code can be compiled and the simulator does
 not exist. `docs/device-testing.md` is the way round it: `.github/workflows/ios-unsigned-ipa.yml`

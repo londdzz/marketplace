@@ -148,6 +148,52 @@ jobs:
           cp -R "$APP" payload/Payload/
           cd payload && zip -qry ../autevo-unsigned.ipa Payload
 
+      # A green build is not a launchable app. The first one to come out of
+      # here linked clean and died on the phone: `-undefined dynamic_lookup`
+      # defers every React and JSI symbol to load time by design, so a symbol
+      # the app imports and nothing exports is not an error until dyld says
+      # "Symbol missing" a second after the splash screen.
+      #
+      # So resolve them here instead. Every Swift symbol naming one of the
+      # modules we compile has to be exported by something in the bundle.
+      - name: Check every Expo symbol resolves
+        run: |
+          set -euo pipefail
+          APP=$(ls -d payload/Payload/*.app)
+          MODULES='ExpoModulesJSI|ExpoModulesCore|ExpoModulesWorklets|ExpoImage|ExpoImageManipulator|ExpoFont|ExpoFileSystem'
+
+          BINARIES="$APP/$(basename "$APP" .app)
+          $(find "$APP/Frameworks" -maxdepth 2 -type f -perm +111 2>/dev/null || true)"
+
+          : > /tmp/defined.txt
+          for b in $BINARIES; do
+            [ -f "$b" ] || continue
+            nm -gU "$b" 2>/dev/null | awk '{print $NF}' >> /tmp/defined.txt || true
+          done
+          sort -u /tmp/defined.txt -o /tmp/defined.txt
+
+          missing=0
+          for b in $BINARIES; do
+            [ -f "$b" ] || continue
+            nm -u "$b" 2>/dev/null | awk '{print $NF}' | grep -E "[0-9]($MODULES)" | sort -u \
+              > /tmp/undef.txt || true
+            if [ -s /tmp/undef.txt ]; then
+              gone=$(comm -23 /tmp/undef.txt /tmp/defined.txt)
+              if [ -n "$gone" ]; then
+                echo "::error::$(basename "$b") imports symbols nothing in the bundle exports:"
+                echo "$gone" | head -20
+                missing=1
+              fi
+            fi
+          done
+
+          if [ "$missing" -ne 0 ]; then
+            echo "::error::This .ipa would crash at launch with DYLD 'Symbol missing'."
+            exit 1
+          fi
+
+          echo "Every Expo symbol resolves within the bundle."
+
       - uses: actions/upload-artifact@v4
         with:
           name: autevo-unsigned-ipa
