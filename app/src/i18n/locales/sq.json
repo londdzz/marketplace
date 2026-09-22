@@ -449,6 +449,15 @@
     "guest_saved_note": "Ruajtur në këtë telefon",
     "guest_benefit_sell": "Shit makinën tënde",
     "guest_benefit_message": "Shkruaji drejtpërdrejt shitësve",
-    "guest_benefit_keep": "Mbaji të ruajturat në llogarinë tënde"
+    "guest_benefit_keep": "Mbaji të ruajturat në llogarinë tënde",
+    "server": "Serveri",
+    "server_body": "Ky ndërtim mund të drejtohet te një API tjetër, që telefoni të flasë me një server zhvillimi në rrjetin tënd pa u rindërtuar.",
+    "server_label": "Adresa e API-t",
+    "server_hint": "Shto /api/v1 në fund.",
+    "server_saved": "U ruajt. Aplikacioni mori përgjigje nga kjo adresë.",
+    "server_reset": "Kthehu te adresa e integruar",
+    "server_built_in": "E integruar: {{url}}",
+    "server_locked": "E fiksuar për këtë ndërtim",
+    "server_locked_body": "Ndërtimet e publikuara flasin me një server dhe nuk drejtohen dot diku tjetër."
   }
 }

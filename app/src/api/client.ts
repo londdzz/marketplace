@@ -1,5 +1,5 @@
 import i18n from '../i18n';
-import { API_URL } from './config';
+import { apiUrl } from './config';
 import { tokenStorage } from './storage';
 
 export type ApiErrorBody = {
@@ -70,7 +70,7 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
     }
   }
 
-  const response = await fetch(`${API_URL}${path}`, {
+  const response = await fetch(`${apiUrl()}${path}`, {
     method,
     headers,
     body: body === undefined ? undefined : JSON.stringify(body),
@@ -112,7 +112,7 @@ export async function upload<T>(path: string, form: FormData): Promise<T> {
     headers.Authorization = `Bearer ${token}`;
   }
 
-  const response = await fetch(`${API_URL}${path}`, { method: 'POST', headers, body: form });
+  const response = await fetch(`${apiUrl()}${path}`, { method: 'POST', headers, body: form });
 
   const text = await response.text();
   const payload = text ? (JSON.parse(text) as unknown) : undefined;

@@ -3,6 +3,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 
 import { authApi } from '../api/auth';
 import { ApiError } from '../api/client';
+import { loadApiUrlOverride } from '../api/config';
 import { tokenStorage } from '../api/storage';
 import type { AuthSession, User } from '../api/types';
 import { mergeGuestData } from '../guest/merge';
@@ -126,6 +127,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     let cancelled = false;
 
     void (async () => {
+      // Before anything asks the API where it is. A build made for testing on
+      // a phone may have been pointed at a different server, and the first
+      // request must already know.
+      await loadApiUrlOverride();
+
       const token = await tokenStorage.read();
 
       if (!token) {

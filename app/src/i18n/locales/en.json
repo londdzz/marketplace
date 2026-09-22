@@ -449,6 +449,15 @@
     "guest_saved_note": "Kept on this phone",
     "guest_benefit_sell": "Sell your car",
     "guest_benefit_message": "Message sellers directly",
-    "guest_benefit_keep": "Keep what you saved on your account"
+    "guest_benefit_keep": "Keep what you saved on your account",
+    "server": "Server",
+    "server_body": "This build can be pointed at a different API, so a phone can talk to a development server on your network without being rebuilt.",
+    "server_label": "API address",
+    "server_hint": "Include /api/v1 at the end.",
+    "server_saved": "Saved. The app answered from this address.",
+    "server_reset": "Back to the built-in address",
+    "server_built_in": "Built in: {{url}}",
+    "server_locked": "Fixed for this build",
+    "server_locked_body": "Released builds talk to one server and cannot be pointed elsewhere."
   }
 }

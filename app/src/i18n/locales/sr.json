@@ -449,6 +449,15 @@
     "guest_saved_note": "Sačuvano na ovom telefonu",
     "guest_benefit_sell": "Prodaj svoj automobil",
     "guest_benefit_message": "Piši prodavcima direktno",
-    "guest_benefit_keep": "Zadrži sačuvano na svom nalogu"
+    "guest_benefit_keep": "Zadrži sačuvano na svom nalogu",
+    "server": "Server",
+    "server_body": "Ovaj build može da se usmeri na drugi API, da telefon razgovara sa razvojnim serverom na tvojoj mreži bez ponovnog build-a.",
+    "server_label": "Adresa API-ja",
+    "server_hint": "Dodaj /api/v1 na kraju.",
+    "server_saved": "Sačuvano. Aplikacija je dobila odgovor sa ove adrese.",
+    "server_reset": "Nazad na ugrađenu adresu",
+    "server_built_in": "Ugrađeno: {{url}}",
+    "server_locked": "Fiksirano za ovaj build",
+    "server_locked_body": "Objavljeni build-ovi razgovaraju sa jednim serverom i ne mogu se usmeriti drugde."
   }
 }

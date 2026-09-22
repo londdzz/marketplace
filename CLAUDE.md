@@ -205,6 +205,19 @@ deleted — all of it is closed rather than removed:
 
 ## Running on a device
 
+- **Testing against your own PC**: `docs/local-api-on-windows.md`. Laragon for PHP and
+  MySQL, `php artisan serve --host=0.0.0.0`, a firewall rule for port 8000, and
+  `APP_URL` set to the PC's own address — get that last one wrong and the app loads
+  but every photograph is a grey box, because the phone is asking itself for them.
+- **The API address is settable on the phone** for a build made with
+  `EXPO_PUBLIC_ALLOW_API_OVERRIDE=1` (the iOS workflow's `settable_api` input, on by
+  default). Profile → Server. A PC on a home network is whatever address the router
+  handed out that morning, and without this every new lease meant another
+  twenty-minute build. Saving checks the address before keeping it and puts the old one
+  back if nothing answers. **Released builds never set the flag**, so the screen is not
+  drawn and any saved value is ignored — an app anyone could point at another server
+  would be a way to harvest sign-in codes.
+
 Development happens on Windows, where no iOS code can be compiled and the simulator does
 not exist. `docs/device-testing.md` is the way round it: `.github/workflows/ios-unsigned-ipa.yml`
 builds an unsigned `.ipa` on a GitHub macOS runner, and Sideloadly or AltStore signs it

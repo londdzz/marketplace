@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import { authApi } from '../../api/auth';
+import { API_URL_IS_SETTABLE, apiUrl } from '../../api/config';
 import { referenceApi } from '../../api/reference';
 import { useAuth } from '../../auth/AuthProvider';
 import { Button, ListGroup, Screen, SettingRow, StackHeader, Text } from '../../components';
@@ -277,6 +278,20 @@ export default function ProfileTab() {
           />
         </ListGroup>
           </>
+        ) : null}
+
+        {/* Only a build made for testing on a phone can be pointed at another
+            server, and only that build draws this. */}
+        {API_URL_IS_SETTABLE ? (
+          <ListGroup inset={56} style={{ marginTop: theme.spacing.xl }}>
+            <SettingRow
+              icon="server-outline"
+              label={t('profile:server')}
+              hint={apiUrl()}
+              onPress={() => router.push('/profile/server')}
+              testID="profile-server"
+            />
+          </ListGroup>
         ) : null}
 
         {/* The one section that works either way. */}

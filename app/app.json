@@ -32,7 +32,8 @@
         ],
         "NSAppTransportSecurity": {
           "NSAllowsLocalNetworking": true
-        }
+        },
+        "NSLocalNetworkUsageDescription": "Autevo connects to a development server on your network when you are testing a local build."
       }
     },
     "android": {

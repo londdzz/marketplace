@@ -20,9 +20,14 @@ on:
   workflow_dispatch:
     inputs:
       api_url:
-        description: 'API the build talks to, e.g. http://192.168.1.20:8000/api/v1'
+        description: 'API the build starts out talking to, e.g. http://192.168.1.20:8000/api/v1'
         required: true
         default: 'https://api.autevo.mk/api/v1'
+      settable_api:
+        description: 'Let the address be changed on the phone (Profile > Server). For testing against a PC only — never for a build anyone else will hold.'
+        type: boolean
+        required: false
+        default: true
 
 jobs:
   build:
@@ -50,6 +55,7 @@ jobs:
       - name: Generate the native project
         env:
           EXPO_PUBLIC_API_URL: ${{ inputs.api_url }}
+          EXPO_PUBLIC_ALLOW_API_OVERRIDE: ${{ inputs.settable_api && '1' || '0' }}
         run: npx expo prebuild --platform ios --clean
 
       - name: Install pods
@@ -61,6 +67,7 @@ jobs:
       - name: Build unsigned
         env:
           EXPO_PUBLIC_API_URL: ${{ inputs.api_url }}
+          EXPO_PUBLIC_ALLOW_API_OVERRIDE: ${{ inputs.settable_api && '1' || '0' }}
         run: |
           set -euo pipefail
           WORKSPACE=$(ls -d ios/*.xcworkspace | head -1)

@@ -1,0 +1,174 @@
+# Running the API on your PC, for testing on your phone
+
+No domain, no hosting, no monthly bill. Your PC runs the API, your phone talks to it
+over your own wifi. About half an hour, most of it waiting for an installer.
+
+This is for testing only. `docs/deployment.md` is the real thing, for when you launch.
+
+---
+
+## What you are building
+
+```
+   iPhone  ──wifi──▶  your PC          both on the same router
+   Autevo             Laravel :8000
+                      MySQL
+```
+
+The phone has to reach your PC by its **address on the network** — something like
+`192.168.1.20`. Not `localhost`: on the phone, localhost is the phone.
+
+---
+
+## 1. Install PHP and MySQL (15 minutes)
+
+**Laragon** puts PHP, MySQL and Composer on the machine in one installer, which on
+Windows is far less painful than three separate ones.
+
+1. **laragon.org** → download **Laragon Full** → install with the defaults.
+2. Open Laragon → **Start All**. Apache and MySQL go green.
+3. Check the PHP version — Laragon → Menu → PHP → Version. **It must be 8.2 or newer.**
+   If it is older, Menu → PHP → Version has the newer ones to switch to.
+
+Open a terminal (Laragon → **Terminal**, which already has PHP and Composer on the path):
+
+```
+php -v          # 8.2 or newer
+composer -V     # any version
+mysql --version # any 8.x, or MariaDB
+```
+
+All three must answer. If `php` is not found, you are in the wrong terminal — use
+Laragon's own.
+
+---
+
+## 2. Get the code and set it up (10 minutes)
+
+```
+git clone https://github.com/londdzz/marketplace.git
+cd marketplace\api
+composer install
+copy .env.example .env
+php artisan key:generate
+```
+
+Make the database. In Laragon → **Database** (opens HeidiSQL) → right-click →
+Create new → Database → name it **autevo** → OK.
+
+Now open `api\.env` in a text editor and change these five lines:
+
+```
+APP_URL=http://192.168.1.20:8000
+DB_DATABASE=autevo
+DB_USERNAME=root
+DB_PASSWORD=
+OTP_DRIVER=log
+```
+
+**`APP_URL` is the one people get wrong.** Photo URLs are built from it, so if it says
+`127.0.0.1` the app loads but every car is a grey box — the phone is asking itself for
+the pictures. Put your PC's address there. Part 3 says how to find it.
+
+Then:
+
+```
+php artisan migrate --seed
+php artisan db:seed --class=DevListingSeeder
+```
+
+The second one puts eight cars with photographs in, so the app has something to show.
+
+---
+
+## 3. Find your PC's address
+
+```
+ipconfig
+```
+
+Look for **IPv4 Address** under your wifi adapter — `192.168.x.x` or `10.0.x.x`. That
+is the number the phone needs, and the one that goes in `APP_URL`.
+
+> It can change when the router restarts. That does not mean rebuilding the app —
+> see part 6.
+
+---
+
+## 4. Let the phone through the firewall
+
+Windows blocks incoming connections by default, and this is the step that silently
+stops everything. In **PowerShell as Administrator**, once:
+
+```powershell
+New-NetFirewallRule -DisplayName "Autevo API" -Direction Inbound -LocalPort 8000 -Protocol TCP -Action Allow
+```
+
+---
+
+## 5. Start the API
+
+From `marketplace\api`:
+
+```
+php artisan serve --host=0.0.0.0 --port=8000
+```
+
+**`--host=0.0.0.0` matters.** The default only listens to the PC itself, so the phone
+gets nothing.
+
+Check it from the PC's browser: `http://192.168.1.20:8000/api/v1/countries` should
+print JSON with North Macedonia in it. Then check the same address **in Safari on the
+phone**. If the phone cannot load it, the app will not either — it is the firewall or
+the two devices are on different networks (a "guest" wifi is a different network).
+
+Leave that terminal running. Closing it stops the API.
+
+---
+
+## 6. Point the app at it
+
+The build is made with **Profile → Server** switched on, so the address lives on the
+phone and is not baked into the binary.
+
+On the phone: **Profile → Server** → type `http://192.168.1.20:8000/api/v1` → **Save**.
+
+It checks the address before keeping it. If nothing answers it says so and puts the old
+one back, rather than leaving the app pointed at nothing and looking broken.
+
+When your PC's address changes, change it here. No rebuild.
+
+---
+
+## Signing in
+
+`OTP_DRIVER=log` means no WhatsApp is needed and nothing is sent. The code is written
+to the log instead. After tapping Send code, read it from the PC:
+
+```
+findstr /C:"\"code\"" api\storage\logs\laravel.log
+```
+
+The last one is yours.
+
+---
+
+## When it does not work
+
+| What you see | What it is |
+|---|---|
+| App opens, no cars, everything fails | The phone cannot reach the PC. Test the URL in Safari on the phone first. |
+| Cars load, photographs are grey boxes | `APP_URL` in `.env` is not your PC's address. Change it, then `php artisan config:clear`. |
+| Safari on the phone times out | Firewall (part 4), or the devices are on different wifi networks. |
+| Works, then stops after a while | The `php artisan serve` terminal was closed, or the PC slept. |
+| Sign-in code never arrives | It is in the log, not on WhatsApp. See above. |
+| Changed `.env`, nothing happened | `php artisan config:clear` |
+
+---
+
+## What this build cannot do
+
+- **Push notifications** and **in-app purchases** — both need entitlements only a paid
+  Apple Developer account carries. The app handles their absence rather than pretending.
+- **It expires seven days after signing.** Re-sign the same `.ipa` with Sideloadly, or
+  run the workflow again.
