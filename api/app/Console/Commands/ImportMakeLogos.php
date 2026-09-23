@@ -7,6 +7,7 @@ namespace App\Console\Commands;
 use App\Models\Make;
 use App\Support\TextNormalizer;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -55,7 +56,16 @@ class ImportMakeLogos extends Command
             $linked++;
         }
 
+        // /makes is cached for an hour, so without this the command reports
+        // success and every make keeps drawing its monogram until the cache
+        // expires — the linking looking like it did nothing at all.
+        Cache::forget('reference:makes');
+
         $this->info("Linked {$linked} logos.");
+
+        if ($linked > 0) {
+            $this->line('Cleared the cached /makes response, so they show straight away.');
+        }
 
         return self::SUCCESS;
     }

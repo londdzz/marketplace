@@ -6,7 +6,7 @@ import { ScrollView, View } from 'react-native';
 import { listingsApi } from '../api/listings';
 import { referenceApi } from '../api/reference';
 import type { SortOption } from '../api/types';
-import { Button, Chip, Input, Screen, Text } from '../components';
+import { Button, Chip, Input, ListGroup, Screen, SettingRow, Text } from '../components';
 import { useFilters } from '../search/FiltersProvider';
 import { useTheme } from '../theme';
 
@@ -37,6 +37,16 @@ export default function FiltersScreen() {
   });
   const total = preview.data?.meta.total ?? 0;
 
+  // Only asked for once a make narrows it to one manufacturer's range.
+  const models = useQuery({
+    queryKey: ['models', filters.makeId],
+    queryFn: () => referenceApi.models(filters.makeId as number),
+    enabled: filters.makeId !== undefined,
+    staleTime: 60 * 60 * 1000,
+  });
+
+  const chosenModel = (models.data ?? []).find((model) => model.id === filters.modelId);
+
   const section = { marginTop: theme.spacing.xxl };
   const row = { flexDirection: 'row' as const, flexWrap: 'wrap' as const, gap: theme.spacing.xs, marginTop: theme.spacing.sm };
 
@@ -59,10 +69,28 @@ export default function FiltersScreen() {
               key={make.id}
               label={make.name}
               selected={filters.makeId === make.id}
-              onPress={() => set({ makeId: filters.makeId === make.id ? undefined : make.id })}
+              // The model goes with the make it belonged to.
+              onPress={() =>
+                set({
+                  makeId: filters.makeId === make.id ? undefined : make.id,
+                  modelId: undefined,
+                })
+              }
             />
           ))}
         </View>
+
+        {filters.makeId !== undefined ? (
+          <ListGroup style={{ marginTop: theme.spacing.md }}>
+            <SettingRow
+              label={t('search:model')}
+              value={chosenModel?.name ?? t('search:any_model')}
+              icon="options-outline"
+              onPress={() => router.push('/models')}
+              testID="filters-pick-model"
+            />
+          </ListGroup>
+        ) : null}
 
         {(countries.data ?? []).length > 1 ? (
         <Text variant="label" tone="muted" style={section}>

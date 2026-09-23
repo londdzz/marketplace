@@ -156,7 +156,9 @@
     "previous": "Назад",
     "next": "Следећа",
     "page_of": "Страница {{page}} од {{total}}",
-    "guest_alerts_off": "Sačuvano na ovom telefonu. Prijavi se da te obavestimo kada se pojavi podudaranje."
+    "guest_alerts_off": "Sačuvano na ovom telefonu. Prijavi se da te obavestimo kada se pojavi podudaranje.",
+    "model": "Модел",
+    "any_model": "Било који модел"
   },
   "listing": {
     "fuel": {

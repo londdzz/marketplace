@@ -156,7 +156,9 @@
     "previous": "Back",
     "next": "Next",
     "page_of": "Page {{page}} of {{total}}",
-    "guest_alerts_off": "Saved on this phone. Sign in to be told when a match appears."
+    "guest_alerts_off": "Saved on this phone. Sign in to be told when a match appears.",
+    "model": "Model",
+    "any_model": "Any model"
   },
   "listing": {
     "fuel": {

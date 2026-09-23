@@ -156,7 +156,9 @@
     "previous": "Prapa",
     "next": "Tjetra",
     "page_of": "Faqja {{page}} nga {{total}}",
-    "guest_alerts_off": "Ruajtur në këtë telefon. Hyr që të njoftohesh kur shfaqet një përputhje."
+    "guest_alerts_off": "Ruajtur në këtë telefon. Hyr që të njoftohesh kur shfaqet një përputhje.",
+    "model": "Modeli",
+    "any_model": "Çdo model"
   },
   "listing": {
     "fuel": {

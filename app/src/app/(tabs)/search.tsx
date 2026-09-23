@@ -11,6 +11,7 @@ import {
   Chip,
   Input,
   ListGroup,
+  SettingRow,
   MakeTile,
   Screen,
   SearchField,
@@ -47,6 +48,17 @@ export default function SearchTab() {
     queryKey: ['listing-count', filters],
     queryFn: () => listingsApi.search({ ...filters }, 1),
   });
+
+  // Named on the row rather than shown as an id, and only fetched once a make
+  // is chosen, because that is the only time the row is drawn.
+  const models = useQuery({
+    queryKey: ['models', filters.makeId],
+    queryFn: () => referenceApi.models(filters.makeId as number),
+    enabled: filters.makeId !== undefined,
+    staleTime: 60 * 60 * 1000,
+  });
+
+  const chosenModel = (models.data ?? []).find((model) => model.id === filters.modelId);
 
   const total = preview.data?.meta.total ?? 0;
   const popular = (makes.data ?? []).filter((make) => make.popular).slice(0, 8);
@@ -102,7 +114,14 @@ export default function SearchTab() {
                 logoUrl={make.logo_url}
                 width={tileWidth}
                 selected={filters.makeId === make.id}
-                onPress={() => set({ makeId: filters.makeId === make.id ? undefined : make.id })}
+                // A model belongs to one make, so changing the make has to let
+                // the model go with it or the search asks for a BMW M3 Octavia.
+                onPress={() =>
+                  set({
+                    makeId: filters.makeId === make.id ? undefined : make.id,
+                    modelId: undefined,
+                  })
+                }
                 testID={`make-${make.id}`}
               />
             ))}
@@ -117,6 +136,21 @@ export default function SearchTab() {
             onPress={() => router.push('/filters')}
             testID="all-makes"
           />
+
+          {/* Only once there is a make to have a model of. Without this the
+              search could name a make and nothing narrower, so anyone after a
+              particular car read every one the marque makes. */}
+          {filters.makeId !== undefined ? (
+            <ListGroup style={{ marginTop: theme.spacing.md }}>
+              <SettingRow
+                label={t('search:model')}
+                value={chosenModel?.name ?? t('search:any_model')}
+                icon="options-outline"
+                onPress={() => router.push('/models')}
+                testID="pick-model"
+              />
+            </ListGroup>
+          ) : null}
         </AccordionCard>
 
         <ListGroup>
