@@ -9,12 +9,11 @@ npm run dev        # http://localhost:5174
 npm run build      # dist/
 ```
 
-`VITE_API_URL` points it at an API; without one it uses
-`https://api.autevo.mk/api/v1`. For a local API:
-
-```
-VITE_API_URL=http://127.0.0.1:8000/api/v1 npm run dev
-```
+`.env.development` points the dev server at `http://127.0.0.1:8000/api/v1`,
+which is what `php artisan serve` answers on. Put your own address in
+`.env.local` if the API is somewhere else — your PC's own address, say, as
+`docs/local-api-on-windows.md` describes. The production build takes
+`VITE_API_URL` from the deploy and falls back to `https://api.autevo.mk/api/v1`.
 
 ## Why a separate app and not the Expo web build
 
@@ -58,21 +57,49 @@ The design tokens in `src/styles/tokens.css` are hand-copied from
 spacing, same 6/10/16 radii. They are values rather than code, so they cannot
 be imported, and a change to the app's theme has to be brought across by hand.
 
-## What the website does, and what it sends to the app
+## What the website does
 
-Browsing is the whole of it, which is what a desktop visitor came for:
+Everything the app does, against the same endpoints — a car published from a
+keyboard is the same row as one published from a phone, and a block made in a
+browser hides that seller on both.
 
 - **Home** — collections, the newest cars, body shapes, each with a count the
   API measured against live listings
 - **Search** — filters beside the results, in the address bar so back, forward
   and sending somebody a link all work
-- **A car** — gallery with a full-size viewer, specification, seller
-- **Saved** — the shortlist, for a signed-in buyer
+- **A car** — gallery with a full-size viewer, specification, seller, and the
+  four things that need an account: call, message, report, block
+- **Saved** and **my searches** — the shortlist and the searches kept
+- **Sell** — the app's eleven screens as one form, because a phone can hold one
+  question at a time and a desktop can hold the lot. The draft is still written
+  after every answer, and `?draft=` picks up one started on the phone
+- **Messages** — both panes at once, polled as the app polls: the open thread
+  every five seconds, the list every fifteen
+- **My listings** — renew, mark sold, promote
+- **Credits** — the balance and the ledger
+- **Profile** — name, dealer, language, blocked people, delete account
 - **Sign in** — phone and a code, the same two steps the app uses
 - **Privacy, terms, support, delete account** — the pages both stores require
   to be reachable at a public URL
 
-**Selling and messaging stay in the app**, and the site says which rather than
-drawing a control that cannot work. A listing needs four photographs and they
-come off a phone. When that changes, the API is already there: nothing here
-would need a new endpoint.
+**The one thing a browser cannot do is buy credits.** Both stores require a
+digital good used inside an app to be bought through their own purchase, so
+the packs are listed with their prices and the page says where to buy. Drawing
+a Buy button here would get the app rejected.
+
+## Two things that are the website's own problem
+
+A phone downloads the app once. A browser downloads the site on every first
+visit, so two things the app can be careless about are not free here:
+
+- **The typefaces are served from our own domain**, not hotlinked from Google,
+  whose CDN would otherwise see every visitor's address on every page load.
+  `src/styles/fonts.ts` imports the Latin and Cyrillic subsets of Onest and the
+  Latin of Sora — about 65 kB, against 350 kB for the whole families.
+- **Only Macedonian and English are bundled.** All five are synced in, because
+  the sync copies what the app has, but `src/i18n/index.ts` imports the two the
+  site can show. The other three are 80 kB nobody would ever read.
+- **Home, search, a car and the shortlist are the first bundle**; everything
+  else is a chunk fetched on the click that needs it. Somebody following a link
+  to a car should not have to download the sell form and the privacy policy
+  first.

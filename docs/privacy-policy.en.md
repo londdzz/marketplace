@@ -8,6 +8,10 @@ Autevo is a marketplace for used cars in North Macedonia. Sellers pay per listin
 search and message sellers. We never handle the car, the money paid for a car, or any
 paperwork — we connect the two people and stop there.
 
+This policy covers both the Autevo app and the website at autevo.mk. They are the same
+service: the same account, the same listings, the same messages. Nothing is collected in one
+that is not collected in the other.
+
 This policy says exactly what we hold, why, and how to get rid of it.
 
 ## What we collect
@@ -18,7 +22,7 @@ This policy says exactly what we hold, why, and how to get rid of it.
 - Your country and town, your chosen language, and whether you sell privately or as a dealer.
 - The date the account was created.
 
-**Because you use the app**
+**Because you use Autevo**
 - Listings you create: the car's details, your description, the town, and the photographs you
   upload. Photographs are re-encoded on our server, which strips embedded metadata including
   any location the camera recorded.
@@ -28,11 +32,16 @@ This policy says exactly what we hold, why, and how to get rid of it.
 
 **Because of how the service runs**
 - A push notification token for each device you allow notifications on.
+- On the website, your browser keeps your sign-in token and your chosen language on your own
+  computer. Both stay there until you sign out or clear the site's data, and neither is sent
+  anywhere but to us.
 - Request logs, including IP address, used to apply rate limits and to find faults. Kept 30 days.
 
 We do **not** collect your device's location, your contacts, your calendar, advertising
 identifiers, or anything for advertising or profiling. There is no analytics SDK and no
-advertising SDK in the app.
+advertising SDK in the app, and the website loads nothing from anyone else — no analytics,
+no advertising, no third-party fonts. Opening a page on autevo.mk tells no company but us
+that you were there.
 
 ## Why we hold it, and on what basis
 
