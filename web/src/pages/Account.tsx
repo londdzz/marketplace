@@ -4,9 +4,13 @@ import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { authApi } from '../api/auth';
+import { ApiError } from '../api/client';
+import { blocksApi } from '../api/blocks';
 import { listingsApi } from '../api/listings';
+import type { Listing } from '../api/types';
 import { creditsApi, sellApi } from '../api/sell';
 import { useAuth } from '../auth/AuthProvider';
+import { PromoteDialog } from '../components/PromoteDialog';
 import { Badge, Button, Card, EmptyState, ErrorState, Field, Input, Select, Spinner } from '../components/ui';
 import { formatEur, formatEurExact } from '../format';
 import i18n, { SUPPORTED_LANGUAGES, setLanguage, type Language } from '../i18n';
@@ -49,6 +53,7 @@ export function MyListings() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [busy, setBusy] = useState<string | null>(null);
+  const [promoting, setPromoting] = useState<Listing | null>(null);
 
   const listings = useQuery({
     queryKey: ['my-listings'],
@@ -129,6 +134,17 @@ export function MyListings() {
                 {/* Days left, counted as the app counts them, rather than a
                     date the seller has to subtract from today. A draft has
                     neither, and an empty line is a gap nobody asked for. */}
+                {listing.featured_until ? (
+                  <p className="subtle mine__top">
+                    {t('sell:promoted_until', {
+                      date: new Date(listing.featured_until).toLocaleDateString(i18n.language, {
+                        day: 'numeric',
+                        month: 'short',
+                      }),
+                    })}
+                  </p>
+                ) : null}
+
                 {listing.expires_at || listing.view_count ? (
                   <p className="subtle mine__meta">
                     {[
@@ -162,6 +178,12 @@ export function MyListings() {
                 ) : null}
 
                 {listing.status === 'active' ? (
+                  <Button variant="secondary" size="sm" onClick={() => setPromoting(listing)}>
+                    {t('sell:promote')}
+                  </Button>
+                ) : null}
+
+                {listing.status === 'active' ? (
                   <Button
                     variant="ghost"
                     size="sm"
@@ -175,6 +197,8 @@ export function MyListings() {
           ))}
         </div>
       )}
+
+      {promoting ? <PromoteDialog listing={promoting} onClose={() => setPromoting(null)} /> : null}
     </div>
   );
 }
@@ -349,6 +373,7 @@ export function Profile() {
   const { t } = useTranslation(['profile', 'common', 'web', 'auth']);
   const { user, refresh } = useAuth();
   const [name, setName] = useState(user?.display_name ?? '');
+  const [isDealer, setIsDealer] = useState(user?.seller_type === 'dealer');
   const [dealerName, setDealerName] = useState(user?.dealer_name ?? '');
   const [saved, setSaved] = useState(false);
 
@@ -356,13 +381,31 @@ export function Profile() {
     mutationFn: () =>
       authApi.updateMe({
         display_name: name.trim() === '' ? null : name.trim(),
-        dealer_name: dealerName.trim() === '' ? null : dealerName.trim(),
+        seller_type: isDealer ? 'dealer' : 'private',
+        dealer_name: isDealer ? (dealerName.trim() === '' ? null : dealerName.trim()) : null,
       }),
     onSuccess: async () => {
       setSaved(true);
       await refresh();
     },
   });
+
+  /**
+   * The language belongs to the account, not to this browser: the app reads
+   * preferred_language on every launch, so a switch here has to follow the
+   * person onto their phone. It changes the page first and saves after,
+   * because waiting on a request to redraw a menu would feel broken.
+   */
+  const chooseLanguage = (language: Language) => {
+    setLanguage(language);
+
+    if (user) {
+      void authApi.updateMe({ preferred_language: language }).then(() => refresh());
+    }
+  };
+
+  const fieldError = (field: string) =>
+    save.error instanceof ApiError ? save.error.fieldError(field) : undefined;
 
   if (!user) {
     return <NeedsAccount title={t('profile:title')} />;
@@ -373,7 +416,11 @@ export function Profile() {
       <h1>{t('profile:title')}</h1>
 
       <Card className="legal__card">
-        <Field label={t('profile:display_name')} hint={t('profile:display_name_hint')}>
+        <Field
+          label={t('profile:display_name')}
+          hint={t('profile:display_name_hint')}
+          error={fieldError('display_name')}
+        >
           <Input
             value={name}
             placeholder={t('profile:display_name_placeholder')}
@@ -384,8 +431,20 @@ export function Profile() {
           />
         </Field>
 
-        {user.seller_type === 'dealer' ? (
-          <Field label={t('profile:dealer_name')}>
+        <label className="sell__check">
+          <input
+            type="checkbox"
+            checked={isDealer}
+            onChange={(event) => {
+              setIsDealer(event.target.checked);
+              setSaved(false);
+            }}
+          />
+          {t('profile:dealer')}
+        </label>
+
+        {isDealer ? (
+          <Field label={t('profile:dealer_name')} error={fieldError('dealer_name')}>
             <Input
               value={dealerName}
               placeholder={t('profile:dealer_name_placeholder')}
@@ -404,7 +463,7 @@ export function Profile() {
         <Field label={t('profile:language')}>
           <Select
             value={i18n.language}
-            onChange={(event) => setLanguage(event.target.value as Language)}
+            onChange={(event) => chooseLanguage(event.target.value as Language)}
           >
             {SUPPORTED_LANGUAGES.map((code) => (
               <option key={code} value={code}>
@@ -414,15 +473,99 @@ export function Profile() {
           </Select>
         </Field>
 
+        {save.isError && !fieldError('display_name') && !fieldError('dealer_name') ? (
+          <p className="field__error">{(save.error as Error).message}</p>
+        ) : null}
+
         <div className="legal__actions">
           <Button loading={save.isPending} onClick={() => save.mutate()}>
             {saved ? `${t('common:save')} ✓` : t('common:save')}
           </Button>
+          <Link to="/blocked">
+            <Button variant="secondary">{t('profile:blocked')}</Button>
+          </Link>
           <Link to="/delete-account">
             <Button variant="ghost">{t('profile:delete_account')}</Button>
           </Link>
         </div>
       </Card>
+    </div>
+  );
+}
+
+/**
+ * Everyone this account has blocked, and the way back.
+ *
+ * Blocking hides, it never deletes, so unblocking gives all of it back —
+ * their cars return to the search and the thread is where it was. The list
+ * exists so that is a decision somebody can change their mind about rather
+ * than one they have to live with.
+ */
+export function Blocked() {
+  const { t } = useTranslation(['profile', 'common', 'listing']);
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+
+  const blocked = useQuery({
+    queryKey: ['blocks'],
+    queryFn: () => blocksApi.list(),
+    enabled: Boolean(user),
+  });
+
+  const unblock = useMutation({
+    mutationFn: (userId: number) => blocksApi.unblock(userId),
+    // Their cars come back into every list the moment this lands.
+    onSuccess: () => void queryClient.invalidateQueries(),
+  });
+
+  if (!user) {
+    return <NeedsAccount title={t('profile:blocked')} />;
+  }
+
+  const rows = blocked.data?.data ?? [];
+
+  return (
+    <div className="page saved">
+      <h1 className="saved__title">{t('profile:blocked')}</h1>
+      <p className="muted">{t('profile:blocked_hint')}</p>
+
+      {blocked.isLoading ? (
+        <Spinner />
+      ) : blocked.isError ? (
+        <ErrorState
+          title={t('common:error_loading')}
+          actionLabel={t('common:retry')}
+          onRetry={() => void blocked.refetch()}
+        />
+      ) : rows.length === 0 ? (
+        <EmptyState title={t('profile:blocked_empty')} description={t('profile:blocked_empty_body')} />
+      ) : (
+        <div className="mine">
+          {rows.map((row) => (
+            <Card key={row.id} className="mine__row mine__row--plain">
+              <div className="mine__body">
+                <p className="mine__title">
+                  {row.dealer_name ?? row.display_name ?? t('profile:blocked_someone')}
+                </p>
+                <p className="subtle">
+                  {row.seller_type === 'dealer' ? t('listing:dealer') : t('listing:private')}
+                </p>
+              </div>
+
+              <div className="mine__actions">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  loading={unblock.isPending && unblock.variables === row.id}
+                  onClick={() => unblock.mutate(row.id)}
+                >
+                  {t('profile:unblock')}
+                </Button>
+              </div>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

@@ -1,12 +1,23 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
+import { blocksApi } from '../api/blocks';
 import { listingsApi } from '../api/listings';
+import { messagingApi } from '../api/messaging';
+import { useAuth } from '../auth/AuthProvider';
 import { Gallery } from '../components/Gallery';
-import { Badge, Button, Card, Chip, EmptyState, ErrorState, Spinner } from '../components/ui';
+import { Badge, Button, Card, Chip, Dialog, EmptyState, ErrorState, Spinner } from '../components/ui';
 import { formatEur, formatKm, listingLocation, listingTitle } from '../format';
 import { useFavorites } from '../hooks/useFavorites';
+
+/**
+ * The reasons the API accepts, in the order a buyer is likely to want them:
+ * the ones about the advert first, the ones about the seller after. The same
+ * order the app puts them in.
+ */
+const REPORT_REASONS = ['sold', 'duplicate', 'wrong_category', 'scam_suspected', 'offensive', 'other'] as const;
 
 /**
  * One car.
@@ -15,15 +26,52 @@ import { useFavorites } from '../hooks/useFavorites';
  * right, where it stays in view as they scroll the pictures — the price, the
  * specifications, the seller. On a phone the same content is one column.
  *
- * Messaging lives in the app. The Call button shows the number to somebody
- * signed in, because the API does not send it to a guest, and says so
- * otherwise rather than failing when pressed.
+ * Message, Call, Report and Block all need an account, and each says so on
+ * the button rather than being hidden or failing when pressed — the API does
+ * not send a guest the seller's number, so "Sign in to call" is what pressing
+ * that button will actually do.
  */
 export function ListingPage() {
-  const { t } = useTranslation(['listing', 'search', 'common', 'web']);
+  const { t } = useTranslation(['listing', 'search', 'common', 'web', 'messages']);
   const { id = '' } = useParams();
   const navigate = useNavigate();
   const favorites = useFavorites();
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+
+  const [asking, setAsking] = useState<'report' | 'block' | null>(null);
+  const [reason, setReason] = useState<string | null>(null);
+  const [note, setNote] = useState('');
+  const [reported, setReported] = useState(false);
+
+  // Asking twice reopens the same thread rather than starting another, so the
+  // button needs no state of its own.
+  const message = useMutation({
+    mutationFn: () => messagingApi.start(id),
+    onSuccess: (conversation) => navigate(`/messages/${conversation.id}`),
+  });
+
+  const report = useMutation({
+    mutationFn: () => listingsApi.report(id, reason as string, note.trim() || undefined),
+    onSuccess: () => {
+      setAsking(null);
+      setReported(true);
+    },
+  });
+
+  const block = useMutation({
+    mutationFn: (userId: number) => blocksApi.block(userId),
+    onSuccess: () => {
+      setAsking(null);
+      navigate('/search');
+      // This listing is now one the API will not serve us, so it is dropped
+      // rather than refetched — asking again would answer 403 and paint an
+      // error over a page we have already left. Everything else is only
+      // stale: their cars have to leave the lists they are still in.
+      queryClient.removeQueries({ queryKey: ['listing', id] });
+      void queryClient.invalidateQueries();
+    },
+  });
 
   const query = useQuery({
     queryKey: ['listing', id],
@@ -136,13 +184,16 @@ export function ListingPage() {
               >
                 {favorited ? '♥' : '♡'} {t('search:park')}
               </Button>
-            </div>
 
-            {/* Messaging is the app's, and the site says which rather than
-                drawing a button that cannot do anything. */}
-            <p className="subtle detail__appnote">
-              {t('listing:message')} — {t('web:app_only')}
-            </p>
+              <Button
+                variant="secondary"
+                block
+                loading={message.isPending}
+                onClick={() => (user ? message.mutate() : navigate('/sign-in'))}
+              >
+                {t('listing:message')}
+              </Button>
+            </div>
           </Card>
 
           {known.length > 0 ? (
@@ -162,14 +213,100 @@ export function ListingPage() {
           {car.seller ? (
             <Card className="detail__block">
               <h2 className="detail__h2">{t('listing:seller')}</h2>
-              <p>{car.seller.display_name ?? t('listing:private')}</p>
+
+              {/* A seller who gave no name falls back to what kind of seller
+                  they are, which is the line below — printing both said
+                  "Private seller" twice. */}
+              {car.seller.dealer_name ?? car.seller.display_name ? (
+                <p>{car.seller.dealer_name ?? car.seller.display_name}</p>
+              ) : null}
+
               <p className="subtle">
                 {car.seller.seller_type === 'dealer' ? t('listing:dealer') : t('listing:private')}
               </p>
+
+              {/* Neither is an action anybody came for, and neither is
+                  hidden. Reporting is not blocking: one asks us to look, the
+                  other takes them out of the way now. */}
+              <div className="detail__quiet">
+                <button type="button" onClick={() => (user ? setAsking('report') : navigate('/sign-in'))}>
+                  {reported ? t('listing:report_thanks') : t('listing:report')}
+                </button>
+                <button type="button" onClick={() => (user ? setAsking('block') : navigate('/sign-in'))}>
+                  {t('listing:block_seller')}
+                </button>
+              </div>
             </Card>
           ) : null}
         </aside>
       </div>
+
+      {asking === 'report' ? (
+        <Dialog
+          title={t('listing:report_title')}
+          description={t('listing:report_body')}
+          onClose={() => setAsking(null)}
+        >
+          <div className="reasons">
+            {REPORT_REASONS.map((value) => (
+              <button
+                key={value}
+                type="button"
+                aria-pressed={reason === value}
+                onClick={() => setReason(value)}
+              >
+                {t(`listing:report_reason_${value}`)}
+              </button>
+            ))}
+          </div>
+
+          <label className="field">
+            <span className="field__label">{t('listing:report_note')}</span>
+            <textarea
+              className="input"
+              rows={3}
+              maxLength={1000}
+              value={note}
+              onChange={(event) => setNote(event.target.value)}
+            />
+            <span className="field__hint">{t('listing:report_note_hint')}</span>
+          </label>
+
+          {report.isError ? <p className="field__error">{(report.error as Error).message}</p> : null}
+
+          <div className="dialog__actions">
+            <Button variant="ghost" onClick={() => setAsking(null)}>
+              {t('common:cancel')}
+            </Button>
+            <Button disabled={!reason} loading={report.isPending} onClick={() => report.mutate()}>
+              {t('listing:report_send')}
+            </Button>
+          </div>
+        </Dialog>
+      ) : null}
+
+      {asking === 'block' ? (
+        <Dialog
+          title={t('listing:block_title')}
+          description={t('listing:block_body')}
+          onClose={() => setAsking(null)}
+        >
+          {block.isError ? <p className="field__error">{(block.error as Error).message}</p> : null}
+
+          <div className="dialog__actions">
+            <Button variant="ghost" onClick={() => setAsking(null)}>
+              {t('common:cancel')}
+            </Button>
+            <Button
+              variant="danger"
+              loading={block.isPending}
+              onClick={() => car.seller && block.mutate(car.seller.id)}
+            >
+              {t('listing:block_confirm')}
+            </Button>
+          </div>
+        </Dialog>
+      ) : null}
     </div>
   );
 }

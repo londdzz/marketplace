@@ -1202,3 +1202,135 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* A question the page stops for: reporting an advert, blocking someone.
+   The one thing on the site that sits above the page — the app keeps the
+   sheet elevation for exactly this, and there are only ever two, flat and
+   this. */
+.scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--s-xl);
+  background: var(--scrim);
+}
+
+.dialog {
+  width: min(480px, 100%);
+  max-height: 86vh;
+  overflow-y: auto;
+  padding: var(--s-xl);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-dialog);
+}
+
+.dialog:focus {
+  outline: none;
+}
+
+.dialog__title {
+  margin: 0 0 var(--s-sm);
+  font-size: var(--t-title);
+}
+
+.dialog__body {
+  margin: 0 0 var(--s-lg);
+}
+
+.dialog__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--s-sm);
+  margin-top: var(--s-lg);
+}
+
+/* Reasons stack: each is a sentence, not a word, so a row of chips would
+   wrap into an unreadable block. */
+.reasons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-xs);
+}
+
+.reasons button {
+  padding: var(--s-sm) var(--s-md);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.reasons button:hover {
+  background: var(--surface-raised);
+}
+
+.reasons button[aria-pressed='true'] {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* The quiet row under the seller block: report, block. Neither is an action
+   anybody came for, and neither is hidden. */
+.detail__quiet {
+  display: flex;
+  gap: var(--s-lg);
+  margin-top: var(--s-md);
+}
+
+.detail__quiet button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text-muted);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.detail__quiet button:hover {
+  color: var(--text);
+}
+
+/* Setting a promotion budget: one number, and the two ways to change it.
+   The buttons line up with the number rather than with the pair of lines,
+   or they sit under it looking like they belong to the caption. */
+.promote {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: var(--s-xl);
+  padding: var(--s-lg) 0;
+}
+
+.promote > .btn {
+  margin-top: var(--s-xs);
+}
+
+.promote__figure {
+  min-width: 140px;
+  text-align: center;
+}
+
+.promote__credits {
+  margin: 0;
+  font-size: var(--t-display);
+  font-weight: 600;
+}
+
+.promote__standing {
+  margin: 0 0 var(--s-md);
+  text-align: center;
+}
+
+.mine__top {
+  margin: 0;
+  color: var(--accent);
+}

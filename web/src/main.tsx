@@ -6,7 +6,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { AuthProvider } from './auth/AuthProvider';
 import { Layout } from './components/Layout';
 import './i18n';
-import { Credits, MyListings, Profile, SavedSearches } from './pages/Account';
+import { Blocked, Credits, MyListings, Profile, SavedSearches } from './pages/Account';
 import { Home } from './pages/Home';
 import { Messages } from './pages/Messages';
 import { Sell } from './pages/Sell';
@@ -51,6 +51,7 @@ createRoot(document.getElementById('root') as HTMLElement).render(
               <Route path="/my-listings" element={<MyListings />} />
               <Route path="/credits" element={<Credits />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/blocked" element={<Blocked />} />
               <Route path="/sign-in" element={<SignIn />} />
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/terms" element={<Terms />} />

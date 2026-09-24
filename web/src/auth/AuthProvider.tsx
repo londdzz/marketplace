@@ -4,6 +4,23 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 import { authApi } from '../api/auth';
 import { tokenStorage } from '../api/storage';
 import type { User } from '../api/types';
+import i18n, { SUPPORTED_LANGUAGES, setLanguage, type Language } from '../i18n';
+
+/**
+ * The account's language wins over this browser's.
+ *
+ * The app does the same on every launch, and it has to hold here too or the
+ * API — which answers in the account's language before it looks at
+ * Accept-Language — would put a Macedonian validation message on an English
+ * page. A language the site does not ship yet is left alone.
+ */
+function adoptLanguage(user: User): void {
+  const wanted = user.preferred_language;
+
+  if ((SUPPORTED_LANGUAGES as readonly string[]).includes(wanted) && wanted !== i18n.language) {
+    setLanguage(wanted as Language);
+  }
+}
 
 type AuthState = {
   user: User | null;
@@ -40,6 +57,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         if (!cancelled) {
           setUser(me);
+          adoptLanguage(me);
         }
       } catch {
         tokenStorage.clear();
@@ -63,6 +81,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       tokenStorage.save(session.token);
       setUser(session.user);
+      adoptLanguage(session.user);
       // Everything cached was fetched as somebody else, including the public
       // queries: a search result depends on who is asking, because blocking
       // hides cars as well as people.

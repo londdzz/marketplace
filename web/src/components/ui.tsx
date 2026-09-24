@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode, SelectHTMLAttributes } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -169,4 +170,63 @@ export function EmptyState({
 
 export function ErrorState({ title, actionLabel, onRetry }: { title: string; actionLabel: string; onRetry: () => void }) {
   return <EmptyState title={title} actionLabel={actionLabel} onAction={onRetry} />;
+}
+
+/**
+ * A question the page has to stop for.
+ *
+ * Reporting an advert and blocking someone both deserve a deliberate second
+ * press, and both are rare enough that a panel is the honest shape: a page
+ * that grew a report form permanently would be a page mostly about reporting.
+ *
+ * It is the one thing on the site that sits above the page — the sheet
+ * elevation the app keeps for exactly this — and it closes on Escape and on
+ * the backdrop, because a dialogue you cannot dismiss without answering is a
+ * dialogue people learn to dread.
+ */
+export function Dialog({
+  title,
+  description,
+  onClose,
+  children,
+}: {
+  title: string;
+  description?: string;
+  onClose: () => void;
+  children: ReactNode;
+}) {
+  const panel = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    document.addEventListener('keydown', onKey);
+    // Whatever was focused is behind the backdrop now and cannot be reached,
+    // so focus moves in with the dialogue rather than staying out there.
+    panel.current?.focus();
+
+    return () => document.removeEventListener('keydown', onKey);
+  }, [onClose]);
+
+  return (
+    <div className="scrim" onClick={onClose}>
+      <div
+        className="dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-label={title}
+        tabIndex={-1}
+        ref={panel}
+        onClick={(event) => event.stopPropagation()}
+      >
+        <h2 className="dialog__title">{title}</h2>
+        {description ? <p className="muted dialog__body">{description}</p> : null}
+        {children}
+      </div>
+    </div>
+  );
 }
