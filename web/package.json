@@ -6,9 +6,10 @@
   "scripts": {
     "sync-locales": "node scripts/sync-locales.js",
     "dev": "npm run sync-locales && vite",
-    "build": "npm run sync-locales && tsc -b && vite build",
+    "build": "npm run sync-locales && npm run check-keys && tsc -b && vite build",
     "preview": "vite preview",
-    "typecheck": "tsc -b --noEmit"
+    "typecheck": "tsc -b --noEmit",
+    "check-keys": "node scripts/check-keys.js"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.90.2",

@@ -81,7 +81,7 @@ export function Layout() {
             <Link to="/privacy">{t('web:privacy')}</Link>
             <Link to="/terms">{t('web:terms')}</Link>
             <Link to="/support">{t('web:support')}</Link>
-            <Link to="/delete-account">{t('web:delete_account')}</Link>
+            <Link to="/delete-account">{t('profile:delete_account')}</Link>
           </nav>
         </div>
       </footer>

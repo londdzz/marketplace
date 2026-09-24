@@ -281,7 +281,8 @@
       "orange": "Orange",
       "gold": "Gold",
       "other": "Other"
-    }
+    },
+    "favorite": "Save"
   },
   "sell": {
     "step": "Step {{current}} of {{total}}",

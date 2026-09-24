@@ -281,7 +281,8 @@
       "orange": "Portokalli",
       "gold": "Ar",
       "other": "Tjetër"
-    }
+    },
+    "favorite": "Ruaj"
   },
   "sell": {
     "step": "Hapi {{current}} nga {{total}}",

@@ -281,7 +281,8 @@
       "orange": "Наранџаста",
       "gold": "Златна",
       "other": "Друга"
-    }
+    },
+    "favorite": "Сачувај"
   },
   "sell": {
     "step": "Корак {{current}} од {{total}}",

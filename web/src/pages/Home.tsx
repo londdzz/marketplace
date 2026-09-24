@@ -116,6 +116,10 @@ export function Home() {
                   className="tile tile--small"
                   onClick={() => open({ bodyType: [shape.key] })}
                 >
+                  {/* The newest live car of that shape, photographed by
+                      whoever is selling it — the same rule the app's tiles
+                      follow, rather than a render of a car nobody can buy. */}
+                  {shape.photoUrl ? <img src={shape.photoUrl} alt="" loading="lazy" /> : null}
                   <span className="tile__name">{t(`listing:body_type.${shape.key}`, shape.key)}</span>
                   <span className="tile__count subtle">{t('search:offers', { count: shape.count })}</span>
                 </button>
