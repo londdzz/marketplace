@@ -159,7 +159,10 @@
     "page_of": "Faqja {{page}} nga {{total}}",
     "guest_alerts_off": "Ruajtur në këtë telefon. Hyr që të njoftohesh kur shfaqet një përputhje.",
     "model": "Modeli",
-    "any_model": "Çdo model"
+    "any_model": "Çdo model",
+    "make": "Marka",
+    "city": "Qyteti",
+    "search_now": "Kërko"
   },
   "listing": {
     "fuel": {

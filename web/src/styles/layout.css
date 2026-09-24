@@ -745,3 +745,76 @@
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   }
 }
+
+/* ---- the search panel -------------------------------------------------- */
+
+/* The search itself on the front page, the way a marketplace's is: a free
+   text box, the handful of things everyone narrows by, and a button that says
+   how many cars those choices would return. */
+.panel {
+  max-width: 1040px;
+  margin: var(--s-xxl) auto 0;
+  padding: var(--s-xl);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  text-align: left;
+}
+
+.panel__query {
+  display: flex;
+  gap: var(--s-sm);
+  margin-bottom: var(--s-xl);
+}
+
+.panel__q {
+  height: 48px;
+  font-size: var(--t-title);
+}
+
+.panel__query .btn {
+  flex: 0 0 auto;
+  width: 56px;
+  font-size: var(--t-title);
+}
+
+.panel__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--s-lg);
+}
+
+.panel__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-lg);
+  margin-top: var(--s-xl);
+}
+
+.panel__links {
+  display: flex;
+  gap: var(--s-sm);
+}
+
+.panel__go {
+  min-width: 220px;
+}
+
+/* A disabled select should read as not-yet rather than broken: the model list
+   fills in the moment a make is chosen. */
+.panel select:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+@media (max-width: 1080px) {
+  .panel__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .panel__foot {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

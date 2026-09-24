@@ -159,7 +159,10 @@
     "page_of": "Page {{page}} of {{total}}",
     "guest_alerts_off": "Saved on this phone. Sign in to be told when a match appears.",
     "model": "Model",
-    "any_model": "Any model"
+    "any_model": "Any model",
+    "make": "Make",
+    "city": "City",
+    "search_now": "Search"
   },
   "listing": {
     "fuel": {

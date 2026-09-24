@@ -6,7 +6,8 @@ import { listingsApi } from '../api/listings';
 import { referenceApi } from '../api/reference';
 import type { SearchFilters } from '../api/types';
 import { ListingCard } from '../components/ListingCard';
-import { Button, Card, ErrorState, Spinner } from '../components/ui';
+import { SearchPanel } from '../components/SearchPanel';
+import { Card, ErrorState, Spinner } from '../components/ui';
 import { useFavorites } from '../hooks/useFavorites';
 import { toQuery } from '../search/query';
 
@@ -42,9 +43,10 @@ export function Home() {
         <div className="page hero__inner">
           <h1 className="hero__title">{t('web:hero_title')}</h1>
           <p className="hero__sub muted">{t('web:hero_sub')}</p>
-          <Button size="lg" onClick={() => navigate('/search')}>
-            {t('web:browse_cars')}
-          </Button>
+
+          {/* The search is here, not behind a button. A front page that only
+              points at a search is a poster. */}
+          <SearchPanel />
         </div>
       </section>
 
