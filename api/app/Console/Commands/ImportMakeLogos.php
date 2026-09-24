@@ -7,15 +7,21 @@ namespace App\Console\Commands;
 use App\Models\Make;
 use App\Support\TextNormalizer;
 use Illuminate\Console\Command;
+use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
 /**
- * Links logo files already on the storage disk to the makes they belong to.
+ * Puts the manufacturer marks on the storage disk and attaches them to makes.
  *
- * Drop files named after the make into makes/ on the configured disk, for
- * example makes/volkswagen.png or makes/mercedes-benz.svg, then run this. The
- * match is on the normalized name, so "Škoda" finds skoda.png.
+ * The marks live in resources/make-logos and are committed, because Simple
+ * Icons publishes them CC0 and there is nothing to honour in redistributing
+ * them. So a fresh checkout needs this one command and no Node: anything in
+ * that directory is copied onto the disk first, and then everything in makes/
+ * is matched to a make by its normalised name, so "Škoda" finds skoda.png.
+ *
+ * A file dropped straight into makes/ on the disk still works, which is how a
+ * mark can be added without touching the repository.
  */
 class ImportMakeLogos extends Command
 {
@@ -28,10 +34,17 @@ class ImportMakeLogos extends Command
         $disk = Storage::disk((string) config('filesystems.default'));
         $directory = (string) $this->option('directory');
 
+        $copied = $this->seedFromResources($disk, $directory);
+
+        if ($copied > 0) {
+            $this->line("Copied {$copied} marks onto the ".config('filesystems.default').' disk.');
+        }
+
         $files = $disk->files($directory);
 
         if ($files === []) {
             $this->warn("No files found in [{$directory}] on the ".config('filesystems.default').' disk.');
+            $this->line('Marks ship in resources/make-logos; this copies them across on its own.');
 
             return self::SUCCESS;
         }
@@ -68,5 +81,45 @@ class ImportMakeLogos extends Command
         }
 
         return self::SUCCESS;
+    }
+
+    /**
+     * Copy any committed mark that is not on the disk yet.
+     *
+     * Only what is missing, so a file replaced by hand on the disk is left
+     * alone rather than being overwritten on every run.
+     *
+     * @param  Filesystem  $disk
+     */
+    private function seedFromResources($disk, string $directory): int
+    {
+        $source = resource_path('make-logos');
+
+        if (! is_dir($source)) {
+            return 0;
+        }
+
+        $copied = 0;
+
+        foreach (glob($source.'/*.{png,svg,webp}', GLOB_BRACE) ?: [] as $path) {
+            $target = $directory.'/'.basename($path);
+
+            if ($disk->exists($target)) {
+                continue;
+            }
+
+            $contents = file_get_contents($path);
+
+            if ($contents === false) {
+                $this->warn('Could not read '.basename($path).'.');
+
+                continue;
+            }
+
+            $disk->put($target, $contents);
+            $copied++;
+        }
+
+        return $copied;
     }
 }
