@@ -164,8 +164,11 @@ deleted — all of it is closed rather than removed:
   are seeded inactive, with their cities, dialling prefixes and currencies.
   Flipping one to active is the whole job: `/countries` starts returning it, its
   dialling prefix appears on the sign-in screen, listings can be created there,
-  and the country chooser reappears in search, in the filter sheet and in the
-  sell flow, because all of those are driven by what the API answers.
+  and the country chooser reappears in search, in the filter sheet, in the sell
+  flow and on the website's search panel and sell form, because all of those are
+  driven by what the API answers. `/cities` obeys it too — it served every town
+  in all five markets while `/countries` served only the open one, so the sell
+  form offered Tirana and the API then refused the listing.
 - **Languages**: `config('app.supported_locales')` in the API and
   `SUPPORTED_LANGUAGES` in the app. Albanian, Serbian and Bulgarian are fully
   translated and still bundled, listed as planned. Shipping one is a line in
@@ -192,10 +195,42 @@ screens are the website's own. The design tokens are hand-copied into
 `web/src/styles/tokens.css` because they are values, not code — **a change to
 the app's theme has to be carried across by hand.**
 
-**The website browses; the app sells.** Search, a car, the shortlist, sign-in
-and the four legal pages are on the web. Selling and messaging stay in the app
-and the site says so rather than drawing a control that cannot work — a listing
-needs four photographs and they come off a phone.
+**The website does everything the app does**, at the owner's request, which
+replaces the earlier split where the site only browsed. Search, a car, the
+shortlist, sign-in, the legal pages, and now selling, messaging, my listings,
+credits, the profile, reporting, blocking and promoting — all against the same
+endpoints, so a car published from a keyboard is the same row as one published
+from a phone and a block made in a browser hides that seller on both.
+
+**The one thing the website cannot do is sell credits.** Both stores require a
+digital good used inside an app to be bought through their own purchase, so the
+packs are listed with their prices and the page says where to buy rather than
+drawing a button that would get the app rejected.
+
+**The sell form is one page, not eleven screens.** A phone can hold one question
+at a time and a desktop can hold the lot, so a seller with a keyboard tabs down
+a form rather than tapping Next eleven times. The same questions in the same
+order, the draft written after every answer, and `?draft=` picks up a draft
+started on the phone. A browser hands over a `File`, so nothing resizes
+client-side; the server re-encodes every photograph regardless.
+
+**A sell form is not a search.** "Any" and "All makes" say the seller does not
+mind, when what is meant is that they have not answered yet, so every empty
+option on that form reads `sell:not_set`.
+
+**The account's language follows the account onto the website too.** The API
+answers in a signed-in user's `preferred_language` before it looks at
+`Accept-Language`, so a site that ignored it would put a Macedonian validation
+message on an English page. `AuthProvider` adopts it on sign-in and on every
+restore, and the profile switcher saves it back, so a language chosen in a
+browser follows onto the phone.
+
+**Dynamic translation keys are checked too.** `web/scripts/check-keys.js` could
+only see `t('ns:key')`, so `sell:reason_*` — built from a column value — existed
+in no language and the credit ledger would have shown a buyer the word
+`listing_publish` in Macedonian. It expands those families now: member by member
+where the schema fixes them, and by proving the family is not empty where the
+vocabulary comes from the API.
 
 ## Status
 
