@@ -7,7 +7,7 @@ import { listingsApi } from '../api/listings';
 import { referenceApi } from '../api/reference';
 import type { SearchFilters } from '../api/types';
 import { toQuery } from '../search/query';
-import { Button, Field, Input, Select } from './ui';
+import { Button, Chip, Field, Input, Select } from './ui';
 
 /**
  * The search itself, on the front page.
@@ -41,6 +41,7 @@ export function SearchPanel() {
   }, [filters]);
 
   const makes = useQuery({ queryKey: ['makes'], queryFn: referenceApi.makes, staleTime: 3_600_000 });
+  const countries = useQuery({ queryKey: ['countries'], queryFn: referenceApi.countries, staleTime: 3_600_000 });
   const cities = useQuery({
     queryKey: ['cities'],
     queryFn: () => referenceApi.cities(),
@@ -177,6 +178,35 @@ export function SearchPanel() {
             ))}
           </Select>
         </Field>
+
+        {/* Countries only where there is a choice to make. One open market
+            means every car is in it, and a chooser with one option is a
+            control that cannot do anything; flipping a second market on in the
+            API brings this back without a change here. */}
+        {(countries.data ?? []).length > 1 ? (
+          <Field label={t('search:countries')}>
+            <div className="chips">
+              {(countries.data ?? []).map((row) => {
+                const on = (filters.countries ?? []).includes(row.code);
+
+                return (
+                  <Chip
+                    key={row.code}
+                    label={t(`search:country.${row.code}`)}
+                    selected={on}
+                    onClick={() =>
+                      set({
+                        countries: on
+                          ? (filters.countries ?? []).filter((code) => code !== row.code)
+                          : [...(filters.countries ?? []), row.code],
+                      })
+                    }
+                  />
+                );
+              })}
+            </div>
+          </Field>
+        ) : null}
 
         <Field label={t('search:city')}>
           <Select

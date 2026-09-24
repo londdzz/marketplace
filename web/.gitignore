@@ -14,3 +14,7 @@ src/api/messaging.ts
 src/api/blocks.ts
 src/format
 src/docs
+
+# Your own overrides, e.g. a different API address.
+.env.local
+tsconfig.tsbuildinfo

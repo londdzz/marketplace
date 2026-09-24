@@ -32,10 +32,61 @@ function sources(dir) {
   });
 }
 
+/**
+ * Key families built from a variable: t(`listing:fuel.${fuel}`).
+ *
+ * The regex below cannot see what the variable holds, so `sell:reason_*` was
+ * absent from every language and the credit ledger showed a buyer the raw
+ * column value — `listing_publish` — in Macedonian. Where the members are
+ * fixed by the database schema they are listed here and checked one by one;
+ * where they come from a vocabulary the API serves, all that can be checked is
+ * that the family exists at all, which is what went wrong.
+ */
+const FAMILIES = {
+  'listing:fuel': ['diesel', 'petrol', 'hybrid', 'electric', 'lpg'],
+  'listing:transmission': ['manual', 'automatic'],
+  'sell:status_': ['draft', 'pending_payment', 'active', 'expired', 'sold', 'removed'],
+  'sell:reason_': ['purchase', 'listing_publish', 'renewal', 'feature', 'refund', 'promo', 'admin_grant'],
+  'search:sort_': ['relevance', 'price_asc', 'price_desc', 'newest', 'mileage_asc'],
+};
+
 const missing = [];
 
 for (const file of sources(SRC)) {
   const text = fs.readFileSync(file, 'utf8');
+
+  for (const match of text.matchAll(/\bt\(\s*`([a-z]+):([a-zA-Z0-9_.]*)\$\{/g)) {
+    const [, namespace, prefix] = match;
+    const family = `${namespace}:${prefix.replace(/\.$/, '')}`;
+    const where = path.relative(SRC, file);
+
+    const known = FAMILIES[`${namespace}:${prefix}`];
+
+    if (known) {
+      for (const member of known) {
+        const full = `${prefix}${member}`.split('.');
+        const value = full.reduce((at, part) => (at && typeof at === 'object' ? at[part] : undefined), strings[namespace]);
+
+        if (value === undefined) {
+          missing.push(`${where}  ${namespace}:${prefix}${member}`);
+        }
+      }
+
+      continue;
+    }
+
+    // An open vocabulary: prove the family is there and not empty.
+    const map = prefix.endsWith('.')
+      ? prefix
+          .slice(0, -1)
+          .split('.')
+          .reduce((at, part) => (at && typeof at === 'object' ? at[part] : undefined), strings[namespace])
+      : Object.keys(strings[namespace] ?? {}).some((key) => key.startsWith(prefix)) || undefined;
+
+    if (map === undefined || (typeof map === 'object' && Object.keys(map).length === 0)) {
+      missing.push(`${where}  ${family}.* (nothing in this family)`);
+    }
+  }
 
   for (const match of text.matchAll(/\bt\(\s*'([a-z]+):([a-zA-Z0-9_.]+)'/g)) {
     const [, namespace, key] = match;

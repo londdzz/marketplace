@@ -94,7 +94,10 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
   return payload as T;
 }
 
-/** Photograph upload. The website does not sell, so this is never called. */
+/**
+ * Photograph upload. A browser hands over a `File`, so there is nothing to
+ * resize here: the server re-encodes every photograph regardless.
+ */
 export async function upload<T>(path: string, form: FormData): Promise<T> {
   const headers: Record<string, string> = {
     Accept: 'application/json',

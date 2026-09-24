@@ -6,7 +6,10 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { AuthProvider } from './auth/AuthProvider';
 import { Layout } from './components/Layout';
 import './i18n';
+import { Credits, MyListings, Profile, SavedSearches } from './pages/Account';
 import { Home } from './pages/Home';
+import { Messages } from './pages/Messages';
+import { Sell } from './pages/Sell';
 import { Privacy, Terms } from './pages/Legal';
 import { ListingPage } from './pages/Listing';
 import { NotFound } from './pages/NotFound';
@@ -41,6 +44,13 @@ createRoot(document.getElementById('root') as HTMLElement).render(
               <Route path="/search" element={<Search />} />
               <Route path="/listing/:id" element={<ListingPage />} />
               <Route path="/saved" element={<Saved />} />
+              <Route path="/saved-searches" element={<SavedSearches />} />
+              <Route path="/messages" element={<Messages />} />
+              <Route path="/messages/:id" element={<Messages />} />
+              <Route path="/sell" element={<Sell />} />
+              <Route path="/my-listings" element={<MyListings />} />
+              <Route path="/credits" element={<Credits />} />
+              <Route path="/profile" element={<Profile />} />
               <Route path="/sign-in" element={<SignIn />} />
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/terms" element={<Terms />} />

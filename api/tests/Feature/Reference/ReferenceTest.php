@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Models\City;
 use App\Models\Country;
 use App\Models\Make;
 use Database\Seeders\CitySeeder;
@@ -54,10 +55,32 @@ it('lists cities for one country, largest first', function (): void {
         ->and(array_unique(array_column($response->json('data'), 'country_code')))->toBe(['MK']);
 });
 
-it('lists every city when no country is named', function (): void {
-    $this->getJson('/api/v1/cities')
+it('lists the cities of every open market when no country is named', function (): void {
+    // Not all thirty: the four closed markets' towns are in the database and
+    // stay out of the answer, the same way /countries leaves the countries out.
+    // Offering one meant a sell form whose location the API then refused.
+    $response = $this->getJson('/api/v1/cities')
         ->assertOk()
-        ->assertJsonCount(30, 'data');
+        ->assertJsonCount(6, 'data');
+
+    expect(array_unique(array_column($response->json('data'), 'country_code')))->toBe(['MK']);
+});
+
+it('serves no cities for a market that is not open yet', function (): void {
+    expect(City::query()->where('country_code', 'AL')->count())->toBeGreaterThan(0);
+
+    $this->getJson('/api/v1/cities?country=AL')
+        ->assertOk()
+        ->assertJsonCount(0, 'data');
+});
+
+it('serves a market\'s cities the day it opens', function (): void {
+    Country::query()->where('code', 'AL')->update(['active' => true]);
+    Cache::flush();
+
+    $this->getJson('/api/v1/cities?country=AL')
+        ->assertOk()
+        ->assertJsonCount(City::query()->where('country_code', 'AL')->count(), 'data');
 });
 
 it('rejects a country that does not exist', function (): void {

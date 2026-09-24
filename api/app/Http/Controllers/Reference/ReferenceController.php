@@ -47,7 +47,12 @@ class ReferenceController extends Controller
 
         $country = isset($validated['country']) ? strtoupper((string) $validated['country']) : null;
 
+        // Only towns in a market that is open. `countries.active` decides
+        // everywhere else — /countries, creating a listing, the dialling
+        // prefixes — and an unfiltered /cities was the one place it did not,
+        // so the sell form offered Tirana and the API then refused it.
         $cities = $this->remember('cities:'.($country ?? 'all'), fn () => City::query()
+            ->whereHas('country', fn ($query) => $query->where('active', true))
             ->when($country, fn ($query, $code) => $query->where('country_code', $code))
             ->orderByDesc('population')
             ->orderBy('name')

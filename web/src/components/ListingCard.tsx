@@ -28,8 +28,8 @@ export function ListingCard({
   const facts = [
     listing.year,
     listing.mileage_km !== null ? formatKm(listing.mileage_km) : null,
-    listing.transmission ? t(`listing:transmission.${listing.transmission}`, listing.transmission) : null,
-    listing.fuel ? t(`listing:fuel.${listing.fuel}`, listing.fuel) : null,
+    listing.transmission ? t(`listing:transmission.${listing.transmission}`) : null,
+    listing.fuel ? t(`listing:fuel.${listing.fuel}`) : null,
   ].filter(Boolean);
 
   return (

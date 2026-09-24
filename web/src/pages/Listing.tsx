@@ -64,12 +64,12 @@ export function ListingPage() {
   const specs: [string, string | null][] = [
     [t('listing:year'), car.year ? String(car.year) : null],
     [t('listing:mileage'), car.mileage_km !== null ? formatKm(car.mileage_km) : null],
-    [t('listing:fuel_label'), car.fuel ? t(`listing:fuel.${car.fuel}`, car.fuel) : null],
-    [t('listing:transmission_label'), car.transmission ? t(`listing:transmission.${car.transmission}`, car.transmission) : null],
-    [t('listing:body'), car.body_type ? t(`listing:body_type.${car.body_type}`, car.body_type) : null],
+    [t('listing:fuel_label'), car.fuel ? t(`listing:fuel.${car.fuel}`) : null],
+    [t('listing:transmission_label'), car.transmission ? t(`listing:transmission.${car.transmission}`) : null],
+    [t('listing:body'), car.body_type ? t(`listing:body_type.${car.body_type}`) : null],
     [t('listing:power'), car.power_hp ? `${car.power_hp} hp` : null],
-    [t('listing:drivetrain'), car.drivetrain ? t(`listing:drivetrain_value.${car.drivetrain}`, car.drivetrain) : null],
-    [t('listing:color'), car.color ? t(`listing:color_value.${car.color}`, car.color) : null],
+    [t('listing:drivetrain'), car.drivetrain ? t(`listing:drivetrain_value.${car.drivetrain}`) : null],
+    [t('listing:color'), car.color ? t(`listing:color_value.${car.color}`) : null],
     [t('listing:doors'), car.doors ? String(car.doors) : null],
     [t('listing:seats'), car.seats ? String(car.seats) : null],
   ];
@@ -99,7 +99,7 @@ export function ListingPage() {
               <h2 className="detail__h2">{t('listing:features')}</h2>
               <div className="chips">
                 {car.features.map((feature) => (
-                  <Chip key={feature} label={t(`listing:feature.${feature}`, feature)} />
+                  <Chip key={feature} label={t(`listing:feature.${feature}`)} />
                 ))}
               </div>
             </Card>

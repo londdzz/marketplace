@@ -377,6 +377,13 @@
     "confirm_delete": "Delete?",
     "status_pending_payment": "Awaiting payment",
     "status_removed": "Removed",
+    "reason_purchase": "Credits bought",
+    "reason_listing_publish": "Listing published",
+    "reason_renewal": "Listing renewed",
+    "reason_feature": "Promotion",
+    "reason_refund": "Refund",
+    "reason_promo": "Free credits",
+    "reason_admin_grant": "Added by support",
     "credits_balance_one": "1 credit",
     "credits_count": "{{count}} credits",
     "credits_count_one": "1 credit",
@@ -492,6 +499,11 @@
   },
   "web": {
     "app_only": "In the app",
+    "browse_cars": "Browse cars",
+    "balance": "Balance",
+    "credits": "Credits",
+    "credit_history": "Credit history",
+    "credits_app_only": "Credits are bought in the Autevo app. They are spent here and there alike.",
     "filters_title": "Narrow it down",
     "footer_line": "Used cars in North Macedonia.",
     "get_the_app": "Get the app",
@@ -501,14 +513,15 @@
     "narrow_title": "Open Autevo on a computer",
     "nav_saved": "Saved",
     "nav_search": "Search",
+    "nav_searches": "My searches",
     "not_found_body": "The link may be old, or mistyped.",
     "not_found_title": "This page does not exist",
+    "pick_thread": "Choose a conversation on the left.",
     "privacy": "Privacy",
     "sell_body": "Listings are created in the Autevo app, where photographs upload straight from your phone.",
     "sell_title": "Selling a car?",
     "sign_in_body": "Sign in with your phone number to keep cars and save searches.",
     "support": "Support",
-    "terms": "Terms",
-    "browse_cars": "Browse cars"
+    "terms": "Terms"
   }
 }

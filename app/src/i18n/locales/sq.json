@@ -377,6 +377,13 @@
     "confirm_delete": "Ta fshij?",
     "status_pending_payment": "Në pritje të pagesës",
     "status_removed": "E hequr",
+    "reason_purchase": "Kredite të blera",
+    "reason_listing_publish": "Njoftim i publikuar",
+    "reason_renewal": "Njoftim i rinovuar",
+    "reason_feature": "Promovim",
+    "reason_refund": "Rimbursim",
+    "reason_promo": "Kredite pa pagesë",
+    "reason_admin_grant": "Shtuar nga mbështetja",
     "credits_balance_one": "1 kredi",
     "credits_count": "{{count}} kredite",
     "credits_count_one": "1 kredi",
@@ -492,6 +499,11 @@
   },
   "web": {
     "app_only": "Në aplikacion",
+    "browse_cars": "Shfleto makinat",
+    "balance": "Bilanci",
+    "credits": "Kredite",
+    "credit_history": "Historiku i krediteve",
+    "credits_app_only": "Kreditet blihen në aplikacionin Autevo. Shpenzohen si këtu ashtu edhe atje.",
     "filters_title": "Ngushtojeni kërkimin",
     "footer_line": "Makina të përdorura në Maqedoninë e Veriut.",
     "get_the_app": "Merrni aplikacionin",
@@ -501,14 +513,15 @@
     "narrow_title": "Hapni Autevo në kompjuter",
     "nav_saved": "Të ruajtura",
     "nav_search": "Kërkimi",
+    "nav_searches": "Kërkimet e mia",
     "not_found_body": "Lidhja mund të jetë e vjetër ose e shkruar gabim.",
     "not_found_title": "Kjo faqe nuk ekziston",
+    "pick_thread": "Zgjidhni një bisedë në të majtë.",
     "privacy": "Privatësia",
     "sell_body": "Shpalljet krijohen në aplikacionin Autevo, ku fotografitë ngarkohen drejtpërdrejt nga telefoni.",
     "sell_title": "Po shisni një makinë?",
     "sign_in_body": "Hyni me numrin tuaj të telefonit për të ruajtur makina dhe kërkime.",
     "support": "Mbështetje",
-    "terms": "Kushtet",
-    "browse_cars": "Shfleto makinat"
+    "terms": "Kushtet"
   }
 }

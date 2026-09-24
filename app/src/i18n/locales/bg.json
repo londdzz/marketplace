@@ -377,6 +377,13 @@
     "confirm_delete": "Да изтрия?",
     "status_pending_payment": "Чака плащане",
     "status_removed": "Премахната",
+    "reason_purchase": "Закупени кредити",
+    "reason_listing_publish": "Публикувана обява",
+    "reason_renewal": "Подновена обява",
+    "reason_feature": "Промоция",
+    "reason_refund": "Възстановяване",
+    "reason_promo": "Безплатни кредити",
+    "reason_admin_grant": "Добавено от поддръжката",
     "credits_balance_one": "1 кредит",
     "credits_count": "{{count}} кредита",
     "credits_count_one": "1 кредит",
@@ -492,6 +499,11 @@
   },
   "web": {
     "app_only": "В приложението",
+    "browse_cars": "Разгледай автомобили",
+    "balance": "Баланс",
+    "credits": "Кредити",
+    "credit_history": "История на кредитите",
+    "credits_app_only": "Кредитите се купуват в приложението Autevo. Харчат се и тук, и там.",
     "filters_title": "Стеснете избора",
     "footer_line": "Употребявани автомобили в Северна Македония.",
     "get_the_app": "Изтеглете приложението",
@@ -501,14 +513,15 @@
     "narrow_title": "Отворете Autevo на компютър",
     "nav_saved": "Запазени",
     "nav_search": "Търсене",
+    "nav_searches": "Моите търсения",
     "not_found_body": "Връзката може да е стара или сгрешена.",
     "not_found_title": "Тази страница не съществува",
+    "pick_thread": "Изберете разговор вляво.",
     "privacy": "Поверителност",
     "sell_body": "Обявите се създават в приложението Autevo, където снимките се качват директно от телефона.",
     "sell_title": "Продавате автомобил?",
     "sign_in_body": "Влезте с телефонния си номер, за да запазвате автомобили и търсения.",
     "support": "Поддръжка",
-    "terms": "Условия",
-    "browse_cars": "Разгледай автомобили"
+    "terms": "Условия"
   }
 }

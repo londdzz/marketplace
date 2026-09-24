@@ -197,7 +197,7 @@ export function Search() {
               {FUELS.map((fuel) => (
                 <Chip
                   key={fuel}
-                  label={t(`listing:fuel.${fuel}`, fuel)}
+                  label={t(`listing:fuel.${fuel}`)}
                   selected={(filters.fuel ?? []).includes(fuel)}
                   onClick={() => toggleIn('fuel', fuel)}
                 />
@@ -210,7 +210,7 @@ export function Search() {
               {GEARBOXES.map((box) => (
                 <Chip
                   key={box}
-                  label={t(`listing:transmission.${box}`, box)}
+                  label={t(`listing:transmission.${box}`)}
                   selected={filters.transmission === box}
                   onClick={() => set({ transmission: filters.transmission === box ? undefined : box })}
                 />

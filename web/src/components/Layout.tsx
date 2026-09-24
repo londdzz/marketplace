@@ -13,7 +13,7 @@ import { Wordmark } from './Wordmark';
  * is on every screen of the app.
  */
 export function Layout() {
-  const { t } = useTranslation(['web', 'common', 'search', 'profile', 'auth']);
+  const { t } = useTranslation(['web', 'common', 'search', 'profile', 'auth', 'sell', 'messages']);
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
 
@@ -32,6 +32,12 @@ export function Layout() {
             <NavLink to="/saved" className={({ isActive }) => (isActive ? 'is-on' : '')}>
               {t('web:nav_saved')}
             </NavLink>
+            <NavLink to="/saved-searches" className={({ isActive }) => (isActive ? 'is-on' : '')}>
+              {t('web:nav_searches')}
+            </NavLink>
+            <NavLink to="/sell" className={({ isActive }) => (isActive ? 'is-on' : '')}>
+              {t('sell:new_listing')}
+            </NavLink>
           </nav>
 
           <div className="header__right">
@@ -43,20 +49,26 @@ export function Layout() {
             >
               {SUPPORTED_LANGUAGES.map((code) => (
                 <option key={code} value={code}>
-                  {t(`profile:language_${code}`, code.toUpperCase())}
+                  {t(`profile:language_${code}`)}
                 </option>
               ))}
             </select>
 
             {user ? (
-              <button
-                type="button"
-                className="header__account"
-                onClick={() => void signOut()}
-                title={user.display_name ?? user.phone ?? ''}
-              >
-                {t('profile:sign_out')}
-              </button>
+              <>
+                <Link to="/messages" className="header__account">
+                  {t('messages:title')}
+                </Link>
+                <Link to="/my-listings" className="header__account">
+                  {t('sell:my_listings')}
+                </Link>
+                <Link to="/profile" className="header__account" title={user.phone ?? ''}>
+                  {user.display_name ?? t('profile:account')}
+                </Link>
+                <button type="button" className="header__account" onClick={() => void signOut()}>
+                  {t('profile:sign_out')}
+                </button>
+              </>
             ) : (
               <button type="button" className="header__account" onClick={() => navigate('/sign-in')}>
                 {t('auth:sign_in')}

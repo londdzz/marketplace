@@ -377,6 +377,13 @@
     "confirm_delete": "Да обришем?",
     "status_pending_payment": "Чека плаћање",
     "status_removed": "Уклоњен",
+    "reason_purchase": "Купљени кредити",
+    "reason_listing_publish": "Објављен оглас",
+    "reason_renewal": "Обновљен оглас",
+    "reason_feature": "Промоција",
+    "reason_refund": "Поврат",
+    "reason_promo": "Бесплатни кредити",
+    "reason_admin_grant": "Додато од подршке",
     "credits_balance_one": "1 кредит",
     "credits_count": "{{count}} кредита",
     "credits_count_one": "1 кредит",
@@ -492,6 +499,11 @@
   },
   "web": {
     "app_only": "У апликацији",
+    "browse_cars": "Прегледај аутомобиле",
+    "balance": "Стање",
+    "credits": "Кредити",
+    "credit_history": "Историја кредита",
+    "credits_app_only": "Кредити се купују у апликацији Autevo. Троше се и овде и тамо.",
     "filters_title": "Сузите избор",
     "footer_line": "Половни аутомобили у Северној Македонији.",
     "get_the_app": "Преузмите апликацију",
@@ -501,14 +513,15 @@
     "narrow_title": "Отворите Autevo на рачунару",
     "nav_saved": "Сачувано",
     "nav_search": "Претрага",
+    "nav_searches": "Моје претраге",
     "not_found_body": "Веза је можда стара или погрешно откуцана.",
     "not_found_title": "Ова страница не постоји",
+    "pick_thread": "Изаберите разговор лево.",
     "privacy": "Приватност",
     "sell_body": "Огласи се праве у апликацији Autevo, где се фотографије отпремају директно са телефона.",
     "sell_title": "Продајете аутомобил?",
     "sign_in_body": "Пријавите се бројем телефона да бисте чували аутомобиле и претраге.",
     "support": "Подршка",
-    "terms": "Услови",
-    "browse_cars": "Прегледај аутомобиле"
+    "terms": "Услови"
   }
 }
