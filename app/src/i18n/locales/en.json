@@ -259,7 +259,8 @@
     "unavailable": "This car is no longer here",
     "unavailable_body": "It may have been sold, taken down, or belong to someone you blocked.",
     "back_to_search": "Back to search",
-    "sign_in_to_call": "Sign in to call"
+    "sign_in_to_call": "Sign in to call",
+    "view_photo": "View photo"
   },
   "sell": {
     "step": "Step {{current}} of {{total}}",

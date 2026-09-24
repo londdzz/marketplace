@@ -25,6 +25,7 @@ export { ListingCard, type ListingCardData, type ListingCardProps } from './List
 export { ListingRow, type ListingRowData, type ListingRowProps } from './ListingRow';
 export { MakeTile, type MakeTileProps } from './MakeTile';
 export { OptionRow, type OptionRowProps } from './OptionRow';
+export { PhotoViewer, type PhotoViewerProps } from './PhotoViewer';
 export { Pager, type PagerProps } from './Pager';
 export { PromoBanner, type PromoBannerProps } from './PromoBanner';
 export { RateCard, type RateCardProps } from './RateCard';

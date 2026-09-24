@@ -20,7 +20,16 @@ import { listingsApi } from '../../api/listings';
 import { messagingApi } from '../../api/messaging';
 import { referenceApi } from '../../api/reference';
 import { ApiError } from '../../api/client';
-import { Button, Chip, ConfirmDialog, EmptyState, Screen, StackHeader, Text } from '../../components';
+import {
+  Button,
+  Chip,
+  ConfirmDialog,
+  EmptyState,
+  PhotoViewer,
+  Screen,
+  StackHeader,
+  Text,
+} from '../../components';
 import { formatEur, formatKm, formatLocal, listingLocation, listingTitle } from '../../format';
 import { useBottomInset } from '../../hooks/useBottomInset';
 import { useExchangeRates } from '../../hooks/useExchangeRates';
@@ -38,6 +47,8 @@ export default function ListingDetail() {
   const { t } = useTranslation(['listing', 'home', 'common']);
 
   const [photoIndex, setPhotoIndex] = useState(0);
+  /** Which photograph is open full screen, or null for none. */
+  const [viewing, setViewing] = useState<number | null>(null);
   const [contactFailure, setContactFailure] = useState<string | null>(null);
   const [confirmingBlock, setConfirmingBlock] = useState(false);
   const queryClient = useQueryClient();
@@ -187,9 +198,15 @@ export default function ListingDetail() {
             }
           >
             {(car.photos.length > 0 ? car.photos : [null]).map((photo, index) => (
-              <View
+              <Pressable
                 key={photo?.id ?? index}
+                // The band here crops to 16:10, so opening a photograph is how
+                // a buyer sees the parts it cut off.
+                onPress={photo ? () => setViewing(index) : undefined}
+                accessibilityRole={photo ? 'imagebutton' : undefined}
+                accessibilityLabel={photo ? t('listing:view_photo') : undefined}
                 style={{ width, height: Math.round(width * 0.62), backgroundColor: theme.colors.skeleton }}
+                testID={photo ? `photo-${index}` : undefined}
               >
                 {photo ? (
                   <Image
@@ -199,7 +216,7 @@ export default function ListingDetail() {
                     transition={150}
                   />
                 ) : null}
-              </View>
+              </Pressable>
             ))}
           </ScrollView>
 
@@ -400,6 +417,14 @@ export default function ListingDetail() {
           testID="message-seller"
         />
       </View>
+
+      {/* Mounted last so it covers the pinned Call and Message bar too. */}
+      <PhotoViewer
+        photos={car.photos}
+        index={viewing ?? 0}
+        visible={viewing !== null}
+        onClose={() => setViewing(null)}
+      />
     </Screen>
   );
 }

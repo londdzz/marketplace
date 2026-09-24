@@ -259,7 +259,8 @@
     "unavailable": "Kjo makinë nuk është më këtu",
     "unavailable_body": "Mund të jetë shitur, hequr, ose është e dikujt që e ke bllokuar.",
     "back_to_search": "Kthehu te kërkimi",
-    "sign_in_to_call": "Hyr për numrin"
+    "sign_in_to_call": "Hyr për numrin",
+    "view_photo": "Shiko foton"
   },
   "sell": {
     "step": "Hapi {{current}} nga {{total}}",
