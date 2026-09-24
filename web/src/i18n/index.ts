@@ -1,16 +1,18 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
-import bg from './locales/bg.json';
 import en from './locales/en.json';
 import mk from './locales/mk.json';
-import sq from './locales/sq.json';
-import sr from './locales/sr.json';
 
 /**
- * Launch is Macedonian and English. The other three are translated and
- * bundled, listed as planned — shipping one is adding it to this line and to
- * SUPPORTED_LANGUAGES in the app.
+ * Launch is Macedonian and English.
+ *
+ * Albanian, Serbian and Bulgarian are translated and sit in
+ * app/src/i18n/locales, and the sync copies all five across — but only the two
+ * the site can show are imported. The app bundles all five because that costs
+ * a phone nothing after the install; a website would be sending every first
+ * visitor 80 kB of strings it will never draw. Shipping one is adding it here
+ * and to the line below.
  */
 export const SUPPORTED_LANGUAGES = ['mk', 'en'] as const;
 
@@ -35,7 +37,7 @@ function initial(): string {
 }
 
 void i18n.use(initReactI18next).init({
-  resources: { mk, en, sq, sr, bg },
+  resources: { mk, en },
   lng: initial(),
   fallbackLng: 'en',
   interpolation: { escapeValue: false },

@@ -97,3 +97,16 @@ img {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* A heading that is there for a screen reader and a search engine, where
+   drawing it again would repeat what the panel below already says. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

@@ -222,9 +222,13 @@ export function Search() {
 
       <section className="results__main">
         <div className="results__bar">
-          <p className="results__count">
+          {/* The count is what this page is: how many cars match. It is the
+              heading whether or not it looks like one, and a search page with
+              no heading is one a screen reader and a search engine both have
+              to guess at. */}
+          <h1 className="results__count">
             {results.isLoading ? ' ' : t('search:offers', { count: total })}
-          </p>
+          </h1>
 
           <Select
             className="results__sort"
