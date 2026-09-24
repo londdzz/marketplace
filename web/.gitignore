@@ -1,0 +1,16 @@
+node_modules
+dist
+.vite
+
+# Copied out of /app and /docs on every build by scripts/sync-locales.js.
+# Tracking them would mean two copies of the same strings in one repository,
+# and the first anyone notices is a screen in Macedonian with one English word.
+src/i18n/locales
+src/api/types.ts
+src/api/listings.ts
+src/api/reference.ts
+src/api/auth.ts
+src/api/messaging.ts
+src/api/blocks.ts
+src/format
+src/docs

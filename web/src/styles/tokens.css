@@ -1,0 +1,106 @@
+/*
+ * The app's design tokens, as custom properties.
+ *
+ * Every value here is copied from app/src/theme — the same petrol, the same
+ * azure, the same scale. The website and the app are one product and a buyer
+ * who uses both must not feel a seam.
+ *
+ * The rules travel with the values. Azure is the only action colour, so
+ * anything azure has to be clickable. There are two elevations, flat and the
+ * dialog shadow. Radii are 6 for chips and inputs, 10 for buttons, 16 for
+ * cards. Spacing is 4/8/12/16/20/24/32/40/56 and nothing between.
+ */
+
+:root {
+  /* Petrol carries every surface. */
+  --petrol-700: #16403a;
+  --petrol-800: #0e2e2a;
+  --petrol-900: #0b2320;
+
+  /* Azure is the action colour and nothing else is allowed to be azure. */
+  --azure-400: #6ba8f7;
+  --azure-500: #3b8af0;
+  --azure-600: #1e6fd9;
+  --azure-700: #1a5fba;
+  --azure-on-dark: #4d94f0;
+
+  /* Neutrals with a trace of petrol, so grey beside petrol is one system. */
+  --neutral-0: #ffffff;
+  --neutral-400: #93a5a2;
+  --neutral-700: #234039;
+  --neutral-800: #16302b;
+  --neutral-900: #0f211e;
+  --neutral-950: #0a1614;
+  --ink-light: #edf2f1;
+
+  /* Surfaces — dark only, as the app is. */
+  --bg: var(--neutral-950);
+  --surface: var(--neutral-900);
+  --surface-muted: var(--neutral-800);
+  --surface-raised: var(--petrol-700);
+  --border: var(--neutral-700);
+  --border-strong: #2f4f47;
+
+  --text: var(--ink-light);
+  --text-muted: var(--neutral-400);
+  --text-subtle: #6f8380;
+  --text-on-accent: #08131b;
+
+  --accent: var(--azure-on-dark);
+  --accent-pressed: var(--azure-400);
+  --accent-muted: rgba(77, 148, 240, 0.16);
+  --accent-border: rgba(77, 148, 240, 0.36);
+  --focus: var(--azure-400);
+
+  --success: #3baf7a;
+  --warning: #e0a12a;
+  --danger: #e2574c;
+  --danger-muted: rgba(226, 87, 76, 0.16);
+
+  --banner: var(--petrol-700);
+  --scrim: rgba(0, 0, 0, 0.62);
+  --skeleton: var(--neutral-800);
+
+  --glass: rgba(15, 33, 30, 0.58);
+  --glass-edge: rgba(237, 242, 241, 0.22);
+
+  /* Spacing — the app's scale, nothing between. */
+  --s-xxs: 2px;
+  --s-xs: 4px;
+  --s-sm: 8px;
+  --s-md: 12px;
+  --s-lg: 16px;
+  --s-xl: 20px;
+  --s-xxl: 24px;
+  --s-xxxl: 32px;
+  --s-huge: 40px;
+  --s-giant: 56px;
+
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 16px;
+  --r-xl: 20px;
+  --r-full: 999px;
+
+  /* The type scale sits a notch below the obvious one, as in the app: a
+     desktop reads from further away, so each step is two points larger and
+     the ratios are unchanged. */
+  --t-caption: 13px;
+  --t-meta: 14px;
+  --t-body: 16px;
+  --t-title: 19px;
+  --t-display: 26px;
+  --t-hero: 34px;
+
+  --font: 'Onest', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  /* Sora is Latin-only — it carries the wordmark and nothing else, because
+     every screen in Macedonian would otherwise fall back to the system face. */
+  --font-brand: 'Sora', var(--font);
+
+  /* Two elevations and no more. */
+  --shadow-dialog: 0 24px 64px rgba(0, 0, 0, 0.55);
+
+  /* A desktop page is read at arm's length; wider than this and a row of
+     specifications becomes a line nobody's eye can track back from. */
+  --page: 1240px;
+}

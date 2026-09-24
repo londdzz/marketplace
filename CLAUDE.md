@@ -5,6 +5,7 @@ Differentiator: one search covering all five countries, with cross-border result
 Repository layout — monorepo
 /api      Laravel 11 backend + SEO website
 /app      Expo (React Native) iOS + Android app
+/web      React + Vite desktop website (added after phase 12 — see Scope)
 /docs     store assets, privacy policy, terms
 
 Stack — do not substitute
@@ -173,6 +174,28 @@ deleted — all of it is closed rather than removed:
   are euro only. The exchange-rate job, the endpoint and the formatting all
   still work; turn it on when a market that does not use the euro opens.
 - Store availability for phase 12 is **MK only**, not the five originally listed.
+
+**A desktop website was added after phase 12, at the owner's request**, which
+overrides "or any web frontend beyond SEO listing pages" under *Do not build*.
+The reasoning is in `web/README.md`; the short of it is that a car marketplace
+is expected to have one, the way mobile.de does. It is its own React + Vite app
+rather than the Expo web build, so that reworking layouts for a wide screen
+cannot destabilise the app being tested on phones, and so the site can be given
+server rendering later — search traffic is most of how a marketplace is found,
+and React Native Web renders only on the client.
+
+**Nothing is duplicated that can be shared.** `web/scripts/sync-locales.js`
+copies the translations, the platform-free half of the API layer and the
+formatters out of `/app`, and the policies out of `/docs`, on every build; the
+copies say so in a header and are overwritten. Only the transport and the
+screens are the website's own. The design tokens are hand-copied into
+`web/src/styles/tokens.css` because they are values, not code — **a change to
+the app's theme has to be carried across by hand.**
+
+**The website browses; the app sells.** Search, a car, the shortlist, sign-in
+and the four legal pages are on the web. Selling and messaging stay in the app
+and the site says so rather than drawing a control that cannot work — a listing
+needs four photographs and they come off a phone.
 
 ## Status
 

@@ -49,7 +49,8 @@
       "call": "Hyr për ta parë numrin e shitësit.",
       "report": "Hyr për ta raportuar këtë shpallje.",
       "block": "Hyr për të bllokuar dikë."
-    }
+    },
+    "sign_in": "Hyr"
   },
   "home": {
     "search_placeholder": "Kërko…",
@@ -260,7 +261,27 @@
     "unavailable_body": "Mund të jetë shitur, hequr, ose është e dikujt që e ke bllokuar.",
     "back_to_search": "Kthehu te kërkimi",
     "sign_in_to_call": "Hyr për numrin",
-    "view_photo": "Shiko foton"
+    "view_photo": "Shiko foton",
+    "drivetrain_value": {
+      "fwd": "Tërheqje përpara",
+      "rwd": "Tërheqje prapa",
+      "awd": "Tërheqje në katër rrota"
+    },
+    "color_value": {
+      "white": "E bardhë",
+      "black": "E zezë",
+      "grey": "Gri",
+      "silver": "Argjend",
+      "blue": "Blu",
+      "red": "E kuqe",
+      "green": "E gjelbër",
+      "brown": "Kafe",
+      "beige": "Bezhë",
+      "yellow": "E verdhë",
+      "orange": "Portokalli",
+      "gold": "Ar",
+      "other": "Tjetër"
+    }
   },
   "sell": {
     "step": "Hapi {{current}} nga {{total}}",
@@ -461,6 +482,29 @@
     "server_reset": "Kthehu te adresa e integruar",
     "server_built_in": "E integruar: {{url}}",
     "server_locked": "E fiksuar për këtë ndërtim",
-    "server_locked_body": "Ndërtimet e publikuara flasin me një server dhe nuk drejtohen dot diku tjetër."
+    "server_locked_body": "Ndërtimet e publikuara flasin me një server dhe nuk drejtohen dot diku tjetër.",
+    "language_mk": "Maqedonisht",
+    "language_en": "Anglisht"
+  },
+  "web": {
+    "app_only": "Në aplikacion",
+    "filters_title": "Ngushtojeni kërkimin",
+    "footer_line": "Makina të përdorura në Maqedoninë e Veriut.",
+    "get_the_app": "Merrni aplikacionin",
+    "hero_sub": "Makina të përdorura nga shitës anembanë Maqedonisë së Veriut.",
+    "hero_title": "Gjeni makinën tuaj të radhës",
+    "narrow_body": "Kjo faqe është ndërtuar për ekran të gjerë. Në telefon, përdorni aplikacionin.",
+    "narrow_title": "Hapni Autevo në kompjuter",
+    "nav_saved": "Të ruajtura",
+    "nav_search": "Kërkimi",
+    "not_found_body": "Lidhja mund të jetë e vjetër ose e shkruar gabim.",
+    "not_found_title": "Kjo faqe nuk ekziston",
+    "privacy": "Privatësia",
+    "sell_body": "Shpalljet krijohen në aplikacionin Autevo, ku fotografitë ngarkohen drejtpërdrejt nga telefoni.",
+    "sell_title": "Po shisni një makinë?",
+    "sign_in_body": "Hyni me numrin tuaj të telefonit për të ruajtur makina dhe kërkime.",
+    "support": "Mbështetje",
+    "terms": "Kushtet",
+    "browse_cars": "Shfleto makinat"
   }
 }

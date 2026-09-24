@@ -49,7 +49,8 @@
       "call": "Prijavi se da vidiš broj prodavca.",
       "report": "Prijavi se da prijaviš ovaj oglas.",
       "block": "Prijavi se da blokiraš nekoga."
-    }
+    },
+    "sign_in": "Пријави се"
   },
   "home": {
     "search_placeholder": "Претражи…",
@@ -260,7 +261,27 @@
     "unavailable_body": "Можда је продат, уклоњен или припада некоме кога си блокирао.",
     "back_to_search": "Назад на претрагу",
     "sign_in_to_call": "Prijavi se",
-    "view_photo": "Погледај фотографију"
+    "view_photo": "Погледај фотографију",
+    "drivetrain_value": {
+      "fwd": "Предњи погон",
+      "rwd": "Задњи погон",
+      "awd": "Погон на сва четири точка"
+    },
+    "color_value": {
+      "white": "Бела",
+      "black": "Црна",
+      "grey": "Сива",
+      "silver": "Сребрна",
+      "blue": "Плава",
+      "red": "Црвена",
+      "green": "Зелена",
+      "brown": "Браон",
+      "beige": "Беж",
+      "yellow": "Жута",
+      "orange": "Наранџаста",
+      "gold": "Златна",
+      "other": "Друга"
+    }
   },
   "sell": {
     "step": "Корак {{current}} од {{total}}",
@@ -461,6 +482,29 @@
     "server_reset": "Nazad na ugrađenu adresu",
     "server_built_in": "Ugrađeno: {{url}}",
     "server_locked": "Fiksirano za ovaj build",
-    "server_locked_body": "Objavljeni build-ovi razgovaraju sa jednim serverom i ne mogu se usmeriti drugde."
+    "server_locked_body": "Objavljeni build-ovi razgovaraju sa jednim serverom i ne mogu se usmeriti drugde.",
+    "language_mk": "Македонски",
+    "language_en": "Енглески"
+  },
+  "web": {
+    "app_only": "У апликацији",
+    "filters_title": "Сузите избор",
+    "footer_line": "Половни аутомобили у Северној Македонији.",
+    "get_the_app": "Преузмите апликацију",
+    "hero_sub": "Половни аутомобили од продаваца широм Северне Македоније.",
+    "hero_title": "Пронађите свој следећи аутомобил",
+    "narrow_body": "Ова страница је направљена за широк екран. На телефону користите апликацију.",
+    "narrow_title": "Отворите Autevo на рачунару",
+    "nav_saved": "Сачувано",
+    "nav_search": "Претрага",
+    "not_found_body": "Веза је можда стара или погрешно откуцана.",
+    "not_found_title": "Ова страница не постоји",
+    "privacy": "Приватност",
+    "sell_body": "Огласи се праве у апликацији Autevo, где се фотографије отпремају директно са телефона.",
+    "sell_title": "Продајете аутомобил?",
+    "sign_in_body": "Пријавите се бројем телефона да бисте чували аутомобиле и претраге.",
+    "support": "Подршка",
+    "terms": "Услови",
+    "browse_cars": "Прегледај аутомобиле"
   }
 }

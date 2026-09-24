@@ -49,7 +49,8 @@
       "call": "Sign in to see the seller's number.",
       "report": "Sign in to report this listing.",
       "block": "Sign in to block someone."
-    }
+    },
+    "sign_in": "Sign in"
   },
   "home": {
     "search_placeholder": "Search for…",
@@ -260,7 +261,27 @@
     "unavailable_body": "It may have been sold, taken down, or belong to someone you blocked.",
     "back_to_search": "Back to search",
     "sign_in_to_call": "Sign in to call",
-    "view_photo": "View photo"
+    "view_photo": "View photo",
+    "drivetrain_value": {
+      "fwd": "Front-wheel drive",
+      "rwd": "Rear-wheel drive",
+      "awd": "All-wheel drive"
+    },
+    "color_value": {
+      "white": "White",
+      "black": "Black",
+      "grey": "Grey",
+      "silver": "Silver",
+      "blue": "Blue",
+      "red": "Red",
+      "green": "Green",
+      "brown": "Brown",
+      "beige": "Beige",
+      "yellow": "Yellow",
+      "orange": "Orange",
+      "gold": "Gold",
+      "other": "Other"
+    }
   },
   "sell": {
     "step": "Step {{current}} of {{total}}",
@@ -461,6 +482,29 @@
     "server_reset": "Back to the built-in address",
     "server_built_in": "Built in: {{url}}",
     "server_locked": "Fixed for this build",
-    "server_locked_body": "Released builds talk to one server and cannot be pointed elsewhere."
+    "server_locked_body": "Released builds talk to one server and cannot be pointed elsewhere.",
+    "language_mk": "Macedonian",
+    "language_en": "English"
+  },
+  "web": {
+    "app_only": "In the app",
+    "filters_title": "Narrow it down",
+    "footer_line": "Used cars in North Macedonia.",
+    "get_the_app": "Get the app",
+    "hero_sub": "Used cars from sellers across North Macedonia.",
+    "hero_title": "Find your next car",
+    "narrow_body": "This site is built for a wide screen. On a phone, use the app.",
+    "narrow_title": "Open Autevo on a computer",
+    "nav_saved": "Saved",
+    "nav_search": "Search",
+    "not_found_body": "The link may be old, or mistyped.",
+    "not_found_title": "This page does not exist",
+    "privacy": "Privacy",
+    "sell_body": "Listings are created in the Autevo app, where photographs upload straight from your phone.",
+    "sell_title": "Selling a car?",
+    "sign_in_body": "Sign in with your phone number to keep cars and save searches.",
+    "support": "Support",
+    "terms": "Terms",
+    "browse_cars": "Browse cars"
   }
 }
