@@ -48,25 +48,52 @@ This is a monorepo, so the root directory matters:
 
 ### 3. Environment variables
 
-Add one, under **Settings → Environment variables → Production**:
+If the build fails on a syntax error inside a dependency, add this under
+**Settings → Environment variables → Production**:
 
 | Name | Value |
 |---|---|
 | `NODE_VERSION` | `22` |
 
-**Without it the build fails.** Pages still defaults to Node 18 and Vite 7
-needs 20 or newer, and the error it gives does not say so plainly.
+Vite 7 needs Node 20 or newer, and an older builder image defaults to 18 with
+an error that does not say so. Newer ones detect Node 22 on their own — the
+log's `Detected the following tools` line tells you which you got.
 
 You do **not** need `VITE_API_URL`. It falls back to
 `https://api.autevo.mk/api/v1`, which is where you want it. Set it only if you
 ever point the site at a different API.
 
-### 4. Deploy, then check the preview URL
+### 4. The SPA fallback — where it comes from here
+
+**Do not add a `_redirects` file.** Cloudflare now deploys this kind of project
+as a **Worker** with static assets rather than as classic Pages, and Workers
+Assets serves `index.html` at `/` — so the usual `/*  /index.html  200` rule
+resolves back onto itself and the deploy is **rejected**:
+
+```
+✘ [ERROR] Invalid _redirects configuration:
+  Line 10: Infinite loop detected in this rule. [code: 100324]
+```
+
+The build succeeds and every asset uploads; it fails on the very last step,
+which makes it look like a deploy problem rather than a config one.
+
+Workers' own answer is `not_found_handling`, and `wrangler` sets it for you the
+first time it configures the project:
+
+```jsonc
+"assets": { "not_found_handling": "single-page-application" }
+```
+
+That is the fallback. Nothing else is needed, and the `_redirects` rule was
+redundant as well as refused.
+
+### 5. Deploy, then check the preview URL
 
 The first build takes two or three minutes. It ends at something like
 `autevo-marketplace.pages.dev` — open it and click about before touching DNS.
 
-### 5. Point the domain at it
+### 6. Point the domain at it
 
 **Pages project → Custom domains → Set up a custom domain**, add `autevo.mk`,
 then repeat for `www.autevo.mk`. Cloudflare rewrites the DNS records itself and
@@ -190,7 +217,8 @@ configured to put it, not on the visitor's phone — see `PLACEHOLDERS.md`.
 | It looks like | It usually is |
 |---|---|
 | 525 from `autevo.mk` | DNS still points at the API server, which has no certificate for this name |
-| The home page works, `/search` 404s on refresh | The SPA fallback — `_redirects` on Pages, the nginx blocks on Forge |
+| The home page works, `/search` 404s on refresh | The SPA fallback — `not_found_handling` on Workers, the nginx blocks on Forge |
+| Build succeeds, deploy fails with "Infinite loop detected in this rule" | A `_redirects` file. Workers rejects `/* /index.html 200`; delete the file and let `not_found_handling` do it |
 | Build fails on Cloudflare with a syntax error in a dependency | `NODE_VERSION` is unset, so it built on Node 18 |
 | Every panel says it could not load | `VITE_API_URL` is set to something wrong; unset it and it defaults correctly |
 | A stale version after a deploy | `index.html` is being cached; it must be `no-cache`, only `/assets/` is immutable |

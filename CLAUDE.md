@@ -276,8 +276,14 @@ vocabulary comes from the API.
   breaks the thing people do most is the SPA fallback** — the site is one HTML file and
   a router, so without it a cold load of `/listing/<uuid>`, which is exactly the URL
   somebody pastes into a chat, is a 404 from the host and the car never appears. Clicking
-  around inside the site never shows it. `web/public/_redirects` covers Pages and Netlify;
-  `deploy/autevo.mk.nginx.conf` is the nginx half. CORS needs nothing: the API already
+  around inside the site never shows it. **Where that fallback lives depends on the host,
+  and there is deliberately no `_redirects` file**: Cloudflare deploys this as a Worker
+  with static assets, Workers Assets serves `index.html` at `/`, and the usual
+  `/*  /index.html  200` rule therefore resolves onto itself and is **refused** — the
+  build succeeds, every asset uploads, and the very last step fails with "Infinite loop
+  detected in this rule". Workers' own `not_found_handling: "single-page-application"`
+  is the answer there; `deploy/autevo.mk.nginx.conf` is the nginx half; a `_redirects`
+  file belongs only to classic Pages or Netlify. CORS needs nothing: the API already
   answers `*` and allows the `authorization` header on preflight.
 - **Going live is `docs/deployment.md`**: Hetzner CX22 + Laravel Forge + Cloudflare R2,
   about €16/month, with the server files in `deploy/`. Two things there fail silently and

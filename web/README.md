@@ -32,6 +32,34 @@ browser. Three things ruled it out as the website:
   lives on search traffic, and this can be given server rendering later. That
   is not a road the app's build is on.
 
+## The SPA fallback, and why there is no `_redirects`
+
+The site is one HTML file and a router, so a cold load of `/listing/<uuid>` —
+the URL somebody pastes into a chat — has to be answered with `index.html`
+rather than a 404. Clicking around inside the site never shows this missing,
+because the router is already running by then; only a refresh or a pasted link
+does.
+
+Every host does it its own way, and **nothing in `public/` handles it**:
+
+| Host | Where the fallback lives |
+|---|---|
+| Cloudflare Workers, which `autevo.mk` runs on | `not_found_handling: "single-page-application"`, in the Wrangler config |
+| nginx, on the Forge box | `deploy/autevo.mk.nginx.conf` |
+| Cloudflare Pages, Netlify | a `public/_redirects` holding `/*  /index.html  200` |
+
+A `_redirects` file was added here first, and **Workers refused to deploy with
+it**. Workers Assets serves `index.html` at `/`, so `/*  /index.html  200`
+resolves back onto itself:
+
+```
+Line 10: Infinite loop detected in this rule. [code: 100324]
+```
+
+`not_found_handling` is Workers' own answer to the same problem, so the rule
+was not only rejected, it was redundant. Add the file back only for a host in
+the third row — not while this deploys to Workers.
+
 ## What is shared, and what is not
 
 Drift between an app and a website is the usual way one product starts
