@@ -218,12 +218,22 @@ curl -s https://api.autevo.mk/api/v1/makes | head -c 200
 # 3. Debug is off. This MUST NOT show a stack trace.
 curl -s https://api.autevo.mk/api/v1/listings/does-not-exist | head -c 200
 
-# 4. The scheduler is alive. On the server, via Forge → Commands:
+# 4. The scheduler is alive. Over SSH, as the forge user:
+#      ssh forge@<server ip>
+#      cd /home/forge/api.autevo.mk/api
 php artisan schedule:list
 #    Expect four jobs with their next run times.
 
-# 5. The worker is alive. Forge → Server → Daemons: green.
+# 5. The worker is alive:
+ps aux | grep '[q]ueue:work'
+#    Expect one process owned by forge. Forge → Processes → Background
+#    processes should show it green too.
 ```
+
+> **Forge's Commands tab may show you nothing.** It has a habit of reporting
+> `cat: /home/forge/.forge/provision-NNNN.output: No such file or directory`
+> while claiming the command finished. The command usually did run; you simply
+> cannot see what it said. Use SSH for anything whose output matters.
 
 If 1 fails but `dig` was right, it is almost always the web directory: `/api/public`.
 
