@@ -12,7 +12,8 @@
     "done": "Готово",
     "optional": "Опционално",
     "save": "Зачувај",
-    "sign_in": "Најави се"
+    "sign_in": "Најави се",
+    "server_error": "Серверот имаше проблем. Обидете се повторно за момент."
   },
   "tabs": {
     "search": "Барај",
@@ -464,7 +465,8 @@
     "kind_car": "Автомобил",
     "kind_motorcycle": "Мотор",
     "variant_placeholder_car": "на пр. 2.0 TDI Highline",
-    "variant_placeholder_motorcycle": "на пр. ABS, 35 kW"
+    "variant_placeholder_motorcycle": "на пр. ABS, 35 kW",
+    "photo_too_large": "Фотографијата е преголема за прикачување. Обидете се со друга."
   },
   "messages": {
     "title": "Пораки",

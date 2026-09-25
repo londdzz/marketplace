@@ -36,6 +36,53 @@ export class ApiError extends Error {
   }
 }
 
+/**
+ * Read a response body that is supposed to be JSON but might not be.
+ *
+ * Everything the API itself answers is JSON, error or not. What is not is
+ * whatever sits in front of it: nginx writes an HTML page for 413 and 502,
+ * and a captive portal on a café network writes its own login page over any
+ * request at all. `JSON.parse` on those throws a `SyntaxError` — "unexpected
+ * character <" — which is not an `ApiError`, so every screen's error handling
+ * misses it and the person is shown a parser's complaint about a page they
+ * cannot see.
+ *
+ * So a body that will not parse is treated as no body. The status still
+ * carries the meaning, and `messageFor` turns it into a sentence.
+ */
+function readBody(text: string): ApiErrorBody | undefined {
+  if (!text) {
+    return undefined;
+  }
+
+  try {
+    return JSON.parse(text) as ApiErrorBody;
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * What to say when the API did not say anything we can use.
+ *
+ * 413 is the one worth naming. It is nginx refusing the request before Laravel
+ * ever sees it, because the body is over `client_max_body_size`, and it is
+ * what a photograph too large for the server looks like from here. "Upload
+ * failed (413)" tells a seller nothing they can act on; "that photograph is
+ * too large" tells them to pick another one.
+ */
+function messageFor(status: number): string {
+  if (status === 413) {
+    return i18n.t('sell:photo_too_large');
+  }
+
+  if (status >= 500) {
+    return i18n.t('common:server_error');
+  }
+
+  return i18n.t('common:error_loading');
+}
+
 type RequestOptions = {
   method?: 'GET' | 'POST' | 'PATCH' | 'DELETE';
   body?: unknown;
@@ -82,12 +129,12 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
   }
 
   const text = await response.text();
-  const payload = text ? (JSON.parse(text) as unknown) : undefined;
+  const payload = readBody(text);
 
   if (!response.ok) {
-    const errorBody = (payload ?? {}) as ApiErrorBody;
+    const errorBody = payload ?? {};
 
-    throw new ApiError(response.status, errorBody.message ?? `Request failed (${response.status})`, errorBody);
+    throw new ApiError(response.status, errorBody.message ?? messageFor(response.status), errorBody);
   }
 
   return payload as T;
@@ -145,12 +192,12 @@ export async function upload<T>(path: string, form: FormData): Promise<T> {
     request.send(form);
   });
 
-  const payload = text ? (JSON.parse(text) as unknown) : undefined;
+  const payload = readBody(text);
 
   if (status < 200 || status >= 300) {
-    const errorBody = (payload ?? {}) as ApiErrorBody;
+    const errorBody = payload ?? {};
 
-    throw new ApiError(status, errorBody.message ?? `Upload failed (${status})`, errorBody);
+    throw new ApiError(status, errorBody.message ?? messageFor(status), errorBody);
   }
 
   return payload as T;

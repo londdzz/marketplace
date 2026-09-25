@@ -12,7 +12,8 @@
     "done": "Done",
     "optional": "Optional",
     "save": "Save",
-    "sign_in": "Sign in"
+    "sign_in": "Sign in",
+    "server_error": "The server had a problem. Try again in a moment."
   },
   "tabs": {
     "search": "Search",
@@ -464,7 +465,8 @@
     "kind_car": "Car",
     "kind_motorcycle": "Motorcycle",
     "variant_placeholder_car": "e.g. 2.0 TDI Highline",
-    "variant_placeholder_motorcycle": "e.g. ABS, 35 kW"
+    "variant_placeholder_motorcycle": "e.g. ABS, 35 kW",
+    "photo_too_large": "That photograph is too large to upload. Try another one."
   },
   "messages": {
     "title": "Messages",

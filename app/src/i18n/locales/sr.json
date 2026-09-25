@@ -12,7 +12,8 @@
     "done": "Готово",
     "optional": "Опционо",
     "save": "Сачувај",
-    "sign_in": "Prijavi se"
+    "sign_in": "Prijavi se",
+    "server_error": "Сервер је имао проблем. Покушајте поново за тренутак."
   },
   "tabs": {
     "search": "Претрага",
@@ -464,7 +465,8 @@
     "kind_car": "Аутомобил",
     "kind_motorcycle": "Мотор",
     "variant_placeholder_car": "нпр. 2.0 TDI Highline",
-    "variant_placeholder_motorcycle": "нпр. ABS, 35 kW"
+    "variant_placeholder_motorcycle": "нпр. ABS, 35 kW",
+    "photo_too_large": "Фотографија је превелика за отпремање. Покушајте са другом."
   },
   "messages": {
     "title": "Поруке",

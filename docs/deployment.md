@@ -320,10 +320,57 @@ installs it over the air, and push and purchases start working.
 
 ---
 
+## Upload limits — do this before anybody sells a car
+
+**A fresh server refuses every photograph over one megabyte**, and does it in a
+way that looks like a bug in the app rather than a setting on the server.
+
+nginx's default `client_max_body_size` is 1m. It refuses a larger body before
+Laravel is reached, so the API's own rule — 12 MB a photograph — never gets a
+say, and it answers with an **HTML** page. A client expecting JSON reports that
+as `unexpected character <`, which says nothing about photographs at all.
+
+Two places to raise it, and both are needed:
+
+1. **nginx.** Forge → Sites → `api.autevo.mk` → *Edit Nginx Configuration*, and
+   put the line from **`deploy/api.autevo.mk.nginx.conf`** inside the
+   `server { }` block.
+2. **PHP.** Forge → Servers → your server → *PHP* → *Edit php.ini*, with the
+   values in **`deploy/php-uploads.ini`**. PHP has two limits of its own, and
+   when a POST exceeds `post_max_size` it **discards the body** — Laravel then
+   sees no files and complains about a missing photograph, which sends you
+   looking in the wrong place entirely.
+
+Check it from anywhere, without signing in. A 413 means it is still capped:
+
+```bash
+head -c 3000000 /dev/urandom > /tmp/big.bin
+curl -s -o /dev/null -w "%{http_code}\n" -X POST \
+  https://api.autevo.mk/api/v1/auth/otp/request \
+  -H "Accept: application/json" -F "file=@/tmp/big.bin"
+```
+
+**422 is the pass.** It means the request reached Laravel and was rejected by
+validation, which is the whole point. 413 means nginx is still refusing it.
+
+---
+
 ## Part 9 — Deploying a change later (2 minutes)
 
 Every deploy after the first one is the same two things: the code reaches GitHub,
 and the server is told to take it.
+
+**The deploy script lives in Forge, not in the repository.** `deploy/deploy.sh`
+is the master copy, but Forge runs its own copy, pasted into *Site → Deploy
+Script* when the site was set up. Editing the file in the repository changes
+nothing on the server. So whenever that file gains a step — it has gained two,
+`models:prune` and `makes:logos` — **open the Deploy Script box and paste the
+current contents in again**, or the new step never runs and the deploy still
+reports success.
+
+That is what a deploy which pulls the new code but leaves `logo_url` null on
+every make looks like: the marks are in the checkout, and nothing ever attached
+them.
 
 **Check whether the server takes it by itself first.** Forge → Site → *Apps*, and
 look at **Quick Deploy**. If it is on, a push to `main` deploys on its own and you
@@ -403,5 +450,7 @@ Not part of getting it running, but do not lose track of them:
 | Upload fails at about 1 MB | `client_max_body_size` — `deploy/nginx-api.conf` |
 | Changing `.env` does nothing | config is cached. `php artisan config:cache` again. |
 | Listings never expire, no alerts arrive | the scheduler is not running (Part 6) |
+| Uploading a photo says "unexpected character" or similar | nginx `client_max_body_size` is still 1m, so it refuses the body with an HTML page a JSON client cannot read — see **Upload limits** above |
+| Every make draws a monogram, `logo_url` is null | `makes:logos` never ran. Almost always the Forge deploy script being an older copy than `deploy/deploy.sh` — re-paste it |
 | Sign-in codes never arrive | `OTP_DRIVER` is still `log` — that is expected, and `php artisan otp:recent` reads them — or the sending credentials are wrong |
 | Purchases take money, grant nothing | `REVENUECAT_WEBHOOK_SECRET` does not match the dashboard |

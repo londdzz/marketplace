@@ -12,7 +12,8 @@
     "done": "U krye",
     "optional": "Opsionale",
     "save": "Ruaj",
-    "sign_in": "Hyr"
+    "sign_in": "Hyr",
+    "server_error": "Serveri pati një problem. Provoni sërish pas pak."
   },
   "tabs": {
     "search": "Kërko",
@@ -464,7 +465,8 @@
     "kind_car": "Veturë",
     "kind_motorcycle": "Motoçikletë",
     "variant_placeholder_car": "p.sh. 2.0 TDI Highline",
-    "variant_placeholder_motorcycle": "p.sh. ABS, 35 kW"
+    "variant_placeholder_motorcycle": "p.sh. ABS, 35 kW",
+    "photo_too_large": "Kjo fotografi është shumë e madhe për t’u ngarkuar. Provoni një tjetër."
   },
   "messages": {
     "title": "Mesazhet",

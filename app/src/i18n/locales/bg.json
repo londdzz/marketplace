@@ -12,7 +12,8 @@
     "done": "Готово",
     "optional": "По желание",
     "save": "Запази",
-    "sign_in": "Влез"
+    "sign_in": "Влез",
+    "server_error": "Сървърът имаше проблем. Опитайте отново след малко."
   },
   "tabs": {
     "search": "Търсене",
@@ -464,7 +465,8 @@
     "kind_car": "Автомобил",
     "kind_motorcycle": "Мотоциклет",
     "variant_placeholder_car": "напр. 2.0 TDI Highline",
-    "variant_placeholder_motorcycle": "напр. ABS, 35 kW"
+    "variant_placeholder_motorcycle": "напр. ABS, 35 kW",
+    "photo_too_large": "Снимката е твърде голяма за качване. Опитайте с друга."
   },
   "messages": {
     "title": "Съобщения",
