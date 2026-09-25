@@ -277,6 +277,60 @@ installs it over the air, and push and purchases start working.
 
 ---
 
+## Part 9 — Deploying a change later (2 minutes)
+
+Every deploy after the first one is the same two things: the code reaches GitHub,
+and the server is told to take it.
+
+**Check whether the server takes it by itself first.** Forge → Site → *Apps*, and
+look at **Quick Deploy**. If it is on, a push to `main` deploys on its own and you
+have nothing to do. If it is off — which is how this site is set up today — a push
+changes nothing on the server until you press **Deploy Now**, and the API carries
+on serving the old code without complaining. That silence is the trap: the site
+answers, the certificate is valid, and every check in Part 7 passes while the
+server runs a week-old commit.
+
+So the routine is:
+
+1. Forge → Site → **Deploy Now**.
+2. Watch the output to the end. `deploy/deploy.sh` puts the site into maintenance
+   mode first and takes it back out in a `trap`, so a deploy that fails halfway
+   still leaves the site up.
+3. Read the three lines that tell you the data actually moved, rather than
+   assuming they ran:
+   - `n model(s) removed.` from `models:prune` — 0 is normal once it has caught up.
+   - `Copied 143 marks onto the s3 disk.` the first time, nothing after that: the
+     command only copies a mark that is not on the bucket yet.
+   - `Linked 143 logos.` every time, and it clears the cached `/makes` response,
+     so the marks appear straight away rather than in an hour.
+
+**Then prove it from outside**, because Forge saying "deployed" only means the
+script exited 0:
+
+```bash
+# The marks are attached — every logo_url should be a https://img.autevo.mk URL,
+# not null.
+curl -s https://api.autevo.mk/api/v1/makes | head -c 400
+
+# One of them actually loads from the bucket. 200 and image/png.
+curl -sI "$(curl -s https://api.autevo.mk/api/v1/makes \
+  | grep -o 'https://img.autevo.mk[^"]*' | head -1)" | head -3
+
+# The duplicate ranges are gone. Should list "3 Series" and no "Series 3".
+curl -s https://api.autevo.mk/api/v1/makes/3/models | grep -o '"name":"Series [0-9]"'
+```
+
+`logo_url` still null after a deploy that said `Linked 143 logos.` means the
+config cache is serving an old `FILESYSTEM_DISK`. Over SSH, from
+`/home/forge/api.autevo.mk/api`: `php artisan config:clear && php artisan config:cache`.
+
+**A migration is the one thing worth reading the output for.** `migrate --force`
+runs on every deploy and skips what has already run, but a migration that fails
+leaves the schema half-changed. If that happens, do not press Deploy Now again —
+SSH in and read `php artisan migrate:status` first.
+
+---
+
 ## Before you submit to a store
 
 Not part of getting it running, but do not lose track of them:
