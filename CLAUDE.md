@@ -270,6 +270,13 @@ vocabulary comes from the API.
   `Class "League\Flysystem\AwsS3V3\PortableVisibilityConverter" not found`.
   Development never saw it because development stores photos on the `public`
   disk. It is a declared dependency now; a deploy installs it.
+- **Handing the build to friends is `docs/friends-test.md`**: what to do the evening
+  before, in order, with a check from outside after each step, and the words to send
+  the testers — including the three things that are not bugs (no notifications, no
+  credit purchases, seven-day expiry) and the one that needs explaining, which is that
+  their sign-in code arrives from you rather than from a text message. **Publish two or
+  three cars before anybody else opens it**: an empty marketplace is one nobody can tell
+  is working, and it is also the first end-to-end test of the photo pipeline.
 - **Putting the website online is `docs/website-deployment.md`**: `/web` is a static
   build, so Cloudflare Pages serves it free and rebuilds on every push, or a second
   Forge site on the same box serves `web/dist`. **The one step that is easy to miss and
