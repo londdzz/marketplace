@@ -15,9 +15,10 @@ export function Saved() {
     return (
       <div className="page">
         <EmptyState
+          heading
           title={t('profile:saved')}
           description={t('web:sign_in_body')}
-          actionLabel={t('auth:send_code')}
+          actionLabel={t('auth:sign_in')}
           onAction={() => navigate('/sign-in')}
         />
       </div>

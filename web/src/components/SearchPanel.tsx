@@ -17,6 +17,13 @@ import { Button, Chip, Field, Input, Select } from './ui';
  * many cars that would return before they commit to looking. Nobody has to run
  * a search to learn whether it is worth running.
  *
+ * **It is ordered by what people actually use.** Make and model take a line of
+ * their own at full size, because they are the first thing almost every buyer
+ * touches and every marketplace in the region leads with them; price, year,
+ * kilometres and town share the line below at half the size. A flat grid of
+ * six identical dropdowns is a form, and a form is something you fill in
+ * rather than something you search with.
+ *
  * The count is the API's, measured against live listings on every change —
  * the same rule the app's builder follows. A number invented on the client
  * would be a wrong number, and this one is the whole point of the panel.
@@ -80,30 +87,28 @@ export function SearchPanel() {
   const narrowed = Object.keys(filters).length > 0;
 
   return (
-    <div className="panel">
-      <form
-        className="panel__query"
-        onSubmit={(event) => {
-          event.preventDefault();
-          run();
-        }}
-      >
-        <Input
-          type="search"
-          className="panel__q"
-          placeholder={t('search:anything')}
-          value={filters.q ?? ''}
-          onChange={(event) => set({ q: event.target.value })}
-          aria-label={t('search:anything')}
-        />
-        <Button type="submit" size="lg" aria-label={t('search:search_now')}>
-          →
-        </Button>
-      </form>
+    <form
+      className="panel"
+      onSubmit={(event) => {
+        event.preventDefault();
+        run();
+      }}
+    >
+      {/* Script-insensitive, which is the one thing this search does that a
+          list of dropdowns cannot: "Пасат" finds a car written "Passat". */}
+      <Input
+        type="search"
+        className="panel__q"
+        placeholder={t('search:anything')}
+        value={filters.q ?? ''}
+        onChange={(event) => set({ q: event.target.value })}
+        aria-label={t('search:anything')}
+      />
 
-      <div className="panel__grid">
+      <div className="panel__lead">
         <Field label={t('search:make')}>
           <Select
+            className="select--lg"
             value={filters.makeId ?? ''}
             onChange={(event) =>
               // A model belongs to one make, so it goes with it.
@@ -124,6 +129,7 @@ export function SearchPanel() {
 
         <Field label={t('search:model')}>
           <Select
+            className="select--lg"
             value={filters.modelId ?? ''}
             disabled={filters.makeId === undefined}
             onChange={(event) => set({ modelId: event.target.value ? Number(event.target.value) : undefined })}
@@ -132,6 +138,22 @@ export function SearchPanel() {
             {(models.data ?? []).map((model) => (
               <option key={model.id} value={model.id}>
                 {model.name}
+              </option>
+            ))}
+          </Select>
+        </Field>
+      </div>
+
+      <div className="panel__rest">
+        <Field label={`${t('search:price')} · ${t('search:max')}`}>
+          <Select
+            value={filters.priceMax ?? ''}
+            onChange={(event) => set({ priceMax: event.target.value ? Number(event.target.value) : undefined })}
+          >
+            <option value="">{t('search:any')}</option>
+            {PRICES.map((price) => (
+              <option key={price} value={price}>
+                {price.toLocaleString('de-DE')} €
               </option>
             ))}
           </Select>
@@ -165,49 +187,6 @@ export function SearchPanel() {
           </Select>
         </Field>
 
-        <Field label={`${t('search:price')} · ${t('search:max')}`}>
-          <Select
-            value={filters.priceMax ?? ''}
-            onChange={(event) => set({ priceMax: event.target.value ? Number(event.target.value) : undefined })}
-          >
-            <option value="">{t('search:any')}</option>
-            {PRICES.map((price) => (
-              <option key={price} value={price}>
-                {price.toLocaleString('de-DE')} €
-              </option>
-            ))}
-          </Select>
-        </Field>
-
-        {/* Countries only where there is a choice to make. One open market
-            means every car is in it, and a chooser with one option is a
-            control that cannot do anything; flipping a second market on in the
-            API brings this back without a change here. */}
-        {(countries.data ?? []).length > 1 ? (
-          <Field label={t('search:countries')}>
-            <div className="chips">
-              {(countries.data ?? []).map((row) => {
-                const on = (filters.countries ?? []).includes(row.code);
-
-                return (
-                  <Chip
-                    key={row.code}
-                    label={t(`search:country.${row.code}`)}
-                    selected={on}
-                    onClick={() =>
-                      set({
-                        countries: on
-                          ? (filters.countries ?? []).filter((code) => code !== row.code)
-                          : [...(filters.countries ?? []), row.code],
-                      })
-                    }
-                  />
-                );
-              })}
-            </div>
-          </Field>
-        ) : null}
-
         <Field label={t('search:city')}>
           <Select
             value={filters.cityId ?? ''}
@@ -223,23 +202,52 @@ export function SearchPanel() {
         </Field>
       </div>
 
+      {/* Countries only where there is a choice to make. One open market means
+          every car is in it, and a chooser with one option is a control that
+          cannot do anything; flipping a second market on in the API brings
+          this back without a change here. */}
+      {(countries.data ?? []).length > 1 ? (
+        <Field label={t('search:countries')}>
+          <div className="chips">
+            {(countries.data ?? []).map((row) => {
+              const on = (filters.countries ?? []).includes(row.code);
+
+              return (
+                <Chip
+                  key={row.code}
+                  label={t(`search:country.${row.code}`)}
+                  selected={on}
+                  onClick={() =>
+                    set({
+                      countries: on
+                        ? (filters.countries ?? []).filter((code) => code !== row.code)
+                        : [...(filters.countries ?? []), row.code],
+                    })
+                  }
+                />
+              );
+            })}
+          </div>
+        </Field>
+      ) : null}
+
       <div className="panel__foot">
         <div className="panel__links">
-          {narrowed ? (
-            <Button variant="ghost" size="sm" onClick={() => setFilters({})}>
-              ↺ {t('search:reset')}
-            </Button>
-          ) : null}
-          <Button variant="ghost" size="sm" onClick={run}>
+          <Button type="button" variant="ghost" size="sm" onClick={run}>
             {t('search:more_filters')}
           </Button>
+          {narrowed ? (
+            <Button type="button" variant="ghost" size="sm" onClick={() => setFilters({})}>
+              {t('search:reset')}
+            </Button>
+          ) : null}
         </div>
 
         {/* The one azure thing on the panel, and it says what it will show. */}
-        <Button size="lg" onClick={run} className="panel__go">
+        <Button type="submit" size="lg" className="panel__go">
           {total === undefined ? t('search:search_now') : t('search:offers', { count: total })}
         </Button>
       </div>
-    </div>
+    </form>
   );
 }

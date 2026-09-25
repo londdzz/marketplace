@@ -40,6 +40,7 @@ export function Messages() {
     return (
       <div className="page">
         <EmptyState
+          heading
           title={t('messages:title')}
           description={t('web:sign_in_body')}
           actionLabel={t('common:sign_in')}

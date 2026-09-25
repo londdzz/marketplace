@@ -11,21 +11,25 @@
   padding-bottom: var(--s-giant);
 }
 
+/* The left is where you look, the right is what you do. */
 .header {
   position: sticky;
   top: 0;
   z-index: 20;
-  background: color-mix(in srgb, var(--bg) 86%, transparent);
-  backdrop-filter: blur(14px);
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border);
 }
 
 .header__inner {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
+  display: flex;
   align-items: center;
   gap: var(--s-xxl);
-  height: 64px;
+  height: 68px;
+}
+
+.header__brand {
+  flex: 0 0 auto;
 }
 
 .header__nav {
@@ -35,44 +39,137 @@
 }
 
 .header__nav a {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 68px;
   color: var(--text-muted);
-  padding: var(--s-xs) 0;
-  border-bottom: 2px solid transparent;
+  white-space: nowrap;
 }
 
 .header__nav a:hover {
   color: var(--text);
 }
 
-/* Active goes white against the muted rest, rather than azure: azure means
-   clickable, and every item here is. */
+/* Active goes white against the muted rest, with a rule on the header's own
+   bottom edge rather than a box around the word: azure means clickable, and
+   every one of these is. */
 .header__nav a.is-on {
   color: var(--text);
-  border-bottom-color: var(--accent);
+}
+
+.header__nav a.is-on::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 -1px;
+  height: 2px;
+  background: var(--accent);
 }
 
 .header__right {
   display: flex;
   align-items: center;
-  gap: var(--s-md);
+  gap: var(--s-sm);
+  margin-left: auto;
 }
 
-.header__lang,
-.header__account {
+/* The language is a quiet control, not a form field: it is set once and then
+   never touched again. */
+.header__lang select {
+  appearance: none;
   height: 34px;
-  padding: 0 var(--s-md);
-  background: var(--surface-muted);
-  border: 1px solid var(--border);
+  padding: 0 var(--s-xl) 0 var(--s-sm);
+  border: 0;
   border-radius: var(--r-sm);
-  color: var(--text);
+  background: transparent;
+  background-image: linear-gradient(45deg, transparent 50%, var(--text-muted) 50%),
+    linear-gradient(135deg, var(--text-muted) 50%, transparent 50%);
+  background-position: calc(100% - 12px) 15px, calc(100% - 7px) 15px;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  color: var(--text-muted);
+  font: inherit;
   font-size: var(--t-caption);
   cursor: pointer;
 }
 
-.header__account:hover,
-.header__lang:hover {
-  background: var(--surface-raised);
+.header__lang select:hover {
+  color: var(--text);
 }
+
+.header__icon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--r-sm);
+  color: var(--text-muted);
+}
+
+.header__icon:hover {
+  background: var(--surface);
+  color: var(--text);
+}
+
+.header__account {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-sm);
+  height: 34px;
+  padding: 0 var(--s-md) 0 var(--s-xs);
+  border: 0;
+  border-radius: var(--r-full);
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: var(--t-caption);
+  cursor: pointer;
+  max-width: 190px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.header__account:hover {
+  background: var(--surface);
+}
+
+.header__avatar {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  flex: 0 0 auto;
+  border-radius: var(--r-full);
+  background: var(--surface-raised);
+  color: var(--text);
+  font-size: var(--t-caption);
+  font-weight: 600;
+}
+
+/* Signed out there is no avatar, so the chip needs its own padding. */
+button.header__account {
+  padding: 0 var(--s-md);
+}
+
+.header__sell {
+  display: inline-flex;
+  align-items: center;
+  height: 34px;
+  padding: 0 var(--s-lg);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-md);
+  color: var(--text);
+  font-size: var(--t-caption);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.header__sell:hover {
+  background: var(--surface);
+  border-color: var(--text-subtle);
+}
+
 
 .footer {
   border-top: 1px solid var(--border);
@@ -105,13 +202,19 @@
 
 /* ---- home -------------------------------------------------------------- */
 
+/* The hero is one band with the search in it, and it ends where the page
+   begins. It used to fade to the page background, which left a hard rule
+   under a gradient going nowhere. */
 .hero {
+  position: relative;
   border-bottom: 1px solid var(--border);
-  background: linear-gradient(180deg, var(--petrol-800) 0%, var(--bg) 100%);
+  background:
+    radial-gradient(120% 140% at 50% 0%, rgba(30, 111, 217, 0.13) 0%, transparent 58%),
+    linear-gradient(180deg, var(--petrol-800) 0%, var(--petrol-900) 62%, var(--bg) 100%);
 }
 
 .hero__inner {
-  padding: var(--s-giant) var(--s-xxl);
+  padding: var(--s-huge) var(--s-xxl) var(--s-giant);
   text-align: center;
 }
 
@@ -119,16 +222,79 @@
   margin: 0;
   font-size: var(--t-hero);
   font-weight: 600;
-  letter-spacing: -0.5px;
+  letter-spacing: -0.6px;
 }
 
 .hero__sub {
-  margin: var(--s-md) 0 var(--s-xxl);
+  margin: var(--s-sm) 0 0;
+  font-size: var(--t-body);
+  color: var(--text-muted);
+}
+
+/* ---- the search panel -------------------------------------------------- */
+
+/* Make and model lead at full size because they are what almost every buyer
+   touches first; price, year, kilometres and town share the line below. Six
+   identical dropdowns in a grid is a form, not a search. */
+.panel {
+  max-width: 1000px;
+  margin: var(--s-xxl) auto 0;
+  padding: var(--s-xl);
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-dialog);
+  text-align: left;
+}
+
+.panel__q {
+  height: 52px;
+  margin-bottom: var(--s-lg);
   font-size: var(--t-title);
 }
 
+.panel__lead {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-lg);
+  margin-bottom: var(--s-md);
+}
+
+.panel__rest {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--s-md);
+}
+
+.panel__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-lg);
+  margin-top: var(--s-xl);
+  padding-top: var(--s-lg);
+  border-top: 1px solid var(--border);
+}
+
+.panel__links {
+  display: flex;
+  gap: var(--s-xs);
+}
+
+.panel__go {
+  min-width: 220px;
+}
+
+.panel select:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ---- home -------------------------------------------------------------- */
+
 .home {
-  padding-top: var(--s-huge);
+  padding-top: var(--s-giant);
+  padding-bottom: var(--s-giant);
 }
 
 .home__section {
@@ -143,9 +309,9 @@
 
 .home__heading {
   margin: 0 0 var(--s-lg);
-  font-size: var(--t-display);
+  font-size: var(--t-title);
   font-weight: 600;
-  letter-spacing: -0.3px;
+  letter-spacing: -0.2px;
 }
 
 .home__all {
@@ -153,16 +319,7 @@
   font-size: var(--t-meta);
 }
 
-.home__sell {
-  padding: var(--s-xxl);
-}
-
-.home__sellbody {
-  margin: var(--s-sm) 0 0;
-  max-width: 60ch;
-}
-
-/* ---- tiles ------------------------------------------------------------- */
+/* ---- ways in ----------------------------------------------------------- */
 
 .tile-row {
   display: grid;
@@ -170,19 +327,17 @@
   gap: var(--s-lg);
 }
 
-.tile-row--small {
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-}
-
+/* The name sits on the photograph. A picture in a box with a caption beneath
+   it reads as a file; this is a door into a search. */
 .tile {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--s-xs);
-  padding: var(--s-lg);
-  background: var(--surface);
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 3;
+  padding: 0;
+  overflow: hidden;
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
+  background: var(--surface);
   cursor: pointer;
   text-align: left;
   transition: border-color 0.12s ease, transform 0.12s ease;
@@ -193,43 +348,162 @@
   transform: translateY(-2px);
 }
 
-.tile img {
+.tile__photo {
+  display: block;
   width: 100%;
-  height: 92px;
+  height: 100%;
   object-fit: cover;
-  border-radius: var(--r-sm);
-  margin-bottom: var(--s-sm);
+}
+
+.tile__photo--none {
+  display: grid;
+  place-items: center;
+  background: linear-gradient(160deg, var(--surface-raised), var(--surface));
+  color: var(--text-subtle);
+}
+
+/* Dark enough at the foot for the name to hold up over a bright photograph,
+   and clear at the top so the car is still the picture. */
+.tile__text {
+  position: absolute;
+  inset: auto 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: var(--s-xxl) var(--s-md) var(--s-md);
+  background: linear-gradient(180deg, transparent 0%, rgba(6, 15, 14, 0.82) 62%);
+  color: #ffffff;
 }
 
 .tile__name {
-  font-weight: 500;
+  font-size: var(--t-meta);
+  font-weight: 600;
 }
 
 .tile__count {
   font-size: var(--t-caption);
+  opacity: 0.78;
 }
+
+/* ---- shapes ------------------------------------------------------------ */
+
+/* The columns are set from what the API returned, so the strip fills the row
+   whether there are four shapes or ten. */
+.shape-row {
+  display: grid;
+  gap: var(--s-md);
+}
+
+/* The drawing to the left of the words rather than above them. Stacked, a
+   tile that fills a quarter of the page is mostly empty around a small car;
+   side by side it reads as a row in a list of shapes, which is what it is. */
+.shape-tile {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  column-gap: var(--s-md);
+  padding: var(--s-md) var(--s-lg);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.12s ease, transform 0.12s ease;
+}
+
+.shape-tile:hover {
+  border-color: var(--border-strong);
+  transform: translateY(-2px);
+}
+
+.shape {
+  display: block;
+  grid-row: span 2;
+  color: var(--text-muted);
+}
+
+.shape-tile:hover .shape {
+  color: var(--text);
+}
+
+.shape-tile__name {
+  font-size: var(--t-meta);
+  font-weight: 500;
+}
+
+.shape-tile__count {
+  font-size: var(--t-caption);
+  color: var(--text-muted);
+}
+
+/* ---- selling ----------------------------------------------------------- */
+
+.sellcta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-xxl);
+  padding: var(--s-xxl);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  background: linear-gradient(120deg, var(--petrol-700), var(--surface) 70%);
+}
+
+.sellcta__title {
+  margin: 0;
+  font-size: var(--t-title);
+  font-weight: 600;
+}
+
+.sellcta__body {
+  margin: var(--s-sm) 0 0;
+  max-width: 62ch;
+  color: var(--text-muted);
+}
+
 
 /* ---- results ----------------------------------------------------------- */
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(268px, 1fr));
-  gap: var(--s-xl);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--s-lg);
+}
+
+/* The results grid sits beside a sidebar, so it has a column less to play
+   with. */
+.results__main .grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 1100px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .results__main .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .results {
   display: grid;
-  grid-template-columns: 288px 1fr;
-  gap: var(--s-xxxl);
-  padding-top: var(--s-xxl);
+  grid-template-columns: 276px minmax(0, 1fr);
+  gap: var(--s-xxl);
+  padding-top: var(--s-xl);
+  padding-bottom: var(--s-giant);
+  align-items: start;
 }
 
+/* The filters stay put while the results scroll past them, which is the whole
+   reason a desktop gets a sidebar instead of a sheet. */
 .filters {
   position: sticky;
-  top: 88px;
-  align-self: start;
-  max-height: calc(100vh - 112px);
+  top: calc(68px + var(--s-lg));
+  max-height: calc(100vh - 68px - var(--s-xxl));
   overflow-y: auto;
+  scrollbar-width: thin;
 }
 
 .filters__head {
@@ -241,15 +515,28 @@
 
 .filters__title {
   margin: 0;
-  font-size: var(--t-title);
+  font-size: var(--t-meta);
   font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
 }
 
+/* One card with hairlines between the groups, not a stack of fields floating
+   apart — the same rule the app's search builder follows. */
 .filters__card {
+  padding: 0;
+}
+
+.filters__group {
   display: flex;
   flex-direction: column;
-  gap: var(--s-lg);
+  gap: var(--s-sm);
   padding: var(--s-lg);
+}
+
+.filters__group + .filters__group {
+  border-top: 1px solid var(--border);
 }
 
 .filters__pair {
@@ -268,6 +555,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: var(--s-lg);
   margin-bottom: var(--s-lg);
 }
 
@@ -277,11 +565,14 @@
   font-weight: 600;
 }
 
+/* A sort control is a preference, not a filter: it sits quietly at the end of
+   the bar rather than matching the heading for weight. */
 .results__sort {
   width: auto;
-  min-width: 200px;
-  height: 38px;
-  background-position: calc(100% - 18px) 17px, calc(100% - 13px) 17px;
+  min-width: 180px;
+  height: 36px;
+  font-size: var(--t-meta);
+  background-position: calc(100% - 16px) 16px, calc(100% - 11px) 16px;
 }
 
 .pager {
@@ -289,18 +580,27 @@
   align-items: center;
   justify-content: center;
   gap: var(--s-lg);
-  margin-top: var(--s-xxxl);
+  margin-top: var(--s-xxl);
+  padding-top: var(--s-xl);
+  border-top: 1px solid var(--border);
 }
+
 
 /* ---- listing card ------------------------------------------------------ */
 
+/* Every card is the same height, because a grid of cards that are not is a
+   grid with nothing to run your eye along. The body is a four-row grid with
+   the place pushed to the bottom, so a car with a long name and one with a
+   short name still line up. */
 .listing-card {
   position: relative;
+  display: flex;
+  flex-direction: column;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
   overflow: hidden;
-  transition: border-color 0.12s ease, transform 0.12s ease;
+  transition: border-color 0.12s ease, transform 0.12s ease, box-shadow 0.12s ease;
 }
 
 .listing-card:hover {
@@ -308,53 +608,127 @@
   transform: translateY(-2px);
 }
 
+.listing-card__link {
+  display: grid;
+  /* An implicit column is `auto`, which a long car name can push wider than
+     the card. Pinning it to minmax(0, 1fr) is what lets the title truncate. */
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  height: 100%;
+}
+
+/* The photograph is taken out of the flow so it cannot size its own frame.
+   Left in it, `height: 100%` against a parent whose height is not yet decided
+   resolves to nothing, the image falls back to its intrinsic height, and one
+   card in four comes out taller than its neighbours — which is exactly the
+   ragged row this was all meant to fix. */
+.listing-card__photo > img,
+.listing-card__nophoto {
+  position: absolute;
+  inset: 0;
+}
+
+/* A flat height in pixels, not a ratio.
+   `aspect-ratio` is a preference a grid row may override, and a percentage
+   padding resolves against a card width that is not identical to the pixel
+   once borders and sub-pixel track rounding are in — both left three cards in
+   eight with a taller photograph and their text sitting a line low. The
+   photograph is cropped to fill either way, so the only thing a ratio bought
+   was the bug. */
 .listing-card__photo {
   position: relative;
-  aspect-ratio: 16 / 10;
+  height: 196px;
   background: var(--skeleton);
 }
 
 .listing-card__photo img {
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
+/* A car with no photograph gets the shape drawing rather than a blank panel,
+   so the row still reads as cars. */
 .listing-card__nophoto {
-  width: 100%;
-  height: 100%;
+  display: grid;
+  place-items: center;
+  color: var(--text-subtle);
 }
 
-.listing-card__ribbon {
+/* A promotion is a paid placement, so it says so plainly and stays out of the
+   way of the car. */
+.listing-card__top {
   position: absolute;
   top: var(--s-sm);
   left: var(--s-sm);
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 var(--s-sm);
+  border-radius: var(--r-sm);
+  background: var(--accent);
+  color: var(--text-on-accent);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
 }
 
+/* No flexible row: every card has the same four single lines, so they all
+   start at the same height and the price lands on the same baseline right
+   across a row. A 1fr row here pushed the place line down on some cards and
+   not others, which is the ragged look one level further in. */
 .listing-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-xxs);
+  min-width: 0;
   padding: var(--s-md) var(--s-lg) var(--s-lg);
 }
 
-/* The price is the largest element on the card. */
-.listing-card__price {
+/* One line and truncated. The variant rides on the title, so the card never
+   grows a fifth line for some cars and not others.
+   `min-width: 0` is what makes the ellipsis work: a flex item defaults to
+   `min-width: auto` and refuses to shrink below its text, so two of the eight
+   titles ran out past the edge of their card rather than truncating. */
+.listing-card__title {
   margin: 0;
+  min-width: 0;
+  font-size: var(--t-body);
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.listing-card__facts,
+.listing-card__place {
+  margin: 0;
+  min-width: 0;
+  font-size: var(--t-caption);
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.listing-card__place {
+  color: var(--text-subtle);
+}
+
+/* The price is the largest element on the card, and it is last: everything
+   above it is what the money is for. */
+.listing-card__price {
+  margin: var(--s-sm) 0 0;
+  /* Pushed to the foot of the card, so a card that is taller than its content
+     (a row where one title wrapped) still ends on the price. */
+  margin-top: auto;
+  padding-top: var(--s-sm);
   font-size: var(--t-display);
   font-weight: 600;
   letter-spacing: -0.3px;
   font-variant-numeric: tabular-nums;
-}
-
-.listing-card__title {
-  margin: var(--s-xs) 0 0;
-  font-size: var(--t-body);
-  font-weight: 500;
-}
-
-.listing-card__variant,
-.listing-card__facts,
-.listing-card__place {
-  margin: var(--s-xxs) 0 0;
-  font-size: var(--t-caption);
 }
 
 .listing-card__heart {
@@ -370,15 +744,17 @@
   background: var(--scrim);
   color: var(--text);
   cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.listing-card__heart:hover {
+  background: rgba(0, 0, 0, 0.8);
 }
 
 .listing-card__heart.is-on {
   color: var(--danger);
 }
 
-.listing-card__link {
-  display: block;
-}
 
 /* ---- detail ------------------------------------------------------------ */
 
@@ -743,79 +1119,6 @@
 
   .tile-row {
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  }
-}
-
-/* ---- the search panel -------------------------------------------------- */
-
-/* The search itself on the front page, the way a marketplace's is: a free
-   text box, the handful of things everyone narrows by, and a button that says
-   how many cars those choices would return. */
-.panel {
-  max-width: 1040px;
-  margin: var(--s-xxl) auto 0;
-  padding: var(--s-xl);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r-lg);
-  text-align: left;
-}
-
-.panel__query {
-  display: flex;
-  gap: var(--s-sm);
-  margin-bottom: var(--s-xl);
-}
-
-.panel__q {
-  height: 48px;
-  font-size: var(--t-title);
-}
-
-.panel__query .btn {
-  flex: 0 0 auto;
-  width: 56px;
-  font-size: var(--t-title);
-}
-
-.panel__grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--s-lg);
-}
-
-.panel__foot {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--s-lg);
-  margin-top: var(--s-xl);
-}
-
-.panel__links {
-  display: flex;
-  gap: var(--s-sm);
-}
-
-.panel__go {
-  min-width: 220px;
-}
-
-/* A disabled select should read as not-yet rather than broken: the model list
-   fills in the moment a make is chosen. */
-.panel select:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-
-@media (max-width: 1080px) {
-  .panel__grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .panel__foot {
-    flex-direction: column;
-    align-items: stretch;
   }
 }
 
@@ -1333,4 +1636,50 @@
 .mine__top {
   margin: 0;
   color: var(--accent);
+}
+
+/* The two the panel leads with are taller than the four below them. */
+.select--lg {
+  height: 52px;
+  font-size: var(--t-title);
+  background-position: calc(100% - 18px) 24px, calc(100% - 13px) 24px;
+}
+
+@media (max-width: 1080px) {
+  .panel__rest {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .panel__foot {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .tile-row {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Message beside the shortlist, under the one azure button: a heart does not
+   need a word next to it and it should not take half the row. */
+.detail__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--s-sm);
+}
+
+.detail__save {
+  width: 42px;
+  padding: 0;
+}
+
+.detail__save.is-on {
+  color: var(--danger);
+}
+
+/* Results cards are a third wider than the home page's, so the same flat
+   photograph height would letterbox them. Each grid is internally consistent,
+   which is what lets an eye scan down a column. */
+.results__main .listing-card__photo {
+  height: 240px;
 }

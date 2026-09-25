@@ -174,6 +174,7 @@ export function Sell() {
     return (
       <div className="page">
         <EmptyState
+          heading
           title={t('sell:guest_title')}
           description={t('sell:guest_body')}
           actionLabel={t('common:sign_in')}

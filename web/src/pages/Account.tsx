@@ -31,6 +31,7 @@ function NeedsAccount({ title }: { title: string }) {
   return (
     <div className="page">
       <EmptyState
+        heading
         title={title}
         description={t('web:sign_in_body')}
         actionLabel={t('auth:sign_in')}
@@ -371,7 +372,7 @@ export function SavedSearches() {
 /** Name, kind of seller, language, and the way out. */
 export function Profile() {
   const { t } = useTranslation(['profile', 'common', 'web', 'auth']);
-  const { user, refresh } = useAuth();
+  const { user, refresh, signOut } = useAuth();
   const [name, setName] = useState(user?.display_name ?? '');
   const [isDealer, setIsDealer] = useState(user?.seller_type === 'dealer');
   const [dealerName, setDealerName] = useState(user?.dealer_name ?? '');
@@ -484,6 +485,9 @@ export function Profile() {
           <Link to="/blocked">
             <Button variant="secondary">{t('profile:blocked')}</Button>
           </Link>
+          <Button variant="secondary" onClick={() => void signOut()}>
+            {t('profile:sign_out')}
+          </Button>
           <Link to="/delete-account">
             <Button variant="ghost">{t('profile:delete_account')}</Button>
           </Link>

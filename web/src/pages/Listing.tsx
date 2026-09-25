@@ -166,33 +166,49 @@ export function ListingPage() {
 
             <p className="muted detail__place">{listingLocation(car)}</p>
 
+            {/* Reaching the seller is what this page is for, so it is the one
+                azure thing on it. Three identical buttons in a column made the
+                shortlist look as important as the telephone number. */}
             <div className="detail__actions">
               {car.seller?.phone ? (
                 <Button size="lg" block onClick={() => (window.location.href = `tel:${car.seller?.phone}`)}>
                   {t('listing:call')} · {car.seller.phone}
                 </Button>
               ) : (
-                <Button size="lg" block variant="secondary" onClick={() => navigate('/sign-in')}>
+                <Button size="lg" block onClick={() => navigate('/sign-in')}>
                   {t('listing:sign_in_to_call')}
                 </Button>
               )}
 
-              <Button
-                variant="secondary"
-                block
-                onClick={() => (favorites.signedIn ? favorites.toggle(car) : navigate('/sign-in'))}
-              >
-                {favorited ? '♥' : '♡'} {t('search:park')}
-              </Button>
+              <div className="detail__row">
+                <Button
+                  variant="secondary"
+                  block
+                  loading={message.isPending}
+                  onClick={() => (user ? message.mutate() : navigate('/sign-in'))}
+                >
+                  {t('listing:message')}
+                </Button>
 
-              <Button
-                variant="secondary"
-                block
-                loading={message.isPending}
-                onClick={() => (user ? message.mutate() : navigate('/sign-in'))}
-              >
-                {t('listing:message')}
-              </Button>
+                <Button
+                  variant="secondary"
+                  className={`detail__save ${favorited ? 'is-on' : ''}`}
+                  aria-pressed={favorited}
+                  aria-label={t('search:park')}
+                  title={t('search:park')}
+                  onClick={() => (favorites.signedIn ? favorites.toggle(car) : navigate('/sign-in'))}
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                      d="M12 21s-7.5-4.7-9.5-9A5.2 5.2 0 0 1 12 6.5 5.2 5.2 0 0 1 21.5 12c-2 4.3-9.5 9-9.5 9Z"
+                      fill={favorited ? 'currentColor' : 'none'}
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </Button>
+              </div>
             </div>
           </Card>
 

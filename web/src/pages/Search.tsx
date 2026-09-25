@@ -91,7 +91,8 @@ export function Search() {
         </div>
 
         <Card className="filters__card">
-          <Field label={t('search:anything')}>
+          <div className="filters__group">
+            <Field label={t('search:anything')}>
             <Input
               type="search"
               defaultValue={filters.q ?? ''}
@@ -102,9 +103,11 @@ export function Search() {
                 }
               }}
             />
-          </Field>
+            </Field>
+          </div>
 
-          <Field label={t('search:make_model')}>
+          <div className="filters__group">
+            <Field label={t('search:make_model')}>
             <Select
               value={filters.makeId ?? ''}
               onChange={(event) =>
@@ -140,59 +143,64 @@ export function Search() {
             </Field>
           ) : null}
 
-          <div className="filters__pair">
+          </div>
+
+          <div className="filters__group">
             <Field label={t('search:price')}>
-              <Input
-                type="number"
-                inputMode="numeric"
-                placeholder={t('search:min')}
-                defaultValue={filters.priceMin ?? ''}
-                onBlur={(event) => set({ priceMin: event.target.value ? Number(event.target.value) : undefined })}
-              />
+              <div className="filters__pair">
+                <Input
+                  type="number"
+                  inputMode="numeric"
+                  aria-label={`${t('search:price')} · ${t('search:min')}`}
+                  placeholder={t('search:min')}
+                  defaultValue={filters.priceMin ?? ''}
+                  onBlur={(event) => set({ priceMin: event.target.value ? Number(event.target.value) : undefined })}
+                />
+                <Input
+                  type="number"
+                  inputMode="numeric"
+                  aria-label={`${t('search:price')} · ${t('search:max')}`}
+                  placeholder={t('search:max')}
+                  defaultValue={filters.priceMax ?? ''}
+                  onBlur={(event) => set({ priceMax: event.target.value ? Number(event.target.value) : undefined })}
+                />
+              </div>
             </Field>
-            <Field label="&nbsp;">
-              <Input
-                type="number"
-                inputMode="numeric"
-                placeholder={t('search:max')}
-                defaultValue={filters.priceMax ?? ''}
-                onBlur={(event) => set({ priceMax: event.target.value ? Number(event.target.value) : undefined })}
-              />
-            </Field>
-          </div>
 
-          <div className="filters__pair">
             <Field label={t('search:year')}>
-              <Input
-                type="number"
-                inputMode="numeric"
-                placeholder={t('search:min')}
-                defaultValue={filters.yearMin ?? ''}
-                onBlur={(event) => set({ yearMin: event.target.value ? Number(event.target.value) : undefined })}
-              />
+              <div className="filters__pair">
+                <Input
+                  type="number"
+                  inputMode="numeric"
+                  aria-label={`${t('search:year')} · ${t('search:min')}`}
+                  placeholder={t('search:min')}
+                  defaultValue={filters.yearMin ?? ''}
+                  onBlur={(event) => set({ yearMin: event.target.value ? Number(event.target.value) : undefined })}
+                />
+                <Input
+                  type="number"
+                  inputMode="numeric"
+                  aria-label={`${t('search:year')} · ${t('search:max')}`}
+                  placeholder={t('search:max')}
+                  defaultValue={filters.yearMax ?? ''}
+                  onBlur={(event) => set({ yearMax: event.target.value ? Number(event.target.value) : undefined })}
+                />
+              </div>
             </Field>
-            <Field label="&nbsp;">
+
+            <Field label={t('search:mileage')}>
               <Input
                 type="number"
                 inputMode="numeric"
                 placeholder={t('search:max')}
-                defaultValue={filters.yearMax ?? ''}
-                onBlur={(event) => set({ yearMax: event.target.value ? Number(event.target.value) : undefined })}
+                defaultValue={filters.mileageMax ?? ''}
+                onBlur={(event) => set({ mileageMax: event.target.value ? Number(event.target.value) : undefined })}
               />
             </Field>
           </div>
 
-          <Field label={t('search:mileage')}>
-            <Input
-              type="number"
-              inputMode="numeric"
-              placeholder={t('search:max')}
-              defaultValue={filters.mileageMax ?? ''}
-              onBlur={(event) => set({ mileageMax: event.target.value ? Number(event.target.value) : undefined })}
-            />
-          </Field>
-
-          <Field label={t('search:fuel')}>
+          <div className="filters__group">
+            <Field label={t('search:fuel')}>
             <div className="chips">
               {FUELS.map((fuel) => (
                 <Chip
@@ -201,22 +209,23 @@ export function Search() {
                   selected={(filters.fuel ?? []).includes(fuel)}
                   onClick={() => toggleIn('fuel', fuel)}
                 />
-              ))}
-            </div>
-          </Field>
+                ))}
+              </div>
+            </Field>
 
-          <Field label={t('search:transmission')}>
+            <Field label={t('search:transmission')}>
             <div className="chips">
               {GEARBOXES.map((box) => (
                 <Chip
                   key={box}
                   label={t(`listing:transmission.${box}`)}
                   selected={filters.transmission === box}
-                  onClick={() => set({ transmission: filters.transmission === box ? undefined : box })}
-                />
-              ))}
-            </div>
-          </Field>
+                    onClick={() => set({ transmission: filters.transmission === box ? undefined : box })}
+                  />
+                ))}
+              </div>
+            </Field>
+          </div>
         </Card>
       </aside>
 

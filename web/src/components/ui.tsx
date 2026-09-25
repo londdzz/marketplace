@@ -143,16 +143,26 @@ export function EmptyState({
   actionLabel,
   onAction,
   to,
+  heading,
 }: {
   title: string;
   description?: string;
   actionLabel?: string;
   onAction?: () => void;
   to?: string;
+  /**
+   * True where this panel *is* the page — a shortlist nobody has signed in to
+   * see, a page that does not exist. Then its title is the page's heading, and
+   * a page with no heading is one a screen reader and a search engine both
+   * have to guess at. Inside a page that already has one, leave it off.
+   */
+  heading?: boolean;
 }) {
+  const Title = heading ? 'h1' : 'p';
+
   return (
     <div className="state">
-      <p className="state__title">{title}</p>
+      <Title className="state__title">{title}</Title>
       {description ? <p className="muted state__body">{description}</p> : null}
       {actionLabel && onAction ? (
         <Button variant="secondary" onClick={onAction}>
