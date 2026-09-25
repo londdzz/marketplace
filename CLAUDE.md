@@ -264,6 +264,15 @@ vocabulary comes from the API.
   **The photo pipeline has never run on this server.** The R2 settings look
   right but no photograph has been uploaded through them, so publishing one
   listing from the website is the first thing to do.
+- **Putting the website online is `docs/website-deployment.md`**: `/web` is a static
+  build, so Cloudflare Pages serves it free and rebuilds on every push, or a second
+  Forge site on the same box serves `web/dist`. **The one step that is easy to miss and
+  breaks the thing people do most is the SPA fallback** — the site is one HTML file and
+  a router, so without it a cold load of `/listing/<uuid>`, which is exactly the URL
+  somebody pastes into a chat, is a 404 from the host and the car never appears. Clicking
+  around inside the site never shows it. `web/public/_redirects` covers Pages and Netlify;
+  `deploy/autevo.mk.nginx.conf` is the nginx half. CORS needs nothing: the API already
+  answers `*` and allows the `authorization` header on preflight.
 - **Going live is `docs/deployment.md`**: Hetzner CX22 + Laravel Forge + Cloudflare R2,
   about €16/month, with the server files in `deploy/`. Two things there fail silently and
   are the first place to look when the marketplace "just stops" — the queue worker and the

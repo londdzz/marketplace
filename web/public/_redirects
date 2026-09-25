@@ -1,0 +1,10 @@
+# Every path that is not a real file is the app, which routes it itself.
+#
+# Without this, a cold load of anything but "/" is a 404 from the host: the
+# router only exists once index.html has run, and /listing/<uuid> is exactly
+# the URL somebody pastes into a message. 200 rather than a redirect, so the
+# address bar still shows the car.
+#
+# Read by Cloudflare Pages and by Netlify. The nginx equivalent, for serving
+# this from the Forge box instead, is deploy/autevo.mk.nginx.conf.
+/*    /index.html   200
