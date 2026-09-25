@@ -21,6 +21,11 @@ return [
     | WhatsApp. WhatsApp coverage is strong in Kosovo and Albania, which is
     | what the Cloud API driver was written for and what it is still there for.
     |
+    | "discord" posts the code to a webhook instead of sending it, so a build
+    | can go to friends before an aggregator is paid for without anybody
+    | opening an SSH session to read a log. It is the log driver with a better
+    | letterbox and is exactly as dangerous — see below.
+    |
     */
 
     'driver' => env('OTP_DRIVER', 'log'),
@@ -115,6 +120,30 @@ return [
             'en' => 'en',
             'default' => 'en',
         ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Discord
+    |--------------------------------------------------------------------------
+    |
+    | Where the "discord" driver posts. Make the webhook in Discord itself:
+    | Server Settings > Integrations > Webhooks > New Webhook, point it at a
+    | channel nobody else is in, and copy the URL.
+    |
+    | Treat that URL as the sign-in codes themselves, because that is what it
+    | is: anyone holding it can read every code, and anyone in the channel can
+    | sign in as any number they see. Unlike everywhere else a number is
+    | written down, this driver does not mask it — telling three friends apart
+    | is the entire job and "+389*****001" cannot do it.
+    |
+    | Private channel, private server, and empty before anybody real signs in.
+    |
+    */
+
+    'discord' => [
+        'webhook_url' => env('OTP_DISCORD_WEBHOOK_URL'),
+        'timeout' => (int) env('OTP_DISCORD_TIMEOUT', 10),
     ],
 
     /*

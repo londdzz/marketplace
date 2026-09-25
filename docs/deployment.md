@@ -141,7 +141,7 @@ The ones that will stop you dead if they are wrong:
 | `APP_URL` | photo URLs are built from it. No trailing slash. |
 | `DB_PASSWORD` | from the Forge provisioning email |
 | `AWS_URL` | wrong and every photo URL points somewhere private — the app loads but no picture ever appears |
-| `OTP_DRIVER` | **must be `whatsapp`**. `log` writes sign-in codes to the log file, so anyone who can read it can sign in as anybody. |
+| `OTP_DRIVER` | **must be `messaggio` or `whatsapp` to ship**. `log` writes sign-in codes to the log file and `discord` posts them to a channel, so with either one anyone who can read that place signs in as anybody. Both are for the friends-and-family stage only. |
 | `REVENUECAT_WEBHOOK_SECRET` | empty means every purchase is rejected and no credit is ever granted |
 
 `OTP_DRIVER`, push and RevenueCat need credentials you may not have yet —
@@ -163,6 +163,26 @@ php artisan otp:recent +38970123456     # just that number
 
 It reads the log, not the database — `otp_codes` holds a hash and never the code — and the
 log masks the number, so the command masks yours the same way before matching.
+
+**Or have the codes come to you instead.** Make a webhook in Discord (Server Settings →
+Integrations → Webhooks → New Webhook) pointed at a private channel, then in `.env`:
+
+```
+OTP_DRIVER=discord
+OTP_DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/...
+```
+
+`php artisan config:cache` afterwards, or the cached config keeps the old driver. Prove it
+before relying on it:
+
+```bash
+php artisan otp:ping +38970123456
+```
+
+A message lands in the channel reading `**+38970123456** → \`483920\``. The number is
+**not masked** here, unlike everywhere else — that is the point, since a masked number
+cannot tell you which friend is waiting — so the channel and the URL are both worth as
+much as the codes themselves.
 
 **One code for everybody instead**: set `OTP_UNIVERSAL_CODE` to something unguessable and
 it verifies any number, so nothing has to be relayed at all. It needs `APP_ENV` set to

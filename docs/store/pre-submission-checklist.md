@@ -101,6 +101,13 @@ and an Android phone, and walk the whole app before anything is submitted.
 - [ ] Sign-in works for the reviewer. A phone-OTP app needs a **demo account** with a number the
       reviewer can use, or codes will never arrive for them. Put the number and a fixed code in
       App Store Connect's review notes, and make sure the account has credits and a listing.
+- [ ] **`OTP_DRIVER` is `messaggio` or `whatsapp`** on the server the submitted build talks to.
+      `log` and `discord` both deliver the code somewhere other than the phone that asked for
+      it, so with either one anybody who can read that file or that channel signs in as anybody.
+      Check the running value, not just `.env` — the deploy caches config:
+      `php artisan tinker --execute="echo config('otp.driver');"`
+- [ ] **`OTP_DISCORD_WEBHOOK_URL` and `OTP_UNIVERSAL_CODE` are both empty.** Either one left set
+      is a way into any account.
 - [ ] The app does not crash with no network. Every screen has a failure state; check on a plane.
 - [ ] No placeholder text, no "Lorem", no test listings visible in production.
 - [ ] Permission prompts appear only when the feature is used, and the strings say why in the

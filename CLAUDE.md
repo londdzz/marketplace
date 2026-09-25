@@ -346,6 +346,17 @@ release, and update it whenever a placeholder is added or replaced.
 
 ## Decisions taken along the way
 
+- **Codes can go to a Discord webhook while no aggregator is paid for.**
+  `OTP_DRIVER=discord` posts each one to a channel instead of sending it, so relaying a
+  code to a friend is reading a phone rather than opening an SSH session. It is the log
+  driver with a better letterbox and is exactly as dangerous: nothing reaches the person
+  signing in, and everyone who can read the channel can sign in as any number in it.
+  **It is the one place a number is written unmasked**, deliberately — telling three
+  friends apart is the whole job, and `+389*****001` cannot. It fails loudly like the
+  senders that really send, because a code Discord never took is a code nobody will read.
+  `php artisan otp:ping {phone}` posts a sample through whichever driver is configured,
+  writing no `otp_codes` row, so a wrong webhook or a bad Messaggio login is found before
+  somebody is waiting on a code that never comes.
 - **A code can be read back while the log driver is on.** `php artisan otp:recent`
   prints the codes `OTP_DRIVER=log` has written, newest last, and takes a number to
   filter by. It reads the log rather than the database, because `otp_codes` stores a

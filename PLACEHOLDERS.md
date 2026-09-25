@@ -33,9 +33,26 @@ Until then `OTP_DRIVER=log` writes codes to `api/storage/logs/laravel.log` and s
 nothing. **Never ship with the log driver** — a code in a log file means anyone who can
 read that file signs in as anybody.
 
-It is, however, the right driver while the build is going to friends and nobody is
-paying an aggregator yet, so there is a way to read a code back without hunting through
-the file:
+**`OTP_DRIVER=discord` is the same thing with a better letterbox.** It posts each code
+to a webhook instead of sending it, so codes arrive on your phone in a channel rather
+than in a file you need SSH to read:
+
+| What | Where |
+|---|---|
+| `OTP_DISCORD_WEBHOOK_URL` | `api/.env`, from Discord → Server Settings → Integrations → Webhooks |
+
+Everything true of the log driver is true of this one, and one thing more: **the number
+is not masked**, because telling three friends apart is the whole job and `+389*****001`
+cannot do it. So the URL is worth exactly as much as the codes — anyone holding it reads
+every code, anyone in the channel signs in as any number they see. Private channel, in a
+server you own, and empty before anybody real signs in.
+
+`php artisan otp:ping +38970123456` posts a sample through whichever driver is set, so a
+wrong URL is found now rather than while somebody waits on a code. The code it sends is
+made up and no `otp_codes` row is written, so it signs nobody in.
+
+The log driver is still the right one where no webhook exists, and there is a way to read
+a code back without hunting through the file:
 
 ```bash
 php artisan otp:recent                    # the last ten, newest at the bottom
