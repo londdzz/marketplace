@@ -18,8 +18,13 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const HERE = path.dirname(new URL(import.meta.url).pathname);
+// `new URL(import.meta.url).pathname` is a URL path, not a file path: on
+// Windows it comes back as /C:/laragon/... and joining that yields
+// \C:\laragon\..., which no Windows API will open. fileURLToPath is the
+// conversion, and it is a no-op on Linux and macOS.
+const HERE = path.dirname(fileURLToPath(import.meta.url));
 const FROM = path.join(HERE, '..', '..', 'app', 'src', 'i18n', 'locales');
 const TO = path.join(HERE, '..', 'src', 'i18n', 'locales');
 
