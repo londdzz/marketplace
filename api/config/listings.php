@@ -74,6 +74,30 @@ return [
         'other',
     ],
 
+    /*
+    | A motorcycle has a shape too, and it is not one of a car's. The column is
+    | the same `body_type`; only the vocabulary allowed in it changes with the
+    | listing's `vehicle_type`, which is what App\Enums\VehicleType::bodyTypes()
+    | answers. Mopeds and quads are in the list because they are sold here, and a
+    | seller with one would otherwise have to file it as something it is not.
+    */
+
+    'motorcycle_types' => [
+        'sport',
+        'naked',
+        'touring',
+        'adventure',
+        'cruiser',
+        'scooter',
+        'moped',
+        'enduro',
+        'motocross',
+        'supermoto',
+        'trike',
+        'quad',
+        'other',
+    ],
+
     'drivetrains' => [
         'fwd',
         'rwd',
@@ -148,24 +172,47 @@ return [
     */
 
     'collections' => [
-        'family' => [
-            'body_type' => ['estate', 'suv', 'minivan'],
-            'year_min' => 2014,
-            'price_max' => 20000,
+        'car' => [
+            'family' => [
+                'body_type' => ['estate', 'suv', 'minivan'],
+                'year_min' => 2014,
+                'price_max' => 20000,
+            ],
+            'first_car' => [
+                'price_max' => 7000,
+                'mileage_max' => 220000,
+            ],
+            'premium' => [
+                'price_min' => 15000,
+                'year_min' => 2018,
+            ],
+            'city' => [
+                'body_type' => ['hatchback', 'coupe'],
+            ],
+            'electrified' => [
+                'fuel' => ['electric', 'hybrid'],
+            ],
         ],
-        'first_car' => [
-            'price_max' => 7000,
-            'mileage_max' => 220000,
-        ],
-        'premium' => [
-            'price_min' => 15000,
-            'year_min' => 2018,
-        ],
-        'city' => [
-            'body_type' => ['hatchback', 'coupe'],
-        ],
-        'electrified' => [
-            'fuel' => ['electric', 'hybrid'],
+
+        // A motorcycle buyer arrives with a different set of questions, so the
+        // ways in are their own rather than a car's borrowed. Same mechanism,
+        // same counting, same rule that an empty one is not shown.
+        'motorcycle' => [
+            'first_bike' => [
+                'price_max' => 3000,
+            ],
+            'two_wheel_commuter' => [
+                'body_type' => ['scooter', 'moped'],
+            ],
+            'adventure' => [
+                'body_type' => ['adventure', 'enduro'],
+            ],
+            'cruisers' => [
+                'body_type' => ['cruiser', 'trike'],
+            ],
+            'track' => [
+                'body_type' => ['sport', 'supermoto'],
+            ],
         ],
     ],
 

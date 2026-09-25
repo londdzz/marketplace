@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Enums\FuelType;
 use App\Enums\ListingStatus;
 use App\Enums\Transmission;
+use App\Enums\VehicleType;
 use App\Observers\ListingObserver;
 use Database\Factories\ListingFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
@@ -32,6 +33,7 @@ class Listing extends Model
      */
     protected $fillable = [
         'user_id',
+        'vehicle_type',
         'make_id',
         'model_id',
         'variant',
@@ -65,6 +67,7 @@ class Listing extends Model
     {
         return [
             'status' => ListingStatus::class,
+            'vehicle_type' => VehicleType::class,
             'fuel' => FuelType::class,
             'transmission' => Transmission::class,
             'year' => 'integer',

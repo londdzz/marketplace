@@ -4,239 +4,76 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
+use App\Enums\VehicleType;
 use App\Models\Make;
 use App\Models\VehicleModel;
+use App\Support\TextNormalizer;
+use Database\Seeders\Concerns\ReadsVehicleData;
 use Illuminate\Database\Seeder;
+use RuntimeException;
 
 /**
- * Models for every make flagged popular. The long tail of models for the
- * remaining makes is filled in from real listing data after launch.
+ * Every model of every make, with the shape its range is usually built in.
+ *
+ * A model belongs to exactly one kind of vehicle — an R 1250 GS is a
+ * motorcycle and an X5 is a car, and nothing is both — so the kind lives on
+ * the row, and the model picker asks for one kind at a time.
+ *
+ * The shape is validated against the vocabulary its kind allows, because a
+ * typo here would put a shape in the column that no filter and no translation
+ * key would ever match, and nothing downstream would complain.
  */
 class VehicleModelSeeder extends Seeder
 {
-    /**
-     * Models for every make flagged popular, each with the shape it is
-     * usually built in.
-     *
-     * The shape is the range's, not a particular car's: a Passat is a saloon
-     * here even though half of them on the road are estates, because our list
-     * names ranges rather than variants. It is a starting point the seller can
-     * change, not the last word — see the sell flow's shape step.
-     *
-     * @var array<string, array<string, string>>
-     */
-    private const MODELS = [
-        'Volkswagen' => [
-            'Golf' => 'hatchback',
-            'Passat' => 'sedan',
-            'Polo' => 'hatchback',
-            'Tiguan' => 'suv',
-            'Touran' => 'minivan',
-            'Caddy' => 'van',
-            'Jetta' => 'sedan',
-            'Sharan' => 'minivan',
-            'T-Roc' => 'suv',
-            'T-Cross' => 'suv',
-            'Touareg' => 'suv',
-            'Arteon' => 'sedan',
-            'Bora' => 'sedan',
-            'Up' => 'hatchback',
-            'Transporter' => 'van',
-            'Amarok' => 'pickup',
-            'Scirocco' => 'coupe',
-            'Beetle' => 'hatchback',
-            'Fox' => 'hatchback',
-            'ID.3' => 'hatchback',
-            'ID.4' => 'suv',
-        ],
-        'Audi' => [
-            'A1' => 'hatchback',
-            'A2' => 'hatchback',
-            'A3' => 'hatchback',
-            'A4' => 'sedan',
-            'A5' => 'coupe',
-            'A6' => 'sedan',
-            'A7' => 'sedan',
-            'A8' => 'sedan',
-            'Q2' => 'suv',
-            'Q3' => 'suv',
-            'Q5' => 'suv',
-            'Q7' => 'suv',
-            'Q8' => 'suv',
-            'TT' => 'coupe',
-            'S3' => 'hatchback',
-            'S4' => 'sedan',
-            'RS6' => 'estate',
-            'e-tron' => 'suv',
-        ],
-        'BMW' => [
-            'Series 1' => 'hatchback',
-            'Series 2' => 'coupe',
-            'Series 3' => 'sedan',
-            'Series 4' => 'coupe',
-            'Series 5' => 'sedan',
-            'Series 6' => 'coupe',
-            'Series 7' => 'sedan',
-            'Series 8' => 'coupe',
-            'X1' => 'suv',
-            'X2' => 'suv',
-            'X3' => 'suv',
-            'X4' => 'suv',
-            'X5' => 'suv',
-            'X6' => 'suv',
-            'X7' => 'suv',
-            'Z3' => 'convertible',
-            'Z4' => 'convertible',
-            'i3' => 'hatchback',
-            'i4' => 'sedan',
-            'M3' => 'sedan',
-            'M5' => 'sedan',
-        ],
-        'Mercedes-Benz' => [
-            'A-Class' => 'hatchback',
-            'B-Class' => 'minivan',
-            'C-Class' => 'sedan',
-            'E-Class' => 'sedan',
-            'S-Class' => 'sedan',
-            'CLA' => 'sedan',
-            'CLK' => 'coupe',
-            'CLS' => 'sedan',
-            'GLA' => 'suv',
-            'GLB' => 'suv',
-            'GLC' => 'suv',
-            'GLE' => 'suv',
-            'GLK' => 'suv',
-            'GLS' => 'suv',
-            'ML' => 'suv',
-            'SLK' => 'convertible',
-            'Vito' => 'van',
-            'Viano' => 'minivan',
-            'V-Class' => 'minivan',
-            'Sprinter' => 'van',
-        ],
-        'Opel' => [
-            'Astra' => 'hatchback',
-            'Corsa' => 'hatchback',
-            'Insignia' => 'sedan',
-            'Zafira' => 'minivan',
-            'Vectra' => 'sedan',
-            'Meriva' => 'minivan',
-            'Mokka' => 'suv',
-            'Crossland' => 'suv',
-            'Grandland' => 'suv',
-            'Combo' => 'van',
-            'Vivaro' => 'van',
-            'Antara' => 'suv',
-            'Agila' => 'hatchback',
-            'Signum' => 'hatchback',
-            'Omega' => 'sedan',
-            'Frontera' => 'suv',
-        ],
-        'Škoda' => [
-            'Octavia' => 'hatchback',
-            'Fabia' => 'hatchback',
-            'Superb' => 'sedan',
-            'Rapid' => 'hatchback',
-            'Yeti' => 'suv',
-            'Kodiaq' => 'suv',
-            'Karoq' => 'suv',
-            'Kamiq' => 'suv',
-            'Scala' => 'hatchback',
-            'Roomster' => 'minivan',
-            'Felicia' => 'hatchback',
-            'Citigo' => 'hatchback',
-            'Enyaq' => 'suv',
-        ],
-        'Renault' => [
-            'Clio' => 'hatchback',
-            'Megane' => 'hatchback',
-            'Scenic' => 'minivan',
-            'Captur' => 'suv',
-            'Kadjar' => 'suv',
-            'Laguna' => 'hatchback',
-            'Espace' => 'minivan',
-            'Twingo' => 'hatchback',
-            'Trafic' => 'van',
-            'Kangoo' => 'van',
-            'Talisman' => 'sedan',
-            'Koleos' => 'suv',
-            'Fluence' => 'sedan',
-            'Master' => 'van',
-            'Zoe' => 'hatchback',
-        ],
-        'Peugeot' => [
-            '106' => 'hatchback',
-            '107' => 'hatchback',
-            '108' => 'hatchback',
-            '206' => 'hatchback',
-            '207' => 'hatchback',
-            '208' => 'hatchback',
-            '301' => 'sedan',
-            '306' => 'hatchback',
-            '307' => 'hatchback',
-            '308' => 'hatchback',
-            '406' => 'sedan',
-            '407' => 'sedan',
-            '508' => 'sedan',
-            '2008' => 'suv',
-            '3008' => 'suv',
-            '5008' => 'suv',
-            'Partner' => 'van',
-            'Expert' => 'van',
-            'Boxer' => 'van',
-            'Rifter' => 'minivan',
-        ],
-        'Ford' => [
-            'Fiesta' => 'hatchback',
-            'Focus' => 'hatchback',
-            'Mondeo' => 'sedan',
-            'Kuga' => 'suv',
-            'Puma' => 'suv',
-            'C-Max' => 'minivan',
-            'S-Max' => 'minivan',
-            'Galaxy' => 'minivan',
-            'Transit' => 'van',
-            'Transit Connect' => 'van',
-            'Ranger' => 'pickup',
-            'EcoSport' => 'suv',
-            'Escort' => 'hatchback',
-            'Ka' => 'hatchback',
-            'Explorer' => 'suv',
-            'Edge' => 'suv',
-            'Mustang' => 'coupe',
-        ],
-        'Toyota' => [
-            'Corolla' => 'sedan',
-            'Yaris' => 'hatchback',
-            'Auris' => 'hatchback',
-            'Avensis' => 'sedan',
-            'RAV4' => 'suv',
-            'C-HR' => 'suv',
-            'Land Cruiser' => 'suv',
-            'Hilux' => 'pickup',
-            'Prius' => 'hatchback',
-            'Camry' => 'sedan',
-            'Aygo' => 'hatchback',
-            'Verso' => 'minivan',
-            'Proace' => 'van',
-            'Supra' => 'coupe',
-            'Celica' => 'coupe',
-        ],
-    ];
+    use ReadsVehicleData;
 
     public function run(): void
     {
-        foreach (self::MODELS as $makeName => $models) {
-            $make = Make::query()->where('name', $makeName)->first();
+        foreach (VehicleType::cases() as $type) {
+            $allowed = $type->bodyTypes();
+            $makeIds = Make::query()->pluck('id', 'name');
+            $rows = [];
 
-            if (! $make instanceof Make) {
-                continue;
+            foreach ($this->vehicleData($type) as $makeName => $entry) {
+                $makeId = $makeIds[$makeName] ?? null;
+
+                if ($makeId === null) {
+                    continue;
+                }
+
+                foreach ($entry['models'] as $name => $bodyType) {
+                    // PHP turns a numeric array key into an int, and plenty of
+                    // models are called nothing else: an Audi 80, a Peugeot
+                    // 206, a Škoda 105.
+                    $name = (string) $name;
+
+                    if (! in_array($bodyType, $allowed, true)) {
+                        throw new RuntimeException(sprintf(
+                            '%s %s: "%s" is not one of the %s shapes.',
+                            $makeName, $name, $bodyType, $type->value,
+                        ));
+                    }
+
+                    $rows[] = [
+                        'make_id' => $makeId,
+                        'vehicle_type' => $type->value,
+                        'name' => $name,
+                        // Normalized here rather than by the model's saving
+                        // hook, because these go in as one statement per
+                        // thousand rows instead of one per row: two and a half
+                        // thousand saves is three seconds on every test that
+                        // needs a make.
+                        'name_normalized' => TextNormalizer::normalize($name),
+                        'body_type' => $bodyType,
+                    ];
+                }
             }
 
-            foreach ($models as $model => $bodyType) {
-                VehicleModel::query()->updateOrCreate(
-                    ['make_id' => $make->getKey(), 'name' => $model],
-                    ['body_type' => $bodyType],
+            foreach (array_chunk($rows, 500) as $chunk) {
+                VehicleModel::query()->upsert(
+                    $chunk,
+                    ['make_id', 'vehicle_type', 'name'],
+                    ['name_normalized', 'body_type'],
                 );
             }
         }

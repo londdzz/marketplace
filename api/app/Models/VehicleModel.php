@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\VehicleType;
 use App\Support\TextNormalizer;
 use Database\Factories\VehicleModelFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -26,10 +27,21 @@ class VehicleModel extends Model
 
     protected $fillable = [
         'make_id',
+        'vehicle_type',
         'name',
         'name_normalized',
         'body_type',
     ];
+
+    /**
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'vehicle_type' => VehicleType::class,
+        ];
+    }
 
     protected static function booted(): void
     {
