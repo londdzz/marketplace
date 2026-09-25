@@ -14,31 +14,37 @@ set -euo pipefail
 REPO=/home/forge/api.autevo.mk
 LARAVEL="$REPO/api"
 
+# Forge sets FORGE_PHP to the binary for the PHP version the site is pinned to.
+# Plain `php` is whatever the system default happens to be, which is the same
+# thing today and the wrong thing the day a second PHP version is installed.
+PHP="${FORGE_PHP:-php}"
+COMPOSER="${FORGE_COMPOSER:-composer}"
+
 cd "$LARAVEL"
-php artisan down --retry=60 || true
-trap 'php artisan up || true' EXIT
+"$PHP" artisan down --retry=60 || true
+trap '"$PHP" artisan up || true' EXIT
 
 cd "$REPO"
 git pull origin main
 cd "$LARAVEL"
 
-composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+"$COMPOSER" install --no-dev --no-interaction --prefer-dist --optimize-autoloader
 
 # --force is what lets a migration run without a confirmation prompt. Without
 # it the deploy hangs waiting for an answer nobody is there to give.
-php artisan migrate --force
+"$PHP" artisan migrate --force
 
 # Countries, cities, makes and models. The seeders are idempotent, so this is
 # safe on every deploy and is what picks up newly seeded models.
-php artisan db:seed --force
+"$PHP" artisan db:seed --force
 
 # Compiled config, routes and views. Never cache config before .env is final:
 # the cache wins over the file, and editing .env afterwards changes nothing
 # until config:cache runs again.
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
-php artisan event:cache
+"$PHP" artisan config:cache
+"$PHP" artisan route:cache
+"$PHP" artisan view:cache
+"$PHP" artisan event:cache
 
 # Manufacturer marks are deliberately NOT here. They are generated rather than
 # committed, and `makes:logos` reads whichever disk is configured — S3 in
@@ -46,9 +52,9 @@ php artisan event:cache
 # It is a one-time step, not a per-deploy one: docs/deployment.md, Part 5.
 
 # The worker holds the old code in memory until it is told otherwise.
-php artisan queue:restart
+"$PHP" artisan queue:restart
 
-php artisan up
+"$PHP" artisan up
 trap - EXIT
 
 echo "Deployed. Now check: curl -s https://api.autevo.mk/api/v1/countries"
