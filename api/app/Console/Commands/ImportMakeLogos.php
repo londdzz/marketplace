@@ -41,7 +41,16 @@ class ImportMakeLogos extends Command
             $this->line("Copied {$copied} marks onto the ".config('filesystems.default').' disk.');
         }
 
-        $files = $disk->files($directory);
+        // Images only. CREDITS.json sits beside them, naming the licence and
+        // the photographer of every mark, and it is not one.
+        $files = array_values(array_filter(
+            $disk->files($directory),
+            fn (string $file): bool => in_array(
+                strtolower(pathinfo($file, PATHINFO_EXTENSION)),
+                ['png', 'jpg', 'jpeg', 'webp'],
+                true,
+            ),
+        ));
 
         if ($files === []) {
             $this->warn("No files found in [{$directory}] on the ".config('filesystems.default').' disk.');

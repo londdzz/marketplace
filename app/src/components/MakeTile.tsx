@@ -17,10 +17,17 @@ export type MakeTileProps = {
 /**
  * One make in the picker grid.
  *
- * Draws the maker's mark when the API has one, and a monogram on a tinted
- * square when it does not, so logos can be added a few at a time without the
- * grid ever showing a hole. The mark is tinted to the text colour so a single
- * monochrome file works in both light and dark.
+ * Draws the maker's mark when the API has one, and a monogram when it does
+ * not, so marks can be added a few at a time without the grid ever showing a
+ * hole. Twenty-four of the 167 makes have no mark we are allowed to serve, so
+ * the monogram is a permanent part of this, not a stage it is passing through.
+ *
+ * **The mark is drawn in its own colours, on a light plate.** It used to be
+ * tinted to the text colour, which is right for a single-ink glyph and wrong
+ * for a real logo — a flattened BMW roundel is a filled circle and a flattened
+ * Alfa badge is a blob. Real marks are built for paper, so they get paper:
+ * every one of them is legible on white and almost none of them is legible on
+ * this app's near-black ground.
  */
 export function MakeTile({ name, logoUrl, selected = false, width, onPress, testID }: MakeTileProps) {
   const theme = useTheme();
@@ -32,7 +39,7 @@ export function MakeTile({ name, logoUrl, selected = false, width, onPress, test
     .join('')
     .toUpperCase();
 
-  const mark = Math.round(width * 0.38);
+  const plate = Math.round(width * 0.46);
 
   return (
     <Pressable
@@ -56,24 +63,39 @@ export function MakeTile({ name, logoUrl, selected = false, width, onPress, test
         },
       ]}
     >
-      <View style={[styles.mark, { width: mark, height: mark }]}>
-        {logoUrl ? (
+      {logoUrl ? (
+        <View
+          style={[
+            styles.mark,
+            {
+              width: plate,
+              height: plate,
+              borderRadius: theme.radius.sm,
+              // Paper, because that is what a manufacturer's mark is drawn
+              // for. A hair off pure white so it is a surface on the page
+              // rather than a hole cut in it.
+              backgroundColor: theme.colors.plate,
+              padding: Math.round(plate * 0.14),
+            },
+          ]}
+        >
           <Image
             source={{ uri: logoUrl }}
-            style={{ width: mark, height: mark }}
+            style={{ width: '100%', height: '100%' }}
             contentFit="contain"
-            tintColor={selected ? theme.colors.accent : theme.colors.text}
             transition={120}
           />
-        ) : (
+        </View>
+      ) : (
+        <View style={[styles.mark, { width: plate, height: plate }]}>
           <Text
             variant="title"
             style={{ color: selected ? theme.colors.accent : theme.colors.textMuted }}
           >
             {monogram}
           </Text>
-        )}
-      </View>
+        </View>
+      )}
 
       <Text
         variant="caption"

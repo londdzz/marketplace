@@ -659,10 +659,24 @@ release, and update it whenever a placeholder is added or replaced.
   that wrap and make every card a different height; neutrals carry a little of
   the accent's hue, because flat grey beside a saturated blue reads as cheap;
   and elevation is for the few things that genuinely sit above the page.
-- **Manufacturer marks are real.** `api/scripts/fetch-make-logos.js` pulls them
-  from Simple Icons, whose files are CC0, and renders flat PNGs that the app
-  tints to the text colour, so one file works in light and dark. Run it, then
-  `php artisan makes:logos`. A make with no mark still falls back to a monogram.
+- **Manufacturer marks come from Wikidata, not a search.** Every maker has an item
+  carrying P154, "logo image", naming the exact file on Wikimedia Commons.
+  `api/scripts/fetch-make-logos.js` reads that. Searching Commons for "<make> logo"
+  instead — which it did first — returns the Ferrari World Abu Dhabi logo for Ferrari,
+  a map of Clapham for Brixton and the Biden Victory Fund for Victory, and Wikidata is
+  also what makes those safe: an ordinary word matches a political party or a
+  university, every one of those scores nothing because its description does not say
+  manufacturer, and a zero is refused rather than guessed at. **Look at what it chose
+  before believing it** — the overrides in that file were all found by rendering a
+  contact sheet of the whole set and going through it by eye.
+  143 of the 167 makes have a mark; the rest keep a monogram permanently, because
+  nothing free on Commons is the right brand for Bentley, Genesis, Norton, Polaris,
+  Ural or most of the small Chinese scooter marques. **They are drawn in colour on a
+  light plate, not tinted**: a single-ink glyph tints cleanly and a real logo does not,
+  and an emblem reads at forty-four pixels where a wordmark does not, so a free emblem
+  wins where one exists. The files are committed in `api/resources/make-logos`, and
+  `makes:logos` — which the deploy script runs — copies them onto whichever disk is
+  configured and links them, so a server needs no Node and no bucket upload.
 - **Push registration belongs to sign-in, not to first launch.** The permission prompt arrives
   once an account exists, so it has something to explain it, and the native device token — not
   an Expo push token, because the API talks to FCM and APNs directly — is sent to

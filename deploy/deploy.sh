@@ -59,10 +59,12 @@ $COMPOSER install --no-dev --no-interaction --prefer-dist --optimize-autoloader
 "$PHP" artisan view:cache
 "$PHP" artisan event:cache
 
-# Manufacturer marks are deliberately NOT here. They are generated rather than
-# committed, and `makes:logos` reads whichever disk is configured — S3 in
-# production — so the files have to be in the bucket before it can link them.
-# It is a one-time step, not a per-deploy one: docs/deployment.md, Part 5.
+# Manufacturer marks. The 143 files live in api/resources/make-logos and this
+# copies them onto whichever disk is configured — the R2 bucket in production —
+# before attaching each one to its make. It used to be a one-time step done by
+# hand, because the marks were generated rather than committed; they are
+# committed now, so it belongs here and is safe to repeat.
+"$PHP" artisan makes:logos
 
 # The worker holds the old code in memory until it is told otherwise.
 "$PHP" artisan queue:restart

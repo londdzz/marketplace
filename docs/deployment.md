@@ -151,26 +151,38 @@ never **ship** that way.
 
 Then deploy: Forge → Site → **Deploy Now**. Watch the output.
 
-### One-time: the manufacturer marks
+### The manufacturer marks — nothing to do
 
-The VW, BMW and Škoda marks on the search screen are generated rather than committed, so a
-fresh server has none and every make falls back to a monogram. This is a **one-time** step,
-not part of a deploy, and the order matters: `makes:logos` links files that are *already on
-the configured disk*, which in production is R2.
-
-On the server, via Forge → Commands, or over SSH in `/home/forge/api.autevo.mk/api`:
+The Audi rings, the BMW roundel and the Ducati shield on the search screen used to need a
+one-time job on the server: generate them, install the AWS CLI, `aws s3 sync` them into the
+bucket, then link them. **That is gone.** The 143 marks are committed in
+`api/resources/make-logos`, and `deploy/deploy.sh` runs
 
 ```bash
-node scripts/fetch-make-logos.js          # writes storage/app/public/makes
-
-# Upload them to the bucket. Install the AWS CLI first: sudo apt install awscli
-aws s3 sync storage/app/public/makes s3://autevo-photos/makes   --endpoint-url "$AWS_ENDPOINT"
-
-php artisan makes:logos                   # links what is now in the bucket
+php artisan makes:logos
 ```
 
-Expect `Linked 34 logos.` Dodge, Lancia and Lexus have no mark published and keep their
-monogram, which is by design.
+on every deploy, which copies anything in that directory onto the configured disk — the R2
+bucket in production — and attaches each file to the make whose normalised name matches it,
+so `skoda.png` finds "Škoda". It is safe to repeat and needs no Node on the server.
+
+Expect `Copied 143 marks onto the s3 disk.` the first time and `Linked 143 logos.` every
+time. Twenty-four makes have no mark that is both the right brand and freely licensed —
+Bentley, Genesis, Norton, Polaris, Ural and most of the small Chinese scooter marques — and
+they keep a monogram, by design. `api/resources/make-logos/README.md` says where every one
+came from and under what licence.
+
+**To change a mark**, do it on your own machine and commit the result, not on the server:
+
+```bash
+cd api
+# Name the Commons file you want in OVERRIDES in scripts/fetch-make-logos.js, then:
+node scripts/fetch-make-logos.js --only="Mercedes-Benz"
+cp storage/app/public/makes/mercedes-benz.png resources/make-logos/
+```
+
+Push, deploy, and the server picks it up. `makes:logos` clears the cached `/makes` response
+itself, so the new mark shows immediately rather than within the hour.
 
 ---
 

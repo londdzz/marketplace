@@ -70,14 +70,25 @@ export function OptionRow({
         style,
       ]}
     >
+      {/* On paper, in its own colours, for the same reason MakeTile does it:
+          a real manufacturer's mark does not survive being tinted to one ink. */}
       {logoUrl ? (
-        <Image
-          source={{ uri: logoUrl }}
-          style={{ width: 20, height: 20 }}
-          contentFit="contain"
-          tintColor={selected ? theme.colors.accent : theme.colors.text}
-          transition={120}
-        />
+        <View
+          style={{
+            width: 26,
+            height: 26,
+            borderRadius: theme.radius.sm,
+            backgroundColor: theme.colors.plate,
+            padding: 3,
+          }}
+        >
+          <Image
+            source={{ uri: logoUrl }}
+            style={{ width: '100%', height: '100%' }}
+            contentFit="contain"
+            transition={120}
+          />
+        </View>
       ) : null}
 
       {icon ? (
