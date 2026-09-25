@@ -8,6 +8,7 @@ use App\Enums\CreditReason;
 use App\Enums\FuelType;
 use App\Enums\SellerType;
 use App\Enums\Transmission;
+use App\Enums\VehicleType;
 use App\Models\City;
 use App\Models\Listing;
 use App\Models\Make;
@@ -31,17 +32,27 @@ use Illuminate\Support\Carbon;
 class DevListingSeeder extends Seeder
 {
     /**
-     * @var array<int, array{make: string, model: string, variant: string, year: int, km: int, fuel: FuelType, gearbox: Transmission, hp: int, price: string, city: string, body: string, photo: string, colour: array{int, int, int}}>
+     * @var array<int, array{make: string, model: string, variant: string, year: int, km: int, fuel: FuelType, gearbox: Transmission, hp: int, price: string, city: string, body: string, photo: string, colour: array{int, int, int}, type?: VehicleType}>
      */
     private const CARS = [
         ['make' => 'Volkswagen', 'model' => 'Passat', 'photo' => 'passat', 'variant' => '2.0 TDI Highline', 'body' => 'sedan', 'year' => 2016, 'km' => 168000, 'fuel' => FuelType::Diesel, 'gearbox' => Transmission::Manual, 'hp' => 150, 'price' => '8950.00', 'city' => 'Skopje', 'colour' => [38, 54, 78]],
         ['make' => 'Audi', 'model' => 'A4', 'photo' => 'a4', 'variant' => 'Avant 2.0 TDI quattro', 'body' => 'estate', 'year' => 2018, 'km' => 121000, 'fuel' => FuelType::Diesel, 'gearbox' => Transmission::Automatic, 'hp' => 190, 'price' => '12400.00', 'city' => 'Skopje', 'colour' => [82, 86, 92]],
         ['make' => 'Škoda', 'model' => 'Octavia', 'photo' => 'octavia', 'variant' => '1.6 TDI Ambition', 'body' => 'hatchback', 'year' => 2015, 'km' => 198000, 'fuel' => FuelType::Diesel, 'gearbox' => Transmission::Manual, 'hp' => 110, 'price' => '7300.00', 'city' => 'Tetovo', 'colour' => [140, 146, 150]],
-        ['make' => 'BMW', 'model' => 'Series 3', 'photo' => 'series-3', 'variant' => '320d Touring', 'body' => 'estate', 'year' => 2019, 'km' => 96000, 'fuel' => FuelType::Diesel, 'gearbox' => Transmission::Automatic, 'hp' => 190, 'price' => '14900.00', 'city' => 'Kumanovo', 'colour' => [26, 30, 36]],
+        ['make' => 'BMW', 'model' => '3 Series', 'photo' => 'series-3', 'variant' => '320d Touring', 'body' => 'estate', 'year' => 2019, 'km' => 96000, 'fuel' => FuelType::Diesel, 'gearbox' => Transmission::Automatic, 'hp' => 190, 'price' => '14900.00', 'city' => 'Kumanovo', 'colour' => [26, 30, 36]],
         ['make' => 'Mercedes-Benz', 'model' => 'C-Class', 'photo' => 'c-class', 'variant' => 'C 220 d AMG Line', 'body' => 'sedan', 'year' => 2017, 'km' => 143000, 'fuel' => FuelType::Diesel, 'gearbox' => Transmission::Automatic, 'hp' => 170, 'price' => '16500.00', 'city' => 'Ohrid', 'colour' => [198, 200, 204]],
         ['make' => 'Golf', 'model' => 'Golf', 'photo' => 'golf', 'variant' => '1.6 TDI Comfortline', 'body' => 'hatchback', 'year' => 2014, 'km' => 212000, 'fuel' => FuelType::Diesel, 'gearbox' => Transmission::Manual, 'hp' => 105, 'price' => '6200.00', 'city' => 'Prilep', 'colour' => [156, 42, 44]],
         ['make' => 'Opel', 'model' => 'Astra', 'photo' => 'astra', 'variant' => '1.6 CDTI Innovation', 'body' => 'hatchback', 'year' => 2017, 'km' => 134000, 'fuel' => FuelType::Diesel, 'gearbox' => Transmission::Manual, 'hp' => 136, 'price' => '8100.00', 'city' => 'Bitola', 'colour' => [60, 90, 120]],
         ['make' => 'Toyota', 'model' => 'Corolla', 'photo' => 'corolla', 'variant' => '1.8 Hybrid Comfort', 'body' => 'sedan', 'year' => 2020, 'km' => 64000, 'fuel' => FuelType::Hybrid, 'gearbox' => Transmission::Automatic, 'hp' => 122, 'price' => '17900.00', 'city' => 'Bitola', 'colour' => [235, 238, 240]],
+
+        // Motorcycles, so the other half of the catalogue is not an empty
+        // screen to develop and screenshot against. Five kinds, because the
+        // browse rail is only worth looking at with more than one shape in it.
+        ['type' => VehicleType::Motorcycle, 'make' => 'Yamaha', 'model' => 'MT-07', 'photo' => 'mt-07', 'variant' => 'ABS', 'body' => 'naked', 'year' => 2019, 'km' => 21000, 'fuel' => FuelType::Petrol, 'gearbox' => Transmission::Manual, 'hp' => 74, 'price' => '6200.00', 'city' => 'Skopje', 'colour' => [30, 34, 40]],
+        ['type' => VehicleType::Motorcycle, 'make' => 'Honda', 'model' => 'PCX 125', 'photo' => 'pcx-125', 'variant' => '', 'body' => 'scooter', 'year' => 2021, 'km' => 9400, 'fuel' => FuelType::Petrol, 'gearbox' => Transmission::Automatic, 'hp' => 12, 'price' => '2450.00', 'city' => 'Skopje', 'colour' => [180, 186, 190]],
+        ['type' => VehicleType::Motorcycle, 'make' => 'BMW', 'model' => 'R 1250 GS', 'photo' => 'r1250gs', 'variant' => 'Adventure', 'body' => 'adventure', 'year' => 2020, 'km' => 38000, 'fuel' => FuelType::Petrol, 'gearbox' => Transmission::Manual, 'hp' => 136, 'price' => '15800.00', 'city' => 'Ohrid', 'colour' => [46, 76, 96]],
+        ['type' => VehicleType::Motorcycle, 'make' => 'Kawasaki', 'model' => 'Ninja 400', 'photo' => 'ninja-400', 'variant' => '', 'body' => 'sport', 'year' => 2018, 'km' => 17600, 'fuel' => FuelType::Petrol, 'gearbox' => Transmission::Manual, 'hp' => 45, 'price' => '4300.00', 'city' => 'Bitola', 'colour' => [22, 108, 62]],
+        ['type' => VehicleType::Motorcycle, 'make' => 'Harley-Davidson', 'model' => 'Iron 883', 'photo' => 'iron-883', 'variant' => 'Sportster', 'body' => 'cruiser', 'year' => 2016, 'km' => 24500, 'fuel' => FuelType::Petrol, 'gearbox' => Transmission::Manual, 'hp' => 51, 'price' => '7900.00', 'city' => 'Tetovo', 'colour' => [40, 38, 36]],
+        ['type' => VehicleType::Motorcycle, 'make' => 'Vespa', 'model' => 'Primavera 125', 'photo' => 'primavera', 'variant' => '', 'body' => 'scooter', 'year' => 2022, 'km' => 5200, 'fuel' => FuelType::Petrol, 'gearbox' => Transmission::Automatic, 'hp' => 11, 'price' => '3600.00', 'city' => 'Kumanovo', 'colour' => [214, 206, 180]],
     ];
 
     public function run(): void
@@ -59,10 +70,18 @@ class DevListingSeeder extends Seeder
                 continue;
             }
 
+            $type = $car['type'] ?? VehicleType::Car;
+
             $make = Make::query()->where('name', $car['make'] === 'Golf' ? 'Volkswagen' : $car['make'])->first();
+            // The kind matters here for the same reason it matters everywhere:
+            // BMW sells both, and a Series 3 and an R 1250 GS are both BMWs.
             $model = $make === null
                 ? null
-                : VehicleModel::query()->where('make_id', $make->getKey())->where('name', $car['model'])->first();
+                : VehicleModel::query()
+                    ->where('make_id', $make->getKey())
+                    ->where('vehicle_type', $type)
+                    ->where('name', $car['model'])
+                    ->first();
 
             if ($make === null || $model === null) {
                 continue;
@@ -77,6 +96,7 @@ class DevListingSeeder extends Seeder
             ]);
 
             $listing = $listings->createDraft($seller, [
+                'vehicle_type' => $type,
                 'make_id' => $make->getKey(),
                 'model_id' => $model->getKey(),
                 'variant' => $car['variant'],
@@ -86,15 +106,21 @@ class DevListingSeeder extends Seeder
                 'transmission' => $car['gearbox'],
                 'power_hp' => $car['hp'],
                 'body_type' => $car['body'],
-                'drivetrain' => 'fwd',
+                // Doors and seats mean nothing on two wheels, and a drivetrain
+                // means something different enough not to claim either.
+                'drivetrain' => $type === VehicleType::Motorcycle ? null : 'fwd',
                 'color' => 'grey',
-                'doors' => 5,
-                'seats' => 5,
+                'doors' => $type === VehicleType::Motorcycle ? null : 5,
+                'seats' => $type === VehicleType::Motorcycle ? null : 5,
                 'price_eur' => $car['price'],
                 'price_negotiable' => $index % 2 === 0,
                 'customs_cleared' => true,
-                'description' => 'Full service history, two owners, no accidents. Recently serviced with new tyres and brakes.',
-                'features' => ['air_conditioning', 'parking_sensors', 'bluetooth', 'alloy_wheels', 'cruise_control', 'service_history'],
+                'description' => $type === VehicleType::Motorcycle
+                    ? 'One owner from new, full service history, garaged. New tyres and chain fitted this year.'
+                    : 'Full service history, two owners, no accidents. Recently serviced with new tyres and brakes.',
+                'features' => $type === VehicleType::Motorcycle
+                    ? ['abs', 'led_lights', 'service_history', 'first_owner']
+                    : ['air_conditioning', 'parking_sensors', 'bluetooth', 'alloy_wheels', 'cruise_control', 'service_history'],
                 'country_code' => $city->country_code,
                 'city_id' => $city->getKey(),
                 'latitude' => $city->latitude,

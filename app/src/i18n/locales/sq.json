@@ -64,11 +64,9 @@
     "empty_title": "Ende asnjë makinë e ruajtur",
     "empty_body": "Makinat që ruan shfaqen këtu.",
     "parked": "Makinat e ruajtura",
-    "promo_title": "Shite makinën tënde",
     "promo_body": "1 kredi = 1 shpallje aktive për 2 javë",
     "promo_cta": "Fillo",
     "vat_note": "{{net}} (neto) + TVSH",
-    "newest": "Të shtuara së fundmi",
     "browse_collections": "Shfleto sipas nevojës",
     "browse_body_types": "Shfleto sipas formës",
     "collection_family": "Vetura familjare",
@@ -90,7 +88,16 @@
     "rate_thanks": "Faleminderit",
     "rate_thanks_low": "E shënuam. Më mirë ta dimë tani sesa pasi të largoheni.",
     "rate_thanks_high": "Na vjen mirë që po ju shërben.",
-    "rate_failed": "Nuk u dërgua. Provoni sërish pas pak."
+    "rate_failed": "Nuk u dërgua. Provoni sërish pas pak.",
+    "newest_car": "Shtuar së voni",
+    "newest_motorcycle": "Shtuar së voni",
+    "collection_first_bike": "Motori i parë",
+    "collection_two_wheel_commuter": "Për çdo ditë",
+    "collection_adventure": "Aventurë",
+    "collection_cruisers": "Cruiser",
+    "collection_track": "Motorë sportivë",
+    "promo_title_car": "Shitni veturën tuaj",
+    "promo_title_motorcycle": "Shitni motoçikletën tuaj"
   },
   "search": {
     "results": "{{count}} makina",
@@ -162,7 +169,11 @@
     "any_model": "Çdo model",
     "make": "Marka",
     "city": "Qyteti",
-    "search_now": "Kërko"
+    "search_now": "Kërko",
+    "category": {
+      "car": "Vetura",
+      "motorcycle": "Motoçikleta"
+    }
   },
   "listing": {
     "fuel": {
@@ -222,7 +233,19 @@
       "minivan": "Minivan",
       "pickup": "Pikap",
       "van": "Furgon",
-      "other": "Tjetër"
+      "other": "Tjetër",
+      "sport": "Sportiv",
+      "naked": "Naked",
+      "touring": "Touring",
+      "adventure": "Aventurë",
+      "cruiser": "Cruiser",
+      "scooter": "Skuter",
+      "moped": "Motobiçikletë",
+      "enduro": "Enduro",
+      "motocross": "Motokros",
+      "supermoto": "Supermoto",
+      "trike": "Triçikletë",
+      "quad": "Kuad"
     },
     "feature": {
       "air_conditioning": "Ajër i kondicionuar",
@@ -320,7 +343,7 @@
     "skip": "Kapërce",
     "resume": "Vazhdo draftin",
     "my_listings": "Shpalljet e mia",
-    "new_listing": "Shit një makinë",
+    "new_listing": "Shpallje e re",
     "no_listings": "Ende asnjë shpallje",
     "no_listings_body": "Shpallja jote e parë zgjat 2 javë.",
     "expires_in": "Edhe {{count}} ditë",
@@ -433,8 +456,14 @@
     "promote_more": "Më shumë kredi",
     "promote": "Promovo",
     "promoted_until": "Në krye deri më {{date}}",
-    "guest_title": "Shit makinën në Autevo",
-    "guest_body": "Hyr për të publikuar një makinë. Blerësit të kontaktojnë në numrin me të cilin hyn, ndaj shpallja ka nevojë për një numër."
+    "guest_title": "Shit në Autevo",
+    "guest_body": "Hyr për të publikuar një veturë ose një motoçikletë. Blerësit të kontaktojnë në numrin me të cilin hyn, ndaj shpallja ka nevojë për një numër.",
+    "category": "Çfarë po shitni?",
+    "category_hint": "Gjithçka pas kësaj varet nga ajo, ndaj pyetet e para.",
+    "shape_motorcycle": "Çfarë lloj motori është?",
+    "shape_hint_motorcycle": "E gjetëm nga modeli. Ndryshojeni nëse është skuter, cruiser ose ndonjë tjetër.",
+    "kind_car": "Veturë",
+    "kind_motorcycle": "Motoçikletë"
   },
   "messages": {
     "title": "Mesazhet",

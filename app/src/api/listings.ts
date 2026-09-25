@@ -1,5 +1,12 @@
 import { api } from './client';
-import type { ApiResource, Listing, ListingPage, SavedSearch, SearchFilters } from './types';
+import type {
+  ApiResource,
+  Listing,
+  ListingPage,
+  SavedSearch,
+  SearchFilters,
+  VehicleType,
+} from './types';
 
 /**
  * Turns the filter object the app holds into the query string the API expects,
@@ -23,6 +30,9 @@ export function toQuery(filters: SearchFilters, page = 1): string {
   };
 
   append('q', filters.q);
+  // Always sent, never left to the default, so a motorcycle search is a
+  // motorcycle search however it was arrived at.
+  append('vehicle_type', filters.vehicleType ?? 'car');
   append('make_id', filters.makeId);
   append('model_id', filters.modelId);
   append('year_min', filters.yearMin);
@@ -44,6 +54,7 @@ export function toQuery(filters: SearchFilters, page = 1): string {
 /** The filter object as the API stores it, in its own snake_case spelling. */
 export type ApiFilters = {
   q?: string;
+  vehicle_type?: VehicleType;
   make_id?: number;
   model_id?: number;
   year_min?: number;
@@ -81,6 +92,7 @@ export function fromApiFilters(filters: ApiFilters | null): SearchFilters {
 
   const mapped: SearchFilters = {
     q: filters.q,
+    vehicleType: filters.vehicle_type ?? 'car',
     makeId: filters.make_id,
     modelId: filters.model_id,
     yearMin: filters.year_min,
@@ -148,6 +160,7 @@ export const listingsApi = {
       name,
       filters: {
         q: filters.q,
+        vehicle_type: filters.vehicleType ?? 'car',
         make_id: filters.makeId,
         model_id: filters.modelId,
         year_min: filters.yearMin,

@@ -4,6 +4,7 @@ export { BodyTypeTile, type BodyTypeTileProps } from './BodyTypeTile';
 export { Badge, type BadgeProps } from './Badge';
 export { Button, type ButtonProps } from './Button';
 export { Card, type CardProps } from './Card';
+export { CategorySwitch, type CategorySwitchProps } from './CategorySwitch';
 export {
   CentreTabButton,
   CentreTabDisc,

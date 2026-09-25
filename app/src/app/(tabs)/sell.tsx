@@ -113,7 +113,7 @@ export default function MyListingsTab() {
 
   const startNew = () => {
     clear();
-    router.push('/sell/make');
+    router.push(pathTo('category'));
   };
 
   /**
@@ -125,7 +125,7 @@ export default function MyListingsTab() {
     resume(listing);
 
     const missing = missingForPublish(listing, MIN_PHOTOS);
-    const screen = missing.length > 0 ? (screenForField(missing[0]) ?? 'make') : 'review';
+    const screen = missing.length > 0 ? (screenForField(missing[0]) ?? 'category') : 'review';
 
     router.push(pathTo(screen));
   };

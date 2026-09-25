@@ -26,9 +26,17 @@ export default function FiltersScreen() {
   const router = useRouter();
   const { t } = useTranslation(['search', 'listing', 'common']);
 
-  const { filters, set, toggle, reset } = useFilters();
+  const { filters, vehicleType, set, toggle, reset } = useFilters();
   const countries = useQuery({ queryKey: ['countries'], queryFn: referenceApi.countries });
-  const makes = useQuery({ queryKey: ['makes'], queryFn: referenceApi.makes });
+  const makes = useQuery({
+    queryKey: ['makes', vehicleType],
+    queryFn: () => referenceApi.makes(vehicleType),
+  });
+  const vocabularies = useQuery({
+    queryKey: ['vocabularies'],
+    queryFn: referenceApi.vocabularies,
+    staleTime: 60 * 60 * 1000,
+  });
 
   // The same count the builder shows, so the button never disagrees with it.
   const preview = useQuery({
@@ -39,8 +47,8 @@ export default function FiltersScreen() {
 
   // Only asked for once a make narrows it to one manufacturer's range.
   const models = useQuery({
-    queryKey: ['models', filters.makeId],
-    queryFn: () => referenceApi.models(filters.makeId as number),
+    queryKey: ['models', filters.makeId, vehicleType],
+    queryFn: () => referenceApi.models(filters.makeId as number, vehicleType),
     enabled: filters.makeId !== undefined,
     staleTime: 60 * 60 * 1000,
   });

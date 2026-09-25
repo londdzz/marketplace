@@ -25,14 +25,17 @@ export default function ModelsScreen() {
   const theme = useTheme();
   const router = useRouter();
   const { t } = useTranslation(['search', 'sell', 'listing', 'common']);
-  const { filters, set } = useFilters();
+  const { filters, vehicleType, set } = useFilters();
 
   const makeId = filters.makeId;
 
-  const makes = useQuery({ queryKey: ['makes'], queryFn: referenceApi.makes });
+  const makes = useQuery({
+    queryKey: ['makes', vehicleType],
+    queryFn: () => referenceApi.makes(vehicleType),
+  });
   const models = useQuery({
-    queryKey: ['models', makeId],
-    queryFn: () => referenceApi.models(makeId as number),
+    queryKey: ['models', makeId, vehicleType],
+    queryFn: () => referenceApi.models(makeId as number, vehicleType),
     enabled: Boolean(makeId),
     staleTime: 60 * 60 * 1000,
   });

@@ -49,16 +49,31 @@ export type OtpChallenge = {
   expires_in_seconds: number;
 };
 
+/**
+ * What kind of vehicle is being looked at.
+ *
+ * Absent means a car everywhere it can be absent, because that is what the
+ * whole catalogue was before motorcycles existed and what the API answers when
+ * nothing says otherwise.
+ */
+export type VehicleType = 'car' | 'motorcycle';
+
+export const VEHICLE_TYPES: readonly VehicleType[] = ['car', 'motorcycle'];
+
 export type Make = {
   id: number;
   name: string;
+  /** Whether it leads the picker — asked per kind, so it follows the request. */
   popular: boolean;
+  /** The kinds it sells. BMW answers both; Vespa answers motorcycles alone. */
+  sells: VehicleType[];
   logo_url: string | null;
 };
 
 export type VehicleModel = {
   id: number;
   make_id: number;
+  vehicle_type: VehicleType;
   name: string;
   body_type: string | null;
 };
@@ -85,6 +100,7 @@ export type Seller = {
 export type Listing = {
   id: string;
   status: string;
+  vehicle_type: VehicleType;
   make: Make | null;
   model: VehicleModel | null;
   variant: string | null;
@@ -182,6 +198,7 @@ export type SavedSearch = {
 
 export type SearchFilters = {
   q?: string;
+  vehicleType?: VehicleType;
   makeId?: number;
   modelId?: number;
   yearMin?: number;

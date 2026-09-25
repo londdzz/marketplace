@@ -1,14 +1,34 @@
 import { api } from './client';
 import { fromApiFilters, type ApiFilters } from './listings';
-import type { ApiResource, City, Country, Make, SearchFilters, VehicleModel } from './types';
+import type {
+  ApiResource,
+  City,
+  Country,
+  Make,
+  SearchFilters,
+  VehicleModel,
+  VehicleType,
+} from './types';
 
 /** The closed vocabularies the API validates against. Keys, never wording. */
 export type Vocabularies = {
+  vehicle_types: VehicleType[];
   body_types: string[];
+  /** A motorcycle's shapes, which share the column and nothing else. */
+  motorcycle_types: string[];
   drivetrains: string[];
   colors: string[];
   features: string[];
 };
+
+/** The shapes the given kind of vehicle comes in. */
+export function shapesFor(vocabularies: Vocabularies | undefined, type: VehicleType): string[] {
+  if (!vocabularies) {
+    return [];
+  }
+
+  return type === 'motorcycle' ? vocabularies.motorcycle_types : vocabularies.body_types;
+}
 
 /**
  * The ways into the catalogue that are not a search box.
@@ -67,17 +87,21 @@ export const referenceApi = {
     api
       .get<ApiResource<City[]>>(`/cities${country ? `?country=${country}` : ''}`, { anonymous: true })
       .then((r) => r.data),
-  makes: () => api.get<ApiResource<Make[]>>('/makes', { anonymous: true }).then((r) => r.data),
-  models: (makeId: number) =>
+  // A make that sells both keeps its cars and its bikes in separate lists, and
+  // which makes lead the picker is a different answer per kind, so both of
+  // these carry the kind rather than filtering afterwards.
+  makes: (type: VehicleType = 'car') =>
+    api.get<ApiResource<Make[]>>(`/makes?type=${type}`, { anonymous: true }).then((r) => r.data),
+  models: (makeId: number, type: VehicleType = 'car') =>
     api
-      .get<ApiResource<VehicleModel[]>>(`/makes/${makeId}/models`, { anonymous: true })
+      .get<ApiResource<VehicleModel[]>>(`/makes/${makeId}/models?type=${type}`, { anonymous: true })
       .then((r) => r.data),
   vocabularies: () =>
     api.get<ApiResource<Vocabularies>>('/vocabularies', { anonymous: true }).then((r) => r.data),
-  browse: () =>
+  browse: (type: VehicleType = 'car') =>
     api
       .get<ApiResource<{ collections: BrowseCollectionRow[]; body_types: BrowseBodyTypeRow[] }>>(
-        '/browse',
+        `/browse?type=${type}`,
       )
       .then((response) => ({
         collections: response.data.collections.map((row) => ({

@@ -1,11 +1,19 @@
 import { Platform } from 'react-native';
 
 import { api } from './client';
-import type { ApiResource, Listing, ListingPage, ListingPhoto, PromotionOptions } from './types';
+import type {
+  ApiResource,
+  Listing,
+  ListingPage,
+  ListingPhoto,
+  PromotionOptions,
+  VehicleType,
+} from './types';
 
 /** What a step of the sell flow sends. Every field is optional: a draft is saved
  * after each step, so it is incomplete by design until the last one. */
 export type ListingDraftInput = {
+  vehicle_type?: VehicleType;
   make_id?: number;
   model_id?: number | null;
   variant?: string | null;

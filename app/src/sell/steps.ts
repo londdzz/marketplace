@@ -4,11 +4,12 @@ import type { Listing } from '../api/types';
  * The sell flow, in order.
  *
  * One decision per screen, but the seller is told how far along they are in
- * terms of the seven things a listing needs, not the twelve screens it takes to
- * collect them: "step 2 of 7" while answering year, kilometres, fuel, gearbox
- * and shape is honest, "step 5 of 12" just looks longer than it is.
+ * terms of the seven things a listing needs, not the thirteen screens it takes
+ * to collect them: "step 2 of 7" while answering year, kilometres, fuel,
+ * gearbox and shape is honest, "step 5 of 13" just looks longer than it is.
  */
 export type SellScreen =
+  | 'category'
   | 'make'
   | 'model'
   | 'year'
@@ -23,6 +24,7 @@ export type SellScreen =
   | 'review';
 
 export const SELL_SCREENS: SellScreen[] = [
+  'category',
   'make',
   'model',
   'year',
@@ -39,6 +41,10 @@ export const SELL_SCREENS: SellScreen[] = [
 
 /** Which of the seven steps a screen belongs to. */
 const STEP_OF: Record<SellScreen, number> = {
+  // What is being sold belongs with what it is: a Yamaha MT-07 is one answer,
+  // asked over three screens, and calling it a step of its own would have made
+  // the flow read as eight steps for no extra decision.
+  category: 1,
   make: 1,
   model: 1,
   year: 2,
@@ -82,6 +88,9 @@ export function progressOf(screen: SellScreen): number {
  * The field names the API returns in a 422 when a listing is not ready, mapped
  * to the screen that collects them, so the review step can send the seller
  * straight back to what is missing.
+ *
+ * `vehicle_type` is not here: it has a default, so a draft always has one and
+ * it can never be the thing that is missing.
  */
 const SCREEN_FOR_FIELD: Record<string, SellScreen> = {
   make_id: 'make',

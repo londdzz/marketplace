@@ -64,11 +64,9 @@
     "empty_title": "Још нема сачуваних аутомобила",
     "empty_body": "Аутомобили које сачуваш појављују се овде.",
     "parked": "Сачувана возила",
-    "promo_title": "Продај свој аутомобил",
     "promo_body": "1 кредит = 1 оглас, активан 2 недеље",
     "promo_cta": "Почни",
     "vat_note": "{{net}} (нето) + ПДВ",
-    "newest": "Недавно додато",
     "browse_collections": "Прегледај по потреби",
     "browse_body_types": "Прегледај по облику",
     "collection_family": "Породични аутомобили",
@@ -90,7 +88,16 @@
     "rate_thanks": "Хвала",
     "rate_thanks_low": "Забележено. Боље да сазнамо сада него након што одете.",
     "rate_thanks_high": "Драго нам је што вам ради.",
-    "rate_failed": "Није послато. Покушајте поново за тренутак."
+    "rate_failed": "Није послато. Покушајте поново за тренутак.",
+    "newest_car": "Недавно додато",
+    "newest_motorcycle": "Недавно додато",
+    "collection_first_bike": "Први мотор",
+    "collection_two_wheel_commuter": "За сваки дан",
+    "collection_adventure": "Авантура",
+    "collection_cruisers": "Крузери",
+    "collection_track": "Спортски мотори",
+    "promo_title_car": "Продајте свој аутомобил",
+    "promo_title_motorcycle": "Продајте свој мотор"
   },
   "search": {
     "results": "{{count}} аутомобила",
@@ -162,7 +169,11 @@
     "any_model": "Било који модел",
     "make": "Марка",
     "city": "Град",
-    "search_now": "Претражи"
+    "search_now": "Претражи",
+    "category": {
+      "car": "Аутомобили",
+      "motorcycle": "Мотоцикли"
+    }
   },
   "listing": {
     "fuel": {
@@ -222,7 +233,19 @@
       "minivan": "Миниван",
       "pickup": "Пикап",
       "van": "Комби",
-      "other": "Остало"
+      "other": "Остало",
+      "sport": "Спортски",
+      "naked": "Нејкед",
+      "touring": "Туринг",
+      "adventure": "Авантуристички",
+      "cruiser": "Крузер",
+      "scooter": "Скутер",
+      "moped": "Мопед",
+      "enduro": "Ендуро",
+      "motocross": "Моторкрос",
+      "supermoto": "Супермото",
+      "trike": "Трицикл",
+      "quad": "Квад"
     },
     "feature": {
       "air_conditioning": "Клима",
@@ -320,7 +343,7 @@
     "skip": "Прескочи",
     "resume": "Настави нацрт",
     "my_listings": "Моји огласи",
-    "new_listing": "Продај аутомобил",
+    "new_listing": "Нови оглас",
     "no_listings": "Још нема огласа",
     "no_listings_body": "Твој први оглас траје 2 недеље.",
     "expires_in": "Још {{count}} дана",
@@ -433,8 +456,14 @@
     "promote_more": "Више кредита",
     "promote": "Промовиши",
     "promoted_until": "На врху до {{date}}",
-    "guest_title": "Prodaj automobil na Autevo",
-    "guest_body": "Prijavi se da objaviš automobil. Kupci te kontaktiraju na broj sa kojim si prijavljen, pa oglas traži broj."
+    "guest_title": "Продај на Autevo",
+    "guest_body": "Пријави се да објавиш аутомобил или мотор. Купци те контактирају на број са којим си пријављен, па оглас тражи број.",
+    "category": "Шта продајете?",
+    "category_hint": "Све после овога зависи од тога, зато се пита прво.",
+    "shape_motorcycle": "Каква је то машина?",
+    "shape_hint_motorcycle": "Претпоставили смо по моделу. Промените ако је скутер, крузер или нешто друго.",
+    "kind_car": "Аутомобил",
+    "kind_motorcycle": "Мотор"
   },
   "messages": {
     "title": "Поруке",

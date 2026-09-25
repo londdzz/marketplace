@@ -19,7 +19,7 @@ const REFERENCE_STALE_MS = 60 * 60 * 1000;
 const CARS_ABOVE_THE_FOLD = 8;
 
 /** The home screen's own query, warmed under the key that screen reads. */
-const NEWEST = { sort: 'newest' } as const;
+const NEWEST = { sort: 'newest', vehicleType: 'car' } as const;
 
 /**
  * Fetches what the first screens need before they are shown.
@@ -57,9 +57,12 @@ export function useWarmUp(waitFor: boolean, signedIn: boolean): boolean {
         queryFn: referenceApi.countries,
         staleTime: REFERENCE_STALE_MS,
       }),
+      // Cars only. The app opens on cars, and a buyer who switches to
+      // motorcycles is on a screen that can afford to fetch: warming both
+      // would make every launch pay for a catalogue most never open.
       queryClient.prefetchQuery({
-        queryKey: ['makes'],
-        queryFn: referenceApi.makes,
+        queryKey: ['makes', 'car'],
+        queryFn: () => referenceApi.makes('car'),
         staleTime: REFERENCE_STALE_MS,
       }),
       queryClient.prefetchQuery({
@@ -75,8 +78,8 @@ export function useWarmUp(waitFor: boolean, signedIn: boolean): boolean {
       // The home screen's collections and body shapes, so it opens with
       // somewhere to go rather than two headings filling in afterwards.
       queryClient.prefetchQuery({
-        queryKey: BROWSE_KEY,
-        queryFn: referenceApi.browse,
+        queryKey: BROWSE_KEY('car'),
+        queryFn: () => referenceApi.browse('car'),
       }),
     ];
 

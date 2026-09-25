@@ -18,7 +18,15 @@ export default function SellMakeScreen() {
   const { t } = useTranslation(['sell', 'common']);
   const { draft, save } = useSell();
 
-  const makes = useQuery({ queryKey: ['makes'], queryFn: referenceApi.makes, staleTime: 60 * 60 * 1000 });
+  // A draft always knows what it is by the time this screen is reached, and the
+  // list follows it: Vespa has no business on a car's make picker.
+  const vehicleType = draft?.vehicle_type ?? 'car';
+
+  const makes = useQuery({
+    queryKey: ['makes', vehicleType],
+    queryFn: () => referenceApi.makes(vehicleType),
+    staleTime: 60 * 60 * 1000,
+  });
   const [query, setQuery] = useState('');
   const [selected, setSelected] = useState<number | null>(draft?.make?.id ?? null);
 

@@ -18,10 +18,12 @@ export default function SellModelScreen() {
   const { draft, save } = useSell();
 
   const makeId = draft?.make?.id;
+  // BMW sells both, so the make alone does not narrow this to one list.
+  const vehicleType = draft?.vehicle_type ?? 'car';
 
   const models = useQuery({
-    queryKey: ['models', makeId],
-    queryFn: () => referenceApi.models(makeId as number),
+    queryKey: ['models', makeId, vehicleType],
+    queryFn: () => referenceApi.models(makeId as number, vehicleType),
     enabled: Boolean(makeId),
     staleTime: 60 * 60 * 1000,
   });

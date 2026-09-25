@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useFocusEffect, useRouter } from 'expo-router';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, ScrollView, View } from 'react-native';
 
@@ -33,7 +33,18 @@ export default function MySearchesTab() {
   // On the account when there is one, on this phone when there is not.
   const saved = useSavedSearches();
   const searches = saved;
-  const makes = useQuery({ queryKey: ['makes'], queryFn: referenceApi.makes });
+  // Both catalogues, because a saved search names a Yamaha as readily as a
+  // Volkswagen and this list has to be able to write either one out. Make ids
+  // are unique across the table, so one flat list answers for both.
+  const carMakes = useQuery({ queryKey: ['makes', 'car'], queryFn: () => referenceApi.makes('car') });
+  const bikeMakes = useQuery({
+    queryKey: ['makes', 'motorcycle'],
+    queryFn: () => referenceApi.makes('motorcycle'),
+  });
+  const makeNames = useMemo(
+    () => new Map([...(carMakes.data ?? []), ...(bikeMakes.data ?? [])].map((make) => [make.id, make.name])),
+    [carMakes.data, bikeMakes.data],
+  );
 
   // A tab screen is mounted once and never unmounted, so without this the list
   // would still show what it held the first time it was opened.
@@ -58,9 +69,13 @@ export default function MySearchesTab() {
       parts.push(`“${filters.q}”`);
     }
 
-    const make = makes.data?.find((entry) => entry.id === filters.makeId);
+    // The kind leads, so a saved search reads as what it is before it reads as
+    // where and how much.
+    parts.push(t(`search:category.${filters.vehicleType ?? 'car'}`));
+
+    const make = filters.makeId === undefined ? undefined : makeNames.get(filters.makeId);
     if (make) {
-      parts.push(make.name);
+      parts.push(make);
     }
 
     if (filters.yearMin && filters.yearMax) {

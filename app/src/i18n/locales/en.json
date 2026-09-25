@@ -64,11 +64,9 @@
     "empty_title": "No saved cars yet",
     "empty_body": "Cars you save show up here.",
     "parked": "Saved vehicles",
-    "promo_title": "Sell your car",
     "promo_body": "1 credit = 1 listing, live for 2 weeks",
     "promo_cta": "Start",
     "vat_note": "{{net}} (net) + VAT",
-    "newest": "Recently added",
     "browse_collections": "Browse by need",
     "browse_body_types": "Browse by shape",
     "collection_family": "Family cars",
@@ -90,7 +88,16 @@
     "rate_thanks": "Thank you",
     "rate_thanks_low": "Noted. We would rather know now than after you leave.",
     "rate_thanks_high": "Glad it is working for you.",
-    "rate_failed": "That did not send. Try again in a moment."
+    "rate_failed": "That did not send. Try again in a moment.",
+    "newest_car": "Recently added",
+    "newest_motorcycle": "Recently added",
+    "collection_first_bike": "First bike",
+    "collection_two_wheel_commuter": "Getting about",
+    "collection_adventure": "Adventure",
+    "collection_cruisers": "Cruisers",
+    "collection_track": "Sports bikes",
+    "promo_title_car": "Sell your car",
+    "promo_title_motorcycle": "Sell your motorcycle"
   },
   "search": {
     "results": "{{count}} cars",
@@ -162,7 +169,11 @@
     "any_model": "Any model",
     "make": "Make",
     "city": "City",
-    "search_now": "Search"
+    "search_now": "Search",
+    "category": {
+      "car": "Cars",
+      "motorcycle": "Motorcycles"
+    }
   },
   "listing": {
     "fuel": {
@@ -222,7 +233,19 @@
       "minivan": "Minivan",
       "pickup": "Pickup",
       "van": "Van",
-      "other": "Other"
+      "other": "Other",
+      "sport": "Sports",
+      "naked": "Naked",
+      "touring": "Touring",
+      "adventure": "Adventure",
+      "cruiser": "Cruiser",
+      "scooter": "Scooter",
+      "moped": "Moped",
+      "enduro": "Enduro",
+      "motocross": "Motocross",
+      "supermoto": "Supermoto",
+      "trike": "Trike",
+      "quad": "Quad"
     },
     "feature": {
       "air_conditioning": "Air conditioning",
@@ -320,7 +343,7 @@
     "skip": "Skip",
     "resume": "Resume draft",
     "my_listings": "My listings",
-    "new_listing": "Sell a car",
+    "new_listing": "New listing",
     "no_listings": "No listings yet",
     "no_listings_body": "Your first listing runs for 2 weeks.",
     "expires_in": "{{count}} days left",
@@ -433,8 +456,14 @@
     "promote_more": "More credits",
     "promote": "Promote",
     "promoted_until": "On top until {{date}}",
-    "guest_title": "Sell your car on Autevo",
-    "guest_body": "Sign in to list a car. Buyers contact you on the number you sign in with, so a listing needs one."
+    "guest_title": "Sell on Autevo",
+    "guest_body": "Sign in to list a car or a motorcycle. Buyers contact you on the number you sign in with, so a listing needs one.",
+    "category": "What are you selling?",
+    "category_hint": "Everything after this depends on it, so it is asked first.",
+    "shape_motorcycle": "What kind of bike is it?",
+    "shape_hint_motorcycle": "We guessed from the model. Change it if it is a scooter, a cruiser or anything else.",
+    "kind_car": "Car",
+    "kind_motorcycle": "Motorcycle"
   },
   "messages": {
     "title": "Messages",

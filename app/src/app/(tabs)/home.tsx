@@ -25,6 +25,7 @@ import { authApi } from '../../api/auth';
 import { referenceApi } from '../../api/reference';
 import {
   BodyTypeTile,
+  CategorySwitch,
   CollectionCard,
   FloatingSearchBar,
   ListingCard,
@@ -49,7 +50,7 @@ import { useAuth } from '../../auth/AuthProvider';
 import { useFilters } from '../../search/FiltersProvider';
 import { useTheme } from '../../theme';
 
-/** The newest cars, which is what the home screen is a window onto. */
+/** The newest of whatever is being browsed, which is what home is a window onto. */
 const NEWEST = { sort: 'newest' } as const;
 
 /** Eight on the home screen. The rest are behind Show all. */
@@ -78,7 +79,7 @@ export default function HomeTab() {
   const router = useRouter();
   const { width } = useWindowDimensions();
   const { t } = useTranslation(['home', 'search', 'listing', 'common']);
-  const { replace } = useFilters();
+  const { replace, vehicleType, setVehicleType } = useFilters();
   const { user, apply } = useAuth();
 
   // Answering sets rated_at on the account, which is what stops the card being
@@ -119,12 +120,19 @@ export default function HomeTab() {
 
   // The newest cars across all five markets, which is what a home screen is
   // for: something to look at before anyone has searched for anything.
-  const newest = useListingPage(NEWEST, 1);
+  // The whole screen follows the switch: the newest list, the collections, the
+  // shapes and what tapping any of them searches for.
+  const newest = useListingPage({ ...NEWEST, vehicleType }, 1);
   const { byCurrency } = useExchangeRates();
   const countries = useQuery({ queryKey: ['countries'], queryFn: referenceApi.countries });
+  const vocabularies = useQuery({
+    queryKey: ['vocabularies'],
+    queryFn: referenceApi.vocabularies,
+    staleTime: 60 * 60 * 1000,
+  });
 
   // The ways in that are not a search box, each with a count the API measured.
-  const browse = useBrowse();
+  const browse = useBrowse(vehicleType);
   const chipsFor = useCollectionChips();
 
   // The heart on a card does what a heart does, here as well as in the
@@ -155,9 +163,14 @@ export default function HomeTab() {
     gap,
   };
 
-  /** Open a set of filters as a search, rather than carrying anything over. */
+  /**
+   * Open a set of filters as a search, rather than carrying anything over.
+   *
+   * The kind comes first so a collection's own `vehicleType` still wins — the
+   * API sends it with every collection, and it is the same one anyway.
+   */
   const open = (filters: Parameters<typeof replace>[0]) => {
-    replace(filters);
+    replace({ vehicleType, ...filters });
     router.push('/results');
   };
 
@@ -189,8 +202,19 @@ export default function HomeTab() {
             pinAt={headerHeight}
           />
 
+          {/* Right under the search bar, so it is the first thing read after
+              it, and inside the page rather than pinned: it is a choice made
+              once on the way in, not a control to keep reaching for. */}
+          <CategorySwitch
+            value={vehicleType}
+            types={vocabularies.data?.vehicle_types}
+            onChange={setVehicleType}
+            label={(type) => t(`search:category.${type}`)}
+            testID="home-category-switch"
+          />
+
           <PromoBanner
-            title={t('home:promo_title')}
+            title={t(`home:promo_title_${vehicleType}`)}
             body={t('home:promo_body')}
             cta={t('home:promo_cta')}
             onPress={() => router.push('/(tabs)/sell')}
@@ -235,7 +259,7 @@ export default function HomeTab() {
           ) : null}
 
           <View style={styles.sectionHeader}>
-            <Text variant="title">{t('home:newest')}</Text>
+            <Text variant="title">{t(`home:newest_${vehicleType}`)}</Text>
             <Pressable
               accessibilityRole="button"
               style={styles.showAll}
@@ -243,7 +267,7 @@ export default function HomeTab() {
               // was last built in the search tab, which is what the results
               // screen would otherwise still be holding.
               onPress={() => {
-                replace(NEWEST);
+                replace({ ...NEWEST, vehicleType });
                 router.push('/results');
               }}
               testID="home-show-all"
@@ -293,7 +317,8 @@ export default function HomeTab() {
                     label={t(`listing:body_type.${shape.key}`, shape.key)}
                     count={t('search:offers', { count: shape.count })}
                     shape={shape.key}
-                    image={bodyTypeArt(shape.key)}
+                    vehicleType={vehicleType}
+                    image={bodyTypeArt(shape.key, vehicleType)}
                     width={SHAPE_TILE}
                     onPress={() => open({ bodyType: [shape.key] })}
                     testID={`shape-${shape.key}`}

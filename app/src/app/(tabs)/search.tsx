@@ -8,6 +8,7 @@ import { referenceApi } from '../../api/reference';
 import {
   AccordionCard,
   Button,
+  CategorySwitch,
   Chip,
   Input,
   ListGroup,
@@ -37,10 +38,20 @@ export default function SearchTab() {
   const router = useRouter();
   const { width } = useWindowDimensions();
   const { t } = useTranslation(['search', 'listing', 'home', 'common']);
-  const { filters, set, toggle, reset, count } = useFilters();
+  const { filters, vehicleType, setVehicleType, set, toggle, reset, count } = useFilters();
 
-  const makes = useQuery({ queryKey: ['makes'], queryFn: referenceApi.makes });
+  // Two catalogues, and the makes are not the same list: Volkswagen sells no
+  // motorcycles and Vespa sells no cars, so the query is keyed on the kind.
+  const makes = useQuery({
+    queryKey: ['makes', vehicleType],
+    queryFn: () => referenceApi.makes(vehicleType),
+  });
   const countries = useQuery({ queryKey: ['countries'], queryFn: referenceApi.countries });
+  const vocabularies = useQuery({
+    queryKey: ['vocabularies'],
+    queryFn: referenceApi.vocabularies,
+    staleTime: 60 * 60 * 1000,
+  });
 
   // One cheap request that asks only how many, so the count on the button is
   // always the count the results will show.
@@ -52,8 +63,8 @@ export default function SearchTab() {
   // Named on the row rather than shown as an id, and only fetched once a make
   // is chosen, because that is the only time the row is drawn.
   const models = useQuery({
-    queryKey: ['models', filters.makeId],
-    queryFn: () => referenceApi.models(filters.makeId as number),
+    queryKey: ['models', filters.makeId, vehicleType],
+    queryFn: () => referenceApi.models(filters.makeId as number, vehicleType),
     enabled: filters.makeId !== undefined,
     staleTime: 60 * 60 * 1000,
   });
@@ -81,7 +92,17 @@ export default function SearchTab() {
     <Screen flush edges={['top']}>
       <TabHeader />
 
-      <View style={{ paddingHorizontal: theme.screenPadding }}>
+      <View style={{ paddingHorizontal: theme.screenPadding, gap: theme.spacing.md }}>
+        {/* Above the search box rather than inside it: this is not a filter
+            narrowing what is on screen, it is which catalogue is being read. */}
+        <CategorySwitch
+          value={vehicleType}
+          types={vocabularies.data?.vehicle_types}
+          onChange={setVehicleType}
+          label={(type) => t(`search:category.${type}`)}
+          testID="category-switch"
+        />
+
         <SearchField
           placeholder={t('search:anything')}
           value={filters.q ?? ''}
@@ -102,7 +123,7 @@ export default function SearchTab() {
       >
         <AccordionCard
           title={t('search:make_model')}
-          icon="car-sport-outline"
+          icon={vehicleType === 'motorcycle' ? 'bicycle-outline' : 'car-sport-outline'}
           defaultOpen
           testID="section-make"
         >

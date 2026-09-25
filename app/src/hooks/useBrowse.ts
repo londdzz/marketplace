@@ -3,18 +3,27 @@ import { useTranslation } from 'react-i18next';
 
 import type { BrowseCollection } from '../api/reference';
 import { referenceApi } from '../api/reference';
-import type { SearchFilters } from '../api/types';
+import type { SearchFilters, VehicleType } from '../api/types';
 import type { CollectionArt } from '../components/CollectionCard';
 import { formatEur, formatKm } from '../format';
 
-/** The key every screen reads the browse sections under. */
-export const BROWSE_KEY = ['browse'] as const;
+/**
+ * The key every screen reads the browse sections under.
+ *
+ * One cache entry per kind of vehicle: the collections are different lists and
+ * every count is measured against listings of that kind alone.
+ */
+export const BROWSE_KEY = (type: VehicleType = 'car') => ['browse', type] as const;
 
 /** It moves only as fast as listings are published, and the API caches an hour. */
 const STALE_MS = 15 * 60 * 1000;
 
-export function useBrowse() {
-  return useQuery({ queryKey: BROWSE_KEY, queryFn: referenceApi.browse, staleTime: STALE_MS });
+export function useBrowse(type: VehicleType = 'car') {
+  return useQuery({
+    queryKey: BROWSE_KEY(type),
+    queryFn: () => referenceApi.browse(type),
+    staleTime: STALE_MS,
+  });
 }
 
 /**
@@ -31,6 +40,11 @@ const ICONS: Record<string, string> = {
   city: 'business-outline',
   automatic: 'options-outline',
   electrified: 'flash-outline',
+  first_bike: 'school-outline',
+  two_wheel_commuter: 'subway-outline',
+  adventure: 'trail-sign-outline',
+  cruisers: 'flame-outline',
+  track: 'speedometer-outline',
 };
 
 export function collectionIcon(key: string): string {
@@ -87,8 +101,10 @@ const SHAPE_ART: Record<string, number> = {
   coupe: require('../../assets/shapes/coupe.png'),
 };
 
-export function bodyTypeArt(shape: string): number | null {
-  return SHAPE_ART[shape] ?? null;
+export function bodyTypeArt(shape: string, type: VehicleType = 'car'): number | null {
+  // Cut-outs are photographs of cars, so they answer for cars alone. A
+  // motorcycle shape keeps its drawing, which is what it was drawn for.
+  return type === 'car' ? (SHAPE_ART[shape] ?? null) : null;
 }
 
 /** At most four, two to a row, as the card draws them. */

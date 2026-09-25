@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { View } from 'react-native';
 
-import { referenceApi } from '../../api/reference';
+import { referenceApi, shapesFor } from '../../api/reference';
 import { OptionRow, Text } from '../../components';
 import { SellStep } from '../../sell/SellStep';
 import { useSell } from '../../sell/SellProvider';
@@ -21,7 +21,9 @@ import { useTheme } from '../../theme';
  * saloon, and estates are half the cars in the region.
  *
  * The list comes from the API's own vocabulary, so a shape added there appears
- * here without the app being rebuilt.
+ * here without the app being rebuilt — and which vocabulary follows what is
+ * being sold, because a motorcycle's shapes are its own and share nothing with
+ * a car's beyond the column they go in.
  */
 export default function SellShapeScreen() {
   const theme = useTheme();
@@ -46,16 +48,16 @@ export default function SellShapeScreen() {
   return (
     <SellStep
       screen="shape"
-      title={t('sell:shape')}
+      title={t(draft?.vehicle_type === 'motorcycle' ? 'sell:shape_motorcycle' : 'sell:shape')}
       canContinue={selected !== null}
       onContinue={() => void onContinue()}
     >
       <Text variant="meta" tone="muted" style={{ marginBottom: theme.spacing.md }}>
-        {t('sell:shape_hint')}
+        {t(draft?.vehicle_type === 'motorcycle' ? 'sell:shape_hint_motorcycle' : 'sell:shape_hint')}
       </Text>
 
       <View style={{ gap: theme.spacing.sm }}>
-        {(vocabularies.data?.body_types ?? []).map((shape) => (
+        {shapesFor(vocabularies.data, draft?.vehicle_type ?? 'car').map((shape) => (
           <OptionRow
             key={shape}
             label={t(`listing:body_type.${shape}`, shape)}
