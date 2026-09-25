@@ -36,6 +36,8 @@ class ImportMakeLogos extends Command
         $disk = Storage::disk((string) config('filesystems.default'));
         $directory = (string) $this->option('directory');
 
+        $this->line('Mirroring resources/make-logos onto the '.config('filesystems.default').' disk.');
+
         [$copied, $removed] = $this->seedFromResources($disk, $directory);
 
         if ($copied > 0) {
@@ -132,8 +134,18 @@ class ImportMakeLogos extends Command
 
         $copied = 0;
         $shipped = [];
+        $files = glob($source.'/*.{png,svg,webp}', GLOB_BRACE) ?: [];
 
-        foreach (glob($source.'/*.{png,svg,webp}', GLOB_BRACE) ?: [] as $path) {
+        // A bar, because this is the slow part and it used to say nothing at
+        // all. Each mark is a check and possibly a write against the bucket,
+        // so on S3 it is a couple of hundred round trips over the network and
+        // the better part of two minutes — long enough that silence reads as
+        // a hang, and long enough for somebody to kill it half way.
+        $bar = $this->output->createProgressBar(count($files));
+        $bar->start();
+
+        foreach ($files as $path) {
+            $bar->advance();
             $target = $directory.'/'.basename($path);
             $shipped[] = $target;
 
@@ -154,6 +166,9 @@ class ImportMakeLogos extends Command
             $disk->put($target, $contents);
             $copied++;
         }
+
+        $bar->finish();
+        $this->newLine(2);
 
         $stale = array_diff($this->images($disk, $directory), $shipped);
 
