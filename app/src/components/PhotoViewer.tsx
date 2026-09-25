@@ -130,7 +130,10 @@ export function PhotoViewer({ photos, index, visible, onClose }: PhotoViewerProp
       }
     });
 
-  const gesture = Gesture.Exclusive(doubleTap, Gesture.Simultaneous(pinch, pan));
+  // Pinch can always run. A one-finger touch is either a double tap or a drag,
+  // and the drag is only live while zoomed — at 1x a sideways swipe belongs to
+  // the pager, and a pan competing for it is why swiping felt dead.
+  const gesture = Gesture.Simultaneous(pinch, Gesture.Exclusive(doubleTap, pan.enabled(zoomed)));
 
   const zoomStyle = useAnimatedStyle(() => ({
     transform: [
@@ -199,6 +202,26 @@ export function PhotoViewer({ photos, index, visible, onClose }: PhotoViewerProp
         >
           <Ionicons name="close" size={22} color="#FFFFFF" />
         </Pressable>
+
+        {zoomed ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Zoom out"
+            onPress={reset}
+            hitSlop={12}
+            style={[
+              styles.close,
+              {
+                top: insets.top + theme.spacing.sm,
+                right: theme.spacing.md,
+                backgroundColor: theme.colors.scrim,
+              },
+            ]}
+            testID="photo-zoom-out"
+          >
+            <Ionicons name="contract-outline" size={20} color="#FFFFFF" />
+          </Pressable>
+        ) : null}
 
         {photos.length > 1 ? (
           <View

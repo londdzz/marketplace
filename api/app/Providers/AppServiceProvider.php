@@ -8,6 +8,7 @@ use App\Contracts\ExchangeRateProvider;
 use App\Contracts\OtpSender;
 use App\Contracts\PushSender;
 use App\Support\Otp\LogOtpSender;
+use App\Support\Otp\MessaggioOtpSender;
 use App\Support\Otp\WhatsAppOtpSender;
 use App\Support\PhoneNumber;
 use App\Support\Push\LogPushSender;
@@ -28,6 +29,7 @@ class AppServiceProvider extends ServiceProvider
             $driver = (string) config('otp.driver');
 
             return match ($driver) {
+                'messaggio' => new MessaggioOtpSender,
                 'whatsapp' => new WhatsAppOtpSender,
                 'log' => new LogOtpSender,
                 default => throw new InvalidArgumentException("Unknown OTP driver [{$driver}]."),

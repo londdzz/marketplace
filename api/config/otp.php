@@ -12,11 +12,14 @@ return [
     | How one-time codes reach the user. "log" writes the code to the
     | application log and sends nothing, which is what local development and
     | the test suite use. "whatsapp" sends an authentication template through
-    | the WhatsApp Cloud API.
+    | the WhatsApp Cloud API. "messaggio" sends over SMS, Viber or WhatsApp
+    | through one aggregator.
     |
-    | WhatsApp covers Kosovo and Albania well. Viber is the everyday messenger
-    | in Bulgaria and Serbia, so a second channel will be needed there before
-    | launch; adding one means writing another OtpSender, nothing more.
+    | Messaggio is what the launch market uses, because the WhatsApp Cloud API
+    | needs Meta business verification, which takes weeks, and because a
+    | Macedonian buyer is likelier to be reached on Viber or SMS than on
+    | WhatsApp. WhatsApp coverage is strong in Kosovo and Albania, which is
+    | what the Cloud API driver was written for and what it is still there for.
     |
     */
 
@@ -112,6 +115,45 @@ return [
             'en' => 'en',
             'default' => 'en',
         ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Messaggio
+    |--------------------------------------------------------------------------
+    |
+    | One request reaches several networks. "channels" is a list in order of
+    | preference, and Messaggio falls through it: "viber,sms" tries Viber and
+    | sends an SMS only to people it could not reach, which is how the cheap
+    | channel gets used without leaving anybody out. Viber costs roughly a
+    | third of an SMS in the region, so the order is worth getting right.
+    |
+    | "ttl" is how many seconds Messaggio waits for the Viber message to be
+    | delivered before giving up and falling back. Long enough to be a real
+    | attempt, short enough that nobody is left staring at an empty code box:
+    | the code itself only lives five minutes.
+    |
+    | The sender name has to be registered with Messaggio before it will send
+    | anything, and registration is not instant. Their support asks for
+    | company details, the same way a sender ID does everywhere else.
+    |
+    */
+
+    'messaggio' => [
+        'base_url' => env('MESSAGGIO_BASE_URL', 'https://msg.messaggio.com'),
+        'login' => env('MESSAGGIO_LOGIN'),
+
+        // Their documentation names only this header. If they issue you a key
+        // under another name, set it here rather than editing the driver.
+        'auth_header' => env('MESSAGGIO_AUTH_HEADER', 'Messaggio-Login'),
+
+        'sender' => env('MESSAGGIO_SENDER', 'Autevo'),
+        'channels' => array_values(array_filter(array_map(
+            trim(...),
+            explode(',', (string) env('MESSAGGIO_CHANNELS', 'sms')),
+        ))),
+        'ttl' => (int) env('MESSAGGIO_TTL', 60),
+        'timeout' => (int) env('MESSAGGIO_TIMEOUT', 10),
     ],
 
 ];

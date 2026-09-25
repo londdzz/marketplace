@@ -92,7 +92,38 @@ like) → Add app → **Android** → package `mk.autevo.app`.
 Then set `PUSH_DRIVER=stores` in `api/.env`. Until it is set, the API writes what it would
 have sent to the log.
 
-## 5. WhatsApp Cloud API, for the sign-in code — start this first, it is the slowest
+## 5a. Messaggio, for the sign-in code — this is the one in use
+
+messaggio.com. One account reaches SMS, Viber and WhatsApp, which is why it is
+here rather than a WhatsApp-only integration that cannot be turned on for weeks.
+
+| Value | Where | Goes in |
+|---|---|---|
+| Project login | Messaggio account → the project | `MESSAGGIO_LOGIN` |
+| Sender name | Register it with their support — company details, not instant | `MESSAGGIO_SENDER` |
+
+Then choose the channels. `MESSAGGIO_CHANNELS` is a preference order and
+Messaggio falls through it:
+
+| Setting | What happens | Roughly |
+|---|---|---|
+| `sms` | everyone gets an SMS | €0.02 a sign-in |
+| `viber,sms` | Viber first, SMS only for whoever it could not reach | €0.007 for most of them |
+
+`viber,sms` is the cheaper of the two and leaves nobody out, but the Viber
+sender needs registering separately. Start on `sms`, move when it is approved.
+
+`MESSAGGIO_TTL` is how many seconds it waits for Viber before falling back to
+SMS. Sixty is a real attempt without leaving somebody staring at an empty code
+box; the code itself only lives five minutes.
+
+> **Do not use an unofficial WhatsApp gateway** — the kind that asks you to scan
+> a QR code and drives a linked personal account. It is cheaper per month and it
+> breaks WhatsApp's terms, so the number gets banned, and the day it does
+> *nobody can sign in at all*. It also means a third party with no obligation to
+> you is reading every sign-in code on the marketplace.
+
+## 5b. WhatsApp Cloud API — the slowest thing on this list, start it early
 
 developers.facebook.com → My Apps → Create app → **Business** → add the **WhatsApp** product.
 Then in Meta Business Suite: verify the business (company documents, can take days to weeks)
