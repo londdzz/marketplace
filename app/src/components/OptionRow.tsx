@@ -70,25 +70,15 @@ export function OptionRow({
         style,
       ]}
     >
-      {/* On paper, in its own colours, for the same reason MakeTile does it:
-          a real manufacturer's mark does not survive being tinted to one ink. */}
+      {/* Untinted and unbacked, like MakeTile: the mark arrives already drawn
+          for a dark ground, and one tint for all of them ruins half. */}
       {logoUrl ? (
-        <View
-          style={{
-            width: 26,
-            height: 26,
-            borderRadius: theme.radius.sm,
-            backgroundColor: theme.colors.plate,
-            padding: 3,
-          }}
-        >
-          <Image
-            source={{ uri: logoUrl }}
-            style={{ width: '100%', height: '100%' }}
-            contentFit="contain"
-            transition={120}
-          />
-        </View>
+        <Image
+          source={{ uri: logoUrl }}
+          style={{ width: 24, height: 24 }}
+          contentFit="contain"
+          transition={120}
+        />
       ) : null}
 
       {icon ? (

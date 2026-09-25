@@ -24,9 +24,11 @@
  * that with your own lawyer before launch. Title, licence and author of every
  * file are written to CREDITS.json beside the images.
  *
- * Marks are rendered IN COLOUR. A single-ink glyph tints cleanly and a real
- * logo does not — a flattened BMW roundel is a filled circle — so `MakeTile`
- * draws them on a light plate instead of tinting them.
+ * **Nothing sits on a plate and nothing is tinted at the drawing end.** Each
+ * mark is measured here and given the one treatment that suits it: a mark in
+ * one flat dark ink is redrawn white, because its shape lives in the alpha
+ * channel and white costs it nothing; a mark with real colours is left exactly
+ * as its owner drew it. Both then sit straight on the app's dark ground.
  *
  * Usage, from /api:  node scripts/fetch-make-logos.js [--only=BMW,KTM]
  * Then:              php artisan makes:logos
@@ -132,6 +134,10 @@ const OVERRIDES = {
   // free, so those two keep their wordmarks rather than wearing a lion last
   // drawn in 1910.
   'Mercedes-Benz': 'File:Mercedes-Benz Star 2022.svg',
+  // The mark Wikidata gives carries the yellow square of the 2009 lockup
+  // baked into it, which on a tile reads as a background rather than a logo.
+  // This is the losange on its own.
+  'Renault': 'File:Renault 2021.svg',
   'Piaggio': 'File:Piaggio-logo.svg',
 
   // Nothing on Commons is both the right brand and free to serve. Bentley's
@@ -328,6 +334,96 @@ function fit(markup) {
   });
 }
 
+/**
+ * Whether the mark would be lost on the app's dark ground, and can be rescued
+ * by redrawing it white.
+ *
+ * Two conditions, and the second is the one that matters. Dark is easy: a mean
+ * luminance under 120 disappears against petrol, whatever colour it is — Honda's
+ * wordmark is dark red and Škoda's is dark green, and both vanish as surely as
+ * Audi's black rings.
+ *
+ * The second asks whether the mark has light parts of its own. Ford's oval is
+ * dark blue with its name knocked out of it in white; invert that and the
+ * script fills in and the whole thing becomes a white blob. So a mark that
+ * already carries light pixels is left alone — it has its own contrast — and
+ * only a mark that is dark all the way through is redrawn.
+ *
+ * The third asks whether it is line art at all. Harley-Davidson's bar and
+ * shield and KTM's name in its orange box are solid slabs: most of their own
+ * bounding box is filled, so turning them white turns them into white slabs.
+ * A wordmark or an outlined emblem covers a fraction of its box, and that is
+ * the difference between something worth inverting and something that must be
+ * left alone whatever its luminance.
+ *
+ * Read off the pixels in the page rather than the file, so it works the same
+ * for an SVG and for a photograph of a badge.
+ */
+async function needsWhitening(page) {
+  return page.evaluate(() => {
+    const image = document.querySelector('img');
+
+    // A mark that never decoded has nothing to measure, and asking a canvas
+    // for a zero-wide region throws and takes the whole run with it.
+    if (!image?.naturalWidth) {
+      return false;
+    }
+
+    const canvas = document.createElement('canvas');
+    canvas.width = image.naturalWidth;
+    canvas.height = image.naturalHeight;
+
+    const context = canvas.getContext('2d', { willReadFrequently: true });
+    context.drawImage(image, 0, 0);
+
+    let total = 0;
+    let light = 0;
+    let luminance = 0;
+    let minX = canvas.width;
+    let maxX = -1;
+    let minY = canvas.height;
+    let maxY = -1;
+
+    const { data } = context.getImageData(0, 0, canvas.width, canvas.height);
+
+    for (let at = 0; at < data.length; at += 4) {
+      if (data[at + 3] < 40) {
+        continue;
+      }
+
+      const pixel = at / 4;
+      const x = pixel % canvas.width;
+      const y = (pixel - x) / canvas.width;
+
+      if (x < minX) minX = x;
+      if (x > maxX) maxX = x;
+      if (y < minY) minY = y;
+      if (y > maxY) maxY = y;
+
+      const value = 0.2126 * data[at] + 0.7152 * data[at + 1] + 0.0722 * data[at + 2];
+
+      if (value > 170) {
+        light++;
+      }
+
+      luminance += value;
+      total++;
+    }
+
+    if (total === 0) {
+      return false;
+    }
+
+    const area = Math.max(1, (maxX - minX + 1) * (maxY - minY + 1));
+
+    // 0.62 is measured, not picked: wordmarks and outlined emblems fill 40 to
+    // 58 per cent of their own box — Audi 42, Toyota 40, Honda 58 — and the
+    // filled shapes start at Harley-Davidson's shield on 65 and run to KTM's
+    // and Aprilia's solid boxes on 100.
+    return luminance / total < 120 && light / total < 0.15 && total / area < 0.62;
+  });
+}
+
 /** Drop a mark this run will not stand behind, file and credit together. */
 function forget(make, credits) {
   const file = path.join(OUT, `${slug(make)}.png`);
@@ -361,6 +457,7 @@ function forget(make, credits) {
   const credits = {};
   const missing = [];
   const refused = [];
+  let inked = 0;
 
   for (const [make, kind] of makes()) {
     if (wanted && !wanted.has(make)) {
@@ -435,6 +532,22 @@ function forget(make, credits) {
       )
       .catch(() => undefined);
 
+    // A mark that would be lost on the app's dark ground is redrawn white; a
+    // mark with light of its own, or colours bright enough to carry, is left
+    // exactly as its owner drew it. Neither gets a plate behind it.
+    //
+    // Measured rather than assumed, because the two need opposite treatment
+    // and one rule for both gets half of them wrong. Force every mark white
+    // and Ford becomes a white blob, Ducati a white shield, Renault a white
+    // square. Leave every mark alone and Audi, Peugeot, Škoda, Toyota and
+    // Honda disappear into the background entirely.
+    if (await needsWhitening(page)) {
+      await page.evaluate(() => {
+        document.querySelector('img').style.filter = 'brightness(0) invert(1)';
+      });
+      inked++;
+    }
+
     await page.screenshot({ path: target, omitBackground: true });
 
     credits[make] = logo;
@@ -456,6 +569,7 @@ function forget(make, credits) {
   fs.writeFileSync(creditsPath, JSON.stringify(merged, null, 2) + '\n');
 
   console.log(`\n${Object.values(credits).filter(Boolean).length} marks written to ${OUT}`);
+  console.log(`${inked} of them were too dark for the app's ground and have been redrawn in white.`);
 
   if (refused.length > 0) {
     console.log(`\n${refused.length} refused — the file is not freely licensed:`);

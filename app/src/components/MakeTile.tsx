@@ -22,12 +22,12 @@ export type MakeTileProps = {
  * hole. Twenty-four of the 167 makes have no mark we are allowed to serve, so
  * the monogram is a permanent part of this, not a stage it is passing through.
  *
- * **The mark is drawn in its own colours, on a light plate.** It used to be
- * tinted to the text colour, which is right for a single-ink glyph and wrong
- * for a real logo — a flattened BMW roundel is a filled circle and a flattened
- * Alfa badge is a blob. Real marks are built for paper, so they get paper:
- * every one of them is legible on white and almost none of them is legible on
- * this app's near-black ground.
+ * **The mark sits straight on the tile, with nothing behind it and no tint.**
+ * It is already drawn the way it needs to be: `fetch-make-logos.js` measures
+ * every mark and redraws the ones that would be lost on this dark ground in
+ * white, leaving the ones with light or colour of their own exactly as their
+ * owner drew them. A plate here would have been a white card on a dark page,
+ * and one tint for all of them turns Ford into a white blob.
  */
 export function MakeTile({ name, logoUrl, selected = false, width, onPress, testID }: MakeTileProps) {
   const theme = useTheme();
@@ -39,7 +39,7 @@ export function MakeTile({ name, logoUrl, selected = false, width, onPress, test
     .join('')
     .toUpperCase();
 
-  const plate = Math.round(width * 0.46);
+  const mark = Math.round(width * 0.42);
 
   return (
     <Pressable
@@ -63,39 +63,23 @@ export function MakeTile({ name, logoUrl, selected = false, width, onPress, test
         },
       ]}
     >
-      {logoUrl ? (
-        <View
-          style={[
-            styles.mark,
-            {
-              width: plate,
-              height: plate,
-              borderRadius: theme.radius.sm,
-              // Paper, because that is what a manufacturer's mark is drawn
-              // for. A hair off pure white so it is a surface on the page
-              // rather than a hole cut in it.
-              backgroundColor: theme.colors.plate,
-              padding: Math.round(plate * 0.14),
-            },
-          ]}
-        >
+      <View style={[styles.mark, { width: mark, height: mark }]}>
+        {logoUrl ? (
           <Image
             source={{ uri: logoUrl }}
             style={{ width: '100%', height: '100%' }}
             contentFit="contain"
             transition={120}
           />
-        </View>
-      ) : (
-        <View style={[styles.mark, { width: plate, height: plate }]}>
+        ) : (
           <Text
             variant="title"
             style={{ color: selected ? theme.colors.accent : theme.colors.textMuted }}
           >
             {monogram}
           </Text>
-        </View>
-      )}
+        )}
+      </View>
 
       <Text
         variant="caption"

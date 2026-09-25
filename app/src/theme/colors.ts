@@ -13,12 +13,6 @@ export type ThemeColors = {
   surfaceMuted: string;
   /** A surface that needs to come forward, such as a pressed row. */
   surfaceRaised: string;
-  /**
-   * Paper, for the few things drawn for paper: a manufacturer's mark is built
-   * to sit on white and almost none of them survive a near-black ground, so
-   * they get a plate of their own rather than being tinted into the scheme.
-   */
-  plate: string;
   /** Hairlines and card outlines. Cards are flat, so this does the work. */
   border: string;
   borderStrong: string;
@@ -77,7 +71,6 @@ export const lightColors: ThemeColors = {
   surface: neutral[0],
   surfaceMuted: neutral[50],
   surfaceRaised: neutral[0],
-  plate: neutral[0],
   border: neutral[200],
   borderStrong: neutral[300],
 
@@ -116,9 +109,6 @@ export const darkColors: ThemeColors = {
   surface: neutral[900],
   surfaceMuted: neutral[800],
   surfaceRaised: petrol[700],
-  // Not pure white: a hair down, so a plate reads as a surface on the page
-  // rather than a hole cut out of it.
-  plate: '#F4F7F6',
   border: neutral[700],
   borderStrong: '#2F4F47',
 
