@@ -72,7 +72,7 @@ dig +short api.autevo.mk
 
 3. In Forge: *New server* → Hetzner → region **Nuremberg** or **Falkenstein** → size
    **CX22**, or **CPX22** if the CX line is out of stock → PHP **8.4** → database
-   **MySQL 8**. Forge provisions it in about ten minutes and emails you the database
+   **MySQL 8.4** (or whichever 8.x Forge offers — nothing here cares which). Forge provisions it in about ten minutes and emails you the database
    password. **Save that email** — it is the only time it shows you the password.
 
 4. Forge's server page shows the **IPv4**. That is the address the DNS records in Part 1
