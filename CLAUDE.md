@@ -261,9 +261,15 @@ vocabulary comes from the API.
   is `log`, so sign-in codes are written to the log rather than sent — anyone
   who can read that file can sign in as anybody; there is no RevenueCat webhook
   secret, so no purchase grants a credit; and push has no credentials.
-  **The photo pipeline has never run on this server.** The R2 settings look
-  right but no photograph has been uploaded through them, so publishing one
-  listing from the website is the first thing to do.
+  **The photo pipeline had never run on this server, and the reason was a
+  missing dependency**: `league/flysystem-aws-s3-v3` is what Laravel's `s3`
+  driver is built on, it is only a *suggestion* in the framework's own
+  metadata, and it was never in our `require`. So the R2 settings were right
+  and nothing could write a byte to the bucket — every photo upload and
+  `makes:logos` died on
+  `Class "League\Flysystem\AwsS3V3\PortableVisibilityConverter" not found`.
+  Development never saw it because development stores photos on the `public`
+  disk. It is a declared dependency now; a deploy installs it.
 - **Putting the website online is `docs/website-deployment.md`**: `/web` is a static
   build, so Cloudflare Pages serves it free and rebuilds on every push, or a second
   Forge site on the same box serves `web/dist`. **The one step that is easy to miss and

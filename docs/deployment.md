@@ -450,6 +450,7 @@ Not part of getting it running, but do not lose track of them:
 | Upload fails at about 1 MB | `client_max_body_size` — `deploy/nginx-api.conf` |
 | Changing `.env` does nothing | config is cached. `php artisan config:cache` again. |
 | Listings never expire, no alerts arrive | the scheduler is not running (Part 6) |
+| `Class "League\Flysystem\AwsS3V3\PortableVisibilityConverter" not found` | The S3 adapter is missing from `vendor/`. It is a declared dependency now, so a deploy installs it; before that fix nothing could be written to R2 at all |
 | Uploading a photo says "unexpected character" or similar | nginx `client_max_body_size` is still 1m, so it refuses the body with an HTML page a JSON client cannot read — see **Upload limits** above |
 | Every make draws a monogram, `logo_url` is null | `makes:logos` never ran. Almost always the Forge deploy script being an older copy than `deploy/deploy.sh` — re-paste it |
 | Sign-in codes never arrive | `OTP_DRIVER` is still `log` — that is expected, and `php artisan otp:recent` reads them — or the sending credentials are wrong |
