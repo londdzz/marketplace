@@ -59,23 +59,33 @@ dig +short api.autevo.mk
 
 ## Part 2 — The server (20 minutes)
 
-1. **hetzner.com/cloud** → sign up → *New project* → *Add server*.
-   - Location: **Nuremberg** or **Falkenstein**
-   - Image: **Ubuntu 24.04**
-   - Type: **CX22** (shared vCPU, x86)
-   - Add your SSH key if you have one. Otherwise Hetzner emails a root password.
-   - Create. Note the **IPv4** — that is what goes in the DNS records above.
+> **Do not create the server in the Hetzner console.** Forge creates it for you, through
+> Hetzner's API, and picks the operating system image itself. Create one by hand as well
+> and you will have two servers and two bills. The only time you build it yourself first
+> is the Custom VPS route below, where Forge asks you for an IP address it cannot make.
 
-2. **forge.laravel.com** → sign up → connect your **Hetzner** account (Forge asks for an
-   API token: Hetzner Cloud → your project → Security → API tokens → **Read & Write**).
+1. **hetzner.com/cloud** → sign up → *New project*. That is all you do here, except one
+   thing: **Security → API tokens → Generate API token**, permission **Read & Write**.
+   Copy it; Hetzner shows it once.
 
-3. In Forge: *Create Server* → Hetzner → same region → **CX22** → PHP **8.4** → database
+2. **forge.laravel.com** → sign up → *Server Providers* → **Hetzner** → paste the token.
+
+3. In Forge: *New server* → Hetzner → region **Nuremberg** or **Falkenstein** → size
+   **CX22**, or **CPX22** if the CX line is out of stock → PHP **8.4** → database
    **MySQL 8**. Forge provisions it in about ten minutes and emails you the database
    password. **Save that email** — it is the only time it shows you the password.
 
-> Doing this without Forge? `deploy/nginx-api.conf`, `deploy/php.ini`,
-> `deploy/autevo-queue.service` and `deploy/autevo-scheduler.cron` are the four files
-> Forge would have written. Install them by hand, then carry on from Part 5.
+4. Forge's server page shows the **IPv4**. That is the address the DNS records in Part 1
+   want; go back and fill them in now.
+
+> **Doing this without Forge?** Then you do create the server in the Hetzner console:
+> Ubuntu **24.04 LTS** (not the newest release — Forge and these instructions are written
+> against the LTS, and a brand-new one is where the surprises live), CX22 or CPX22,
+> Nuremberg or Falkenstein, your SSH key. Then install the four files below by hand.
+
+> The four files Forge would have written are `deploy/nginx-api.conf`, `deploy/php.ini`,
+> `deploy/autevo-queue.service` and `deploy/autevo-scheduler.cron`. Install them, then
+> carry on from Part 5.
 
 ---
 
