@@ -131,8 +131,9 @@ in section 2 has to be real before a purchase can ever add anything.
 ## 7. Content that is representative, not final
 
 - **Listing photographs in development are other people's.** `node scripts/fetch-car-photos.js`
-  from /api pulls a freely licensed photograph of each of the eight seeded cars from
-  Wikimedia Commons into `storage/app/dev-photos`, and `DevListingSeeder` publishes them
+  from /api pulls a freely licensed photograph of each of the fourteen seeded vehicles —
+  eight cars and six motorcycles — from Wikimedia Commons into `storage/app/dev-photos`,
+  and `DevListingSeeder` publishes them
   through the real upload path. `storage/app/dev-photos/CREDITS.json` names the
   photographer and the licence of every one. Storage is not in the repository, so run the
   script after a fresh checkout; without it the seeder falls back to generated coloured

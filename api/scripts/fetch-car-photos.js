@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 /**
- * Photographs of real cars for the development seeder.
+ * Photographs of real vehicles for the development seeder.
  *
  * DevListingSeeder draws coloured panels when these are absent, which is
  * honest but makes every screen look like a wireframe. This pulls freely
- * licensed photographs of the eight cars it seeds from Wikimedia Commons and
- * writes them beside a credits file naming the photographer and the licence.
+ * licensed photographs of the fourteen vehicles it seeds from Wikimedia Commons
+ * and writes them beside a credits file naming the photographer and the
+ * licence.
  *
  * These are DEVELOPMENT photographs. In production a listing's pictures are
  * the seller's own and none of this runs. A CC BY-SA photograph carries
@@ -33,6 +34,14 @@ const CARS = [
   { slug: 'golf', query: 'Volkswagen Golf VII hatchback', must: [/golf/i] },
   { slug: 'astra', query: 'Opel Astra K hatchback', must: [/astra/i] },
   { slug: 'corolla', query: 'Toyota Corolla E210 sedan', must: [/corolla/i] },
+
+  // The six motorcycles the seeder publishes beside them.
+  { slug: 'mt-07', query: 'Yamaha MT-07 motorcycle', must: [/mt[- ]?07|mt07/i] },
+  { slug: 'pcx-125', query: 'Honda PCX 125 scooter', must: [/pcx/i] },
+  { slug: 'r1250gs', query: 'BMW R 1250 GS motorcycle', must: [/r\s?125\d\s?gs|r1250gs/i] },
+  { slug: 'ninja-400', query: 'Kawasaki Ninja 400 motorcycle', must: [/ninja/i] },
+  { slug: 'iron-883', query: 'Harley-Davidson Sportster Iron 883', must: [/sportster|883|iron/i] },
+  { slug: 'primavera', query: 'Vespa Primavera scooter', must: [/vespa|primavera/i] },
 ];
 
 /**
@@ -40,7 +49,7 @@ const CARS = [
  * three-quarters on if possible, so anything naming a part of one is skipped.
  */
 const NOT_THE_CAR =
-  /engine|motor|interior|dashboard|cockpit|instrument|badge|logo|emblem|wheel|headlamp|headlight|taillight|tail light|rear light|seat|boot|trunk|steering|gearbox|detail|plate|chassis|cutaway|diagram|\bM\d{3}\b|\bEA\d{3}\b|\bOM\d{3}\b/;
+  /engine|interior|dashboard|cockpit|instrument|badge|logo|emblem|wheel|headlamp|headlight|taillight|tail light|rear light|seat|boot|trunk|steering|gearbox|detail|plate|chassis|cutaway|diagram|\bM\d{3}\b|\bEA\d{3}\b|\bOM\d{3}\b/;
 
 /** Licences we will use, best first. Anything else is left alone. */
 const ACCEPTED = [/^cc0/i, /^public domain/i, /^cc by 4/i, /^cc by 3/i, /^cc by-sa 4/i, /^cc by-sa 3/i];

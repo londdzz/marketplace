@@ -248,6 +248,9 @@ vocabulary comes from the API.
 - Phase 12: complete (app.json, EAS, icons, push registration, /docs, store copy, screenshots,
   privacy and data-safety answers, pre-submission checklist). **All twelve phases are done.**
 - Blocking another user is built (Apple 1.2 / Play UGC), after phase 12.
+- **Motorcycles are built**, after phase 12, at the owner's request: a second catalogue
+  beside cars, with its own makes, models, shapes and collections, switchable in the app
+  and on the website. See the decisions below.
 - **The API is live at `https://api.autevo.mk`**, on a Hetzner CPX22 in Nuremberg
   (2 vCPU, 4 GB, Ubuntu 24.04) managed by Laravel Forge, PHP 8.4, MySQL 8.4.
   Verified from outside: valid certificate, reference data seeded, `APP_DEBUG`
@@ -424,9 +427,10 @@ release, and update it whenever a placeholder is added or replaced.
   screen with their own header, sort control and Save search.
 - **Three things in the reference are deliberately absent**, because the specification puts
   them under "do not build": the price rating bars, financing, and seller star ratings. The
-  reference's vehicle-type row — car, van, motorbike, caravan — is gone too, since the
-  marketplace sells cars only. Body shapes are a different thing and are on the home
-  screen, below.
+  reference's vehicle-type row — car, van, motorbike, caravan — was gone too while the
+  marketplace sold cars only; **motorcycles arrived after phase 12**, so there is a
+  category switch now, of two kinds rather than four. Body shapes are a different thing
+  and are on the home screen, below.
 - **Make logos are supported but not shipped.** `makes.logo_path` holds the file,
   `MakeResource` exposes `logo_url`, `MakeTile` draws it tinted to the text colour, and
   `php artisan makes:logos` links files dropped into `makes/` on the storage disk. A make
@@ -673,6 +677,59 @@ release, and update it whenever a placeholder is added or replaced.
   not paper, so the Android background layer and `adaptiveIcon.backgroundColor` follow it.
   Where a platform strips colour — Android's themed icon, its notification icon — the wedges
   are dropped and the letter stands alone.
+- **Motorcycles sell beside cars, in the same tables.** A motorcycle shares almost
+  everything a car has — make, model, year, kilometres, fuel, price, town, photographs —
+  so `listings.vehicle_type` says which it is and the columns that mean nothing on two
+  wheels (doors, seats) were already nullable. Everything that existed before the
+  migration is a car, which is why every default is `car` and why a request that does not
+  say which kind it wants still means cars: `/listings` alone answers exactly what it
+  always did, and a link or a saved search made before motorcycles existed still opens
+  the cars it was made for. **A make carries a flag per kind rather than a type of its
+  own** (`makes.cars`, `makes.motorcycles`), because BMW, Honda, Peugeot, Piaggio and
+  Suzuki sell both; **which makes lead the picker is a different answer per kind**
+  (`popular` for cars, `popular_motorcycles` for bikes — Suzuki is an also-ran among cars
+  here and one of the first names in bikes). A model belongs to one kind, so the kind sits
+  on the row, and the model's unique key includes it: Honda sells a car called Integra and
+  a scooter called Integra.
+- **The shapes follow the kind.** `body_type` is one column and two vocabularies —
+  `listings.body_types` for cars, `listings.motorcycle_types` for bikes — and
+  `App\Enums\VehicleType::bodyTypes()` answers which. Asking search for an estate
+  motorcycle is a 422, not zero results. `collections` is keyed by kind too, so the home
+  screen's ways in are a motorcycle buyer's rather than a car buyer's borrowed.
+- **The category is a switch, not a filter**, and that decides where it sits. A filter
+  narrows what is on screen; this changes what "everything" means, so it is above the
+  search rather than inside it: a segmented control over the app's search builder and
+  under its home search bar, and a tab row joined to the top of the website's search
+  panel. The whole screen follows it — makes, models, collections, shapes, the newest
+  list, the headline and the copy — because a page where only the top half switched would
+  disagree with itself. Switching drops the make, the model and the shape (each exists in
+  only one catalogue) and keeps price, year, kilometres, fuel, gearbox and where, which
+  ask the same question of both. `countFilters` ignores it, or the reset button would
+  show on an untouched search. **The chosen side is not filled azure in the app**: both
+  screens that carry it already spend the accent, on the offer-count button and on the tab
+  bar's disc, so it takes a raised neutral pane with accent text instead.
+- **The sell flow asks what is being sold first**, as step 1 beside make and model rather
+  than a step of its own — it is one answer over three screens, and calling it a step
+  would have made the flow read as eight for no extra decision. Everything after it
+  depends on it, so asking later would mean letting a seller pick Volkswagen and then
+  telling them it cannot be a motorcycle. The website's one-page form asks it as its first
+  field. A model belonging to the right make is no longer enough on a draft: it has to be
+  of the right kind, or a Golf could be filed as a motorcycle and nothing downstream would
+  notice.
+- **Every make and model, in `database/data`.** 104 car makes with 1,475 ranges and 68
+  motorcycle makes with 1,194, out of the seeders and into `cars.php` and
+  `motorcycles.php`, because a seeder whose body is a wall of 2,669 rows is a seeder
+  nobody reads. **Ranges, not variants**: a Megane is one entry and the seller answers the
+  shape question, because scrolling thirty Meganes serves nobody; the exceptions are
+  ranges the maker itself sells as separate cars, like an A4 Allroad. The shapes are
+  checked against the vocabulary their kind allows while seeding, so a typo cannot put a
+  value in `body_type` that no filter and no translation key would ever match.
+- **Thirteen motorcycle silhouettes**, drawn the way the cars were — against a rendered
+  contact sheet rather than by eye. Five kinds share the closest drawing rather than
+  getting a worse one of their own: a naked bike and an unspecified one are the same
+  picture, and an enduro, a motocrosser and a supermoto differ in their tyres and their
+  lights, neither of which survives being drawn at forty-four pixels tall. Three
+  near-identical scribbles would only look like a mistake.
 - **Blocking hides, it never deletes.** `user_blocks` is one row per direction, and everything
   asks `BlockService::eitherWay()`: search, the listing policy, the conversation policy, the
   conversations list, saved cars and the saved-search job. Unblocking gives all of it back,
