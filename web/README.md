@@ -44,6 +44,7 @@ looking like two. So the parts that can be shared are copied at build time by
 | `types.ts`, `listings.ts`, `reference.ts`, `auth.ts`, `messaging.ts`, `blocks.ts` | `app/src/api` |
 | `formatEur`, `formatKm`, `listingTitle`, … | `app/src/format` |
 | The privacy policy and terms | `/docs` |
+| The collection art and body-shape cut-outs | `app/assets/collections`, `app/assets/shapes` |
 
 Those copies carry a header saying so and are overwritten on every build —
 **edit them in the app, not here.**
@@ -51,6 +52,12 @@ Those copies carry a header saying so and are overwritten on every build —
 Not shared, because they genuinely differ: the transport (`src/api/client.ts`
 is `fetch` plus `localStorage`, the app's is the same shape over its own
 storage), and every screen.
+
+Two small things travel by hand rather than by the sync, because they are
+values and not files: the design tokens, below, and the `carRatio` of each
+collection's cut-out car in `src/components/CollectionCard.tsx`, which comes
+from `app/src/hooks/useBrowse.ts`. A low saloon drawn at an SUV's proportions
+is a squashed saloon, so if one changes there it has to be carried across.
 
 The design tokens in `src/styles/tokens.css` are hand-copied from
 `app/src/theme` — same petrol, same azure, same 4/8/12/16/20/24/32/40/56

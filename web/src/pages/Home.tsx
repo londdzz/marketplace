@@ -6,6 +6,7 @@ import { listingsApi } from '../api/listings';
 import { referenceApi } from '../api/reference';
 import type { SearchFilters } from '../api/types';
 import { BodyShape } from '../components/BodyShape';
+import { CollectionCard } from '../components/CollectionCard';
 import { ListingCard } from '../components/ListingCard';
 import { SearchPanel } from '../components/SearchPanel';
 import { Button, ErrorState, Spinner } from '../components/ui';
@@ -13,6 +14,13 @@ import { useFavorites } from '../hooks/useFavorites';
 import { toQuery } from '../search/query';
 
 const NEWEST: SearchFilters = { sort: 'newest' };
+
+/**
+ * The shapes the app has a cut-out car for. Copied into public/ by
+ * sync-locales; a shape that is not here keeps the line drawing, which is what
+ * every shape had before any of them were photographed.
+ */
+const SHAPE_ART = new Set(['sedan', 'hatchback', 'estate', 'suv', 'coupe']);
 const ON_HOME = 8;
 
 /**
@@ -59,29 +67,13 @@ export function Home() {
           <section className="home__section">
             <h2 className="home__heading">{t('home:browse_collections')}</h2>
 
-            {/* The name sits on the photograph rather than under it: a picture
-                in a box with a caption below reads as a file, and these are
-                doors into a search. */}
             <div className="tile-row">
               {browse.data?.collections.map((collection) => (
-                <button
+                <CollectionCard
                   key={collection.key}
-                  type="button"
-                  className="tile"
-                  onClick={() => open(collection.filters)}
-                >
-                  {collection.photoUrl ? (
-                    <img className="tile__photo" src={collection.photoUrl} alt="" loading="lazy" />
-                  ) : (
-                    <span className="tile__photo tile__photo--none">
-                      <BodyShape shape="sedan" width={120} />
-                    </span>
-                  )}
-                  <span className="tile__text">
-                    <span className="tile__name">{t(`home:collection_${collection.key}`)}</span>
-                    <span className="tile__count">{t('search:offers', { count: collection.count })}</span>
-                  </span>
-                </button>
+                  collection={collection}
+                  onOpen={() => open(collection.filters)}
+                />
               ))}
             </div>
           </section>
@@ -123,9 +115,10 @@ export function Home() {
           <section className="home__section">
             <h2 className="home__heading">{t('home:browse_body_types')}</h2>
 
-            {/* Drawings, not photographs. Each of these stands for every car
-                of its shape, and a photograph means one particular car — the
-                row used to be four unrelated cars in four car parks. */}
+            {/* The app's cut-out cars where there is one, its line drawing
+                where there is not — never a photograph of a car in a street,
+                because each of these stands for every car of its shape. Both
+                sit in a box of the same height, so a mixed row stays level. */}
             <div
               className="shape-row"
               style={{
@@ -139,7 +132,13 @@ export function Home() {
                   className="shape-tile"
                   onClick={() => open({ bodyType: [shape.key] })}
                 >
-                  <BodyShape shape={shape.key} width={64} />
+                  <span className="shape-tile__art">
+                    {SHAPE_ART.has(shape.key) ? (
+                      <img src={`/shapes/${shape.key}.png`} alt="" loading="lazy" />
+                    ) : (
+                      <BodyShape shape={shape.key} width={96} />
+                    )}
+                  </span>
                   <span className="shape-tile__name">{t(`listing:body_type.${shape.key}`)}</span>
                   <span className="shape-tile__count">{t('search:offers', { count: shape.count })}</span>
                 </button>

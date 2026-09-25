@@ -321,69 +321,136 @@ button.header__account {
 
 /* ---- ways in ----------------------------------------------------------- */
 
+/* Stretched, not top-aligned: a collection with four filters wraps its chips
+   onto a second row, and a row where one card is taller than the rest has
+   nothing for the eye to run along. */
 .tile-row {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: var(--s-lg);
 }
 
-/* The name sits on the photograph. A picture in a box with a caption beneath
-   it reads as a file; this is a door into a search. */
-.tile {
+/* Built as the app builds it: a scene across the top, the car standing on the
+   join between the scene and the card, then the name and what it filters on.
+   The numbers are the app's — a 142 scene, a 52 overlap, the car 70% of the
+   card wide and sitting 55% of its own height above the join. */
+/* A flex column so the scene keeps its height and the body takes the rest.
+   As plain blocks the slack from stretching landed differently depending on
+   whether a card's chips wrapped, and the names sat 15px apart along a row. */
+.coll {
+  --scene: 142px;
+  --overlap: 52px;
   position: relative;
-  display: block;
-  aspect-ratio: 4 / 3;
+  display: flex;
+  flex-direction: column;
   padding: 0;
   overflow: hidden;
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
   background: var(--surface);
+  color: var(--text);
   cursor: pointer;
   text-align: left;
   transition: border-color 0.12s ease, transform 0.12s ease;
 }
 
-.tile:hover {
+.coll:hover {
   border-color: var(--border-strong);
   transform: translateY(-2px);
 }
 
-.tile__photo {
+/* Without a car standing on it the scene simply takes the space the car would
+   have overlapped, so a row of cards with and without art stays level. */
+.coll__scene {
+  position: relative;
   display: block;
+  flex: 0 0 auto;
+  height: calc(var(--scene) + var(--overlap));
+  background: var(--surface-muted);
+}
+
+.coll--art .coll__scene {
+  height: var(--scene);
+}
+
+.coll__bg {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: top;
 }
 
-.tile__photo--none {
+.coll__bg--none {
   display: grid;
   place-items: center;
-  background: linear-gradient(160deg, var(--surface-raised), var(--surface));
   color: var(--text-subtle);
 }
 
-/* Dark enough at the foot for the name to hold up over a bright photograph,
-   and clear at the top so the car is still the picture. */
-.tile__text {
+/* The number the card promises, over the picture, so the words below are only
+   the name and what it filters on. */
+.coll__count {
   position: absolute;
-  inset: auto 0 0;
+  top: var(--s-sm);
+  left: var(--s-sm);
+  padding: 3px var(--s-sm);
+  border-radius: var(--r-sm);
+  background: var(--scrim);
+  color: #ffffff;
+  font-size: var(--t-caption);
+}
+
+.coll__car {
+  position: absolute;
+  left: 50%;
+  top: var(--scene);
+  width: 70%;
+  transform: translate(-50%, -55%);
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.coll__body {
   display: flex;
   flex-direction: column;
-  gap: 1px;
-  padding: var(--s-xxl) var(--s-md) var(--s-md);
-  background: linear-gradient(180deg, transparent 0%, rgba(6, 15, 14, 0.82) 62%);
-  color: #ffffff;
+  justify-content: flex-start;
+  flex: 1 1 auto;
+  gap: var(--s-sm);
+  padding: var(--s-md);
+  min-width: 0;
 }
 
-.tile__name {
-  font-size: var(--t-meta);
-  font-weight: 600;
+.coll--art .coll__body {
+  padding-top: calc(var(--overlap) + var(--s-xs));
 }
 
-.tile__count {
+.coll__name {
+  font-size: var(--t-body);
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Held open even when empty, so a collection whose only filter is its own
+   name does not make a shorter card than its neighbours. */
+.coll__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-xs);
+  min-height: 24px;
+}
+
+.coll__chip {
+  padding: 4px var(--s-sm);
+  border-radius: var(--r-sm);
+  background: var(--surface-muted);
+  color: var(--text-muted);
   font-size: var(--t-caption);
-  opacity: 0.78;
+  white-space: nowrap;
 }
+
 
 /* ---- shapes ------------------------------------------------------------ */
 
@@ -394,15 +461,14 @@ button.header__account {
   gap: var(--s-md);
 }
 
-/* The drawing to the left of the words rather than above them. Stacked, a
-   tile that fills a quarter of the page is mostly empty around a small car;
-   side by side it reads as a row in a list of shapes, which is what it is. */
+/* Art above the words, as the app's tile has it. A cut-out car is a wide
+   picture and reads badly squeezed into a column beside a label. */
 .shape-tile {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  column-gap: var(--s-md);
-  padding: var(--s-md) var(--s-lg);
+  gap: var(--s-xxs);
+  padding: var(--s-lg) var(--s-md);
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
@@ -417,9 +483,23 @@ button.header__account {
   transform: translateY(-2px);
 }
 
+/* A cut-out and a drawing both sit in this, so a mixed row stays level. */
+.shape-tile__art {
+  display: grid;
+  place-items: center;
+  align-self: stretch;
+  height: 56px;
+  margin-bottom: var(--s-sm);
+}
+
+.shape-tile__art img {
+  max-width: 100%;
+  max-height: 56px;
+  object-fit: contain;
+}
+
 .shape {
   display: block;
-  grid-row: span 2;
   color: var(--text-muted);
 }
 

@@ -107,3 +107,39 @@ for (const file of DOCS) {
 }
 
 console.log(`[sync-locales] ${DOCS.length} policy documents copied from /docs.`);
+
+// The art drawn for the collections and the cut-out cars for the body shapes.
+// The app and the site show the same pictures because they are the same files,
+// copied on every build — a second set kept beside these would drift the first
+// time one of them was retouched.
+//
+// They land in public/ rather than src/: they are served as they are, and a
+// megabyte of photographs has no business going through the bundler.
+const ART = [
+  ['collections', ['city-bg.jpg', 'city-car.png', 'family-bg.jpg', 'family-car.png',
+    'first-car-bg.jpg', 'first-car.png', 'premium-bg.jpg', 'premium-car.png']],
+  ['shapes', ['coupe.png', 'estate.png', 'hatchback.png', 'sedan.png', 'suv.png']],
+];
+
+let drawn = 0;
+
+for (const [folder, files] of ART) {
+  const from = path.join(HERE, '..', '..', 'app', 'assets', folder);
+  const to = path.join(HERE, '..', 'public', folder);
+
+  fs.mkdirSync(to, { recursive: true });
+
+  for (const file of files) {
+    const source = path.join(from, file);
+
+    if (!fs.existsSync(source)) {
+      console.error(`[sync-locales] Expected ${file} in app/assets/${folder}.`);
+      process.exit(1);
+    }
+
+    fs.copyFileSync(source, path.join(to, file));
+    drawn += 1;
+  }
+}
+
+console.log(`[sync-locales] ${drawn} pieces of art copied from the app.`);

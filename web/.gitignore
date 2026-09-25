@@ -18,3 +18,7 @@ src/docs
 # Your own overrides, e.g. a different API address.
 .env.local
 tsconfig.tsbuildinfo
+
+# Copied out of app/assets by scripts/sync-locales.js.
+public/collections
+public/shapes
