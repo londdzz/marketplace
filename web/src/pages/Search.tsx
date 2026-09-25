@@ -4,7 +4,8 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { listingsApi } from '../api/listings';
 import { referenceApi } from '../api/reference';
-import type { SearchFilters, SortOption } from '../api/types';
+import type { SearchFilters, SortOption, VehicleType } from '../api/types';
+import { CategoryTabs } from '../components/CategoryTabs';
 import { ListingCard } from '../components/ListingCard';
 import { Button, Card, Chip, EmptyState, ErrorState, Field, Input, Select, Spinner } from '../components/ui';
 import { useFavorites } from '../hooks/useFavorites';
@@ -32,11 +33,23 @@ export function Search() {
   const favorites = useFavorites();
 
   const { filters, page } = fromQuery(params);
+  // Absent means cars, here as everywhere: a link sent before motorcycles
+  // existed still opens the search it was sent for.
+  const vehicleType = filters.vehicleType ?? 'car';
 
-  const makes = useQuery({ queryKey: ['makes'], queryFn: referenceApi.makes, staleTime: 3_600_000 });
+  const makes = useQuery({
+    queryKey: ['makes', vehicleType],
+    queryFn: () => referenceApi.makes(vehicleType),
+    staleTime: 3_600_000,
+  });
+  const vocabularies = useQuery({
+    queryKey: ['vocabularies'],
+    queryFn: referenceApi.vocabularies,
+    staleTime: 3_600_000,
+  });
   const models = useQuery({
-    queryKey: ['models', filters.makeId],
-    queryFn: () => referenceApi.models(filters.makeId as number),
+    queryKey: ['models', filters.makeId, vehicleType],
+    queryFn: () => referenceApi.models(filters.makeId as number, vehicleType),
     enabled: filters.makeId !== undefined,
     staleTime: 3_600_000,
   });
@@ -69,6 +82,20 @@ export function Search() {
     set({ [key]: list.includes(value) ? list.filter((item) => item !== value) : [...list, value] } as Partial<SearchFilters>);
   };
 
+  /**
+   * Switching catalogue drops the make, the model and the shape, and keeps the
+   * rest — the same bargain the panel on the front page makes. It goes through
+   * the address bar like every other change, so back steps out of it.
+   */
+  const switchTo = (type: VehicleType) => {
+    const next = { ...filters, vehicleType: type };
+    delete next.makeId;
+    delete next.modelId;
+    delete next.bodyType;
+
+    navigate(`/search?${toQuery(next)}`);
+  };
+
   const goto = (next: number) => {
     navigate(`/search?${toQuery(filters, next)}`);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -89,6 +116,15 @@ export function Search() {
             </Button>
           ) : null}
         </div>
+
+        {/* Which catalogue, above everything that narrows it: this is not a
+            filter, it changes what the filters are filtering. */}
+        <CategoryTabs
+          className="cat-tabs--inline"
+          value={vehicleType}
+          types={vocabularies.data?.vehicle_types}
+          onChange={switchTo}
+        />
 
         <Card className="filters__card">
           <div className="filters__group">

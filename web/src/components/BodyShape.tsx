@@ -14,6 +14,8 @@
  * does not change every time somebody lists a hatchback.
  */
 
+import type { VehicleType } from '../api/types';
+
 /** Centre and radius of each wheel, in the same box as the body. */
 type Wheel = readonly [number, number, number];
 
@@ -60,8 +62,68 @@ const SHAPES: Record<string, { d: string; wheels: readonly Wheel[] }> = {
   },
 };
 
-export function BodyShape({ shape, width = 96 }: { shape: string; width?: number }) {
-  const drawing = SHAPES[shape] ?? SHAPES.other;
+/**
+ * The motorcycle shapes, the same way. Five kinds share the closest drawing
+ * rather than getting a worse one of their own: a naked bike and an
+ * unspecified one are the same picture, and an enduro, a motocrosser and a
+ * supermoto differ in their tyres and their lights, neither of which survives
+ * being drawn this small.
+ */
+const MOTORCYCLE_SHAPES: Record<string, { d: string; wheels: readonly Wheel[] }> = {
+  other: {
+    d: 'M12.5 18.8 18.5 8.2M18.5 8.2 23.5 6.6M20 10.8 27 9.8 34 10.6 44 10.6 52.5 9.4 51 12.2M50.5 18.8 42 14.8 35 14M30 12.6 30 16.6 38 16.6 39.5 13.2',
+    wheels: [[12.5, 18.8, 5.2], [50.5, 18.8, 5.2], [9, 12.6, 2.4]],
+  },
+  sport: {
+    d: 'M8 16.5 9.5 11Q11 7.4 15 7.6L21.5 10.6 28 10.2 34 11.2 40 12.2M40 12.2 47 8.2 53.5 7.6 51.5 10.8 43 13.8M50.5 18.8 42 15.2 34 13.8M12.5 18.8 15.4 13',
+    wheels: [[12.5, 18.8, 5.2], [50.5, 18.8, 5.2]],
+  },
+  touring: {
+    d: 'M8.5 16 10 10.4Q11 6.4 15 6.6Q17.6 2 18.6 3.4L20.4 8.8 28 9.8 36 10.8 42.6 11.2M43.2 11.4 44.6 7 53 7 54 11.8 43.2 11.8M50.5 18.8 44 15.2 36 13.8M12.5 18.8 15 12.2',
+    wheels: [[12.5, 18.8, 5.2], [50.5, 18.8, 5.2]],
+  },
+  adventure: {
+    d: 'M5.5 12.6 13 11 16.6 11.8M16.6 11.4 18 4.6M18 4.6 23.5 3.6M20 8.6 27 8.2 34 8.8 41 10 45 10.6M45 10.6 50 7 55 6.6 52.5 10 45.6 12.6M12 18 17 7.6M51 18 43.5 13.8 34 12.4',
+    wheels: [[12, 18, 6], [51, 18, 6]],
+  },
+  cruiser: {
+    d: 'M10.5 19.4 19.5 7.6M19.5 7.6 24 5.8 28.2 6.4M23 10.2Q28.5 12.4 34 12.4L41 12.8 47 13.8 52 11.4 56 11.4M53.5 19.4 46 16.6 36 15.2 30 15.2',
+    wheels: [[10.5, 19.4, 4.6], [53.5, 19.4, 4.6]],
+  },
+  scooter: {
+    d: 'M10 17 11.5 10.4Q12.5 7.4 16.5 7.6L21.5 6.6M15.5 9.4 18 14.4 21 16.8 31 16.8 34.5 11.4 44 10.8 49.5 12 52 16M12 20.4 15.6 10.4M49.5 20.4 46 16.4',
+    wheels: [[12, 20.4, 3.6], [49.5, 20.4, 3.6]],
+  },
+  moped: {
+    d: 'M12.5 20.8 17.5 9.4M17.5 9.4 22.5 8.4M18.6 11 25 13.6 32 14.6 36 12 45 11.8 49 13.2M35.5 11.6 43.5 11.6M49.5 20.8 45 17 38 15.2',
+    wheels: [[12.5, 20.8, 3.2], [49.5, 20.8, 3.2], [31, 17.6, 2]],
+  },
+  trike: {
+    d: 'M11 19.4 18 8.4M18 8.4 23 6.8 27 7.4M22 11 30 11.6 38 12 46 12.4 54 13M40 12 40 15.4 56 15.4',
+    wheels: [[11, 19.4, 4.6], [44.5, 19.8, 4.2], [55, 19.8, 4.2]],
+  },
+  quad: {
+    d: 'M6.5 13.4 12 11.8 18 12.6M18 12.6 22.5 12.2 25.5 8.8 34 8.8 37.5 12 45 12.4 51 12.8 57 14.2M22.5 11 21.5 6 17 5M21.5 6 26.5 7M45 12.4 47 9.6 55.5 10.2',
+    wheels: [[14, 18.4, 5.6], [49.5, 18.4, 5.6]],
+  },
+};
+
+MOTORCYCLE_SHAPES.naked = MOTORCYCLE_SHAPES.other;
+MOTORCYCLE_SHAPES.enduro = MOTORCYCLE_SHAPES.adventure;
+MOTORCYCLE_SHAPES.motocross = MOTORCYCLE_SHAPES.adventure;
+MOTORCYCLE_SHAPES.supermoto = MOTORCYCLE_SHAPES.adventure;
+
+export function BodyShape({
+  shape,
+  vehicleType = 'car',
+  width = 96,
+}: {
+  shape: string;
+  vehicleType?: VehicleType;
+  width?: number;
+}) {
+  const family = vehicleType === 'motorcycle' ? MOTORCYCLE_SHAPES : SHAPES;
+  const drawing = family[shape] ?? family.other;
 
   return (
     <svg

@@ -53,6 +53,16 @@ const FAMILIES = {
   'sell:status_': ['draft', 'pending_payment', 'active', 'expired', 'sold', 'removed'],
   'sell:reason_': ['purchase', 'listing_publish', 'renewal', 'feature', 'refund', 'promo', 'admin_grant'],
   'search:sort_': ['relevance', 'price_asc', 'price_desc', 'newest', 'mileage_asc'],
+  // The kinds of vehicle. Fixed by the enum the API validates against, so the
+  // members are named here rather than proved non-empty.
+  'search:category.': ['car', 'motorcycle'],
+  'sell:kind_': ['car', 'motorcycle'],
+  'home:newest_': ['car', 'motorcycle'],
+  'home:promo_title_': ['car', 'motorcycle'],
+  'web:hero_title_': ['car', 'motorcycle'],
+  'web:hero_sub_': ['car', 'motorcycle'],
+  'web:sell_title_': ['car', 'motorcycle'],
+  'sell:variant_placeholder_': ['car', 'motorcycle'],
 };
 
 const missing = [];

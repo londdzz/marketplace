@@ -74,5 +74,9 @@ export function fromQuery(search: URLSearchParams): { filters: SearchFilters; pa
 
 /** How many filters are set, for the count beside "Narrow it down". */
 export function countFilters(filters: SearchFilters): number {
-  return Object.keys(filters).filter((key) => key !== 'sort' && key !== 'q').length;
+  // The category is not a filter: it is which catalogue is being read, and
+  // counting it would leave the reset button showing on an untouched search.
+  return Object.keys(filters).filter(
+    (key) => key !== 'sort' && key !== 'q' && key !== 'vehicleType',
+  ).length;
 }

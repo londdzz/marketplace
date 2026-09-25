@@ -4,9 +4,9 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { ApiError } from '../api/client';
-import { referenceApi } from '../api/reference';
+import { referenceApi, shapesFor } from '../api/reference';
 import { sellApi, type ListingDraftInput } from '../api/sell';
-import type { Listing } from '../api/types';
+import type { Listing, VehicleType } from '../api/types';
 import { useAuth } from '../auth/AuthProvider';
 import { Button, Card, Chip, EmptyState, Field, Input, Select, Spinner } from '../components/ui';
 
@@ -49,7 +49,18 @@ export function Sell() {
   const [error, setError] = useState<string | null>(null);
   const fileInput = useRef<HTMLInputElement>(null);
 
-  const makes = useQuery({ queryKey: ['makes'], queryFn: referenceApi.makes, staleTime: 3_600_000 });
+  // What is being sold decides the makes, the models under them and the
+  // shapes further down. It is the first question on the form for the same
+  // reason it is the first screen in the app's flow: everything else depends
+  // on it, and a seller who picks Volkswagen should never then be told it
+  // cannot be a motorcycle.
+  const vehicleType = form.vehicle_type ?? draft?.vehicle_type ?? 'car';
+
+  const makes = useQuery({
+    queryKey: ['makes', vehicleType],
+    queryFn: () => referenceApi.makes(vehicleType),
+    staleTime: 3_600_000,
+  });
   const countries = useQuery({ queryKey: ['countries'], queryFn: referenceApi.countries, staleTime: 3_600_000 });
 
   // The seller's own country unless they say otherwise. A city belongs to one
@@ -64,8 +75,8 @@ export function Sell() {
   });
   const vocab = useQuery({ queryKey: ['vocabularies'], queryFn: referenceApi.vocabularies, staleTime: 3_600_000 });
   const models = useQuery({
-    queryKey: ['models', form.make_id],
-    queryFn: () => referenceApi.models(form.make_id as number),
+    queryKey: ['models', form.make_id, vehicleType],
+    queryFn: () => referenceApi.models(form.make_id as number, vehicleType),
     enabled: form.make_id !== undefined,
     staleTime: 3_600_000,
   });
@@ -195,6 +206,29 @@ export function Sell() {
       <Card className="legal__card">
         <h2 className="detail__h2">{t('search:make_model')}</h2>
         <div className="sell__grid">
+          <Field label={t('sell:category')}>
+            <Select
+              value={vehicleType}
+              onChange={(event) =>
+                // The make, the model and the shape all belong to one
+                // catalogue, so they go with the change rather than being
+                // carried into a form that would reject them.
+                save.mutate({
+                  vehicle_type: event.target.value as VehicleType,
+                  make_id: undefined,
+                  model_id: null,
+                  body_type: null,
+                })
+              }
+            >
+              {(vocab.data?.vehicle_types ?? ['car', 'motorcycle']).map((type) => (
+                <option key={type} value={type}>
+                  {t(`sell:kind_${type}`)}
+                </option>
+              ))}
+            </Select>
+          </Field>
+
           <Field label={t('search:make')} error={shot('make_id')}>
             <Select
               value={form.make_id ?? ''}
@@ -232,7 +266,7 @@ export function Sell() {
           <Field label={t('sell:variant')}>
             <Input
               defaultValue={form.variant ?? ''}
-              placeholder={t('sell:variant_placeholder')}
+              placeholder={t(`sell:variant_placeholder_${vehicleType}`)}
               onBlur={(event) => save.mutate({ variant: event.target.value.trim() || null })}
             />
           </Field>
@@ -243,7 +277,7 @@ export function Sell() {
               onChange={(event) => save.mutate({ body_type: event.target.value || null })}
             >
               <option value="">{t('sell:not_set')}</option>
-              {(vocab.data?.body_types ?? []).map((key) => (
+              {shapesFor(vocab.data, vehicleType).map((key) => (
                 <option key={key} value={key}>
                   {t(`listing:body_type.${key}`)}
                 </option>

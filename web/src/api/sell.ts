@@ -1,5 +1,12 @@
 import { api } from './client';
-import type { ApiResource, Listing, ListingPage, ListingPhoto, PromotionOptions } from './types';
+import type {
+  ApiResource,
+  Listing,
+  ListingPage,
+  ListingPhoto,
+  PromotionOptions,
+  VehicleType,
+} from './types';
 
 /**
  * Selling, from a browser.
@@ -10,6 +17,7 @@ import type { ApiResource, Listing, ListingPage, ListingPhoto, PromotionOptions 
  * hands over a `File`, which is what multipart wanted all along.
  */
 export type ListingDraftInput = {
+  vehicle_type?: VehicleType;
   make_id?: number;
   model_id?: number | null;
   variant?: string | null;

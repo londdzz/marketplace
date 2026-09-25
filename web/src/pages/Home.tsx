@@ -1,10 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { listingsApi } from '../api/listings';
 import { referenceApi } from '../api/reference';
-import type { SearchFilters } from '../api/types';
+import type { SearchFilters, VehicleType } from '../api/types';
 import { BodyShape } from '../components/BodyShape';
 import { CollectionCard } from '../components/CollectionCard';
 import { ListingCard } from '../components/ListingCard';
@@ -40,25 +41,38 @@ export function Home() {
   const navigate = useNavigate();
   const favorites = useFavorites();
 
+  // The tabs on the panel change the whole page, not just the panel: the
+  // collections, the newest list and the shapes are all one catalogue or the
+  // other, and a page where only the top half switched would be a page that
+  // disagreed with itself.
+  const [vehicleType, setVehicleType] = useState<VehicleType>('car');
+
   const newest = useQuery({
-    queryKey: ['listings', NEWEST, 1],
-    queryFn: () => listingsApi.search(NEWEST, 1),
+    queryKey: ['listings', NEWEST, vehicleType, 1],
+    queryFn: () => listingsApi.search({ ...NEWEST, vehicleType }, 1),
   });
 
-  const browse = useQuery({ queryKey: ['browse'], queryFn: referenceApi.browse });
+  const browse = useQuery({
+    queryKey: ['browse', vehicleType],
+    queryFn: () => referenceApi.browse(vehicleType),
+  });
 
-  const open = (filters: SearchFilters) => navigate(`/search?${toQuery(filters)}`);
+  const open = (filters: SearchFilters) =>
+    navigate(`/search?${toQuery({ vehicleType, ...filters })}`);
 
   return (
     <>
       <section className="hero">
         <div className="page hero__inner">
-          <h1 className="hero__title">{t('web:hero_title')}</h1>
-          <p className="hero__sub">{t('web:hero_sub')}</p>
+          {/* The headline follows the tabs too. A page that says "Find your
+              next car" over a motorcycle search is a page arguing with
+              itself, and the headline is the first thing read. */}
+          <h1 className="hero__title">{t(`web:hero_title_${vehicleType}`)}</h1>
+          <p className="hero__sub">{t(`web:hero_sub_${vehicleType}`)}</p>
 
           {/* The search is here, not behind a button. A front page that only
               points at a search is a poster. */}
-          <SearchPanel />
+          <SearchPanel vehicleType={vehicleType} onVehicleTypeChange={setVehicleType} />
         </div>
       </section>
 
@@ -81,8 +95,8 @@ export function Home() {
 
         <section className="home__section">
           <div className="home__header">
-            <h2 className="home__heading">{t('home:newest')}</h2>
-            <Link to="/search?sort=newest" className="home__all">
+            <h2 className="home__heading">{t(`home:newest_${vehicleType}`)}</h2>
+            <Link to={`/search?sort=newest&vehicleType=${vehicleType}`} className="home__all">
               {t('home:show_all')} ›
             </Link>
           </div>
@@ -133,10 +147,10 @@ export function Home() {
                   onClick={() => open({ bodyType: [shape.key] })}
                 >
                   <span className="shape-tile__art">
-                    {SHAPE_ART.has(shape.key) ? (
+                    {vehicleType === 'car' && SHAPE_ART.has(shape.key) ? (
                       <img src={`/shapes/${shape.key}.png`} alt="" loading="lazy" />
                     ) : (
-                      <BodyShape shape={shape.key} width={96} />
+                      <BodyShape shape={shape.key} vehicleType={vehicleType} width={96} />
                     )}
                   </span>
                   <span className="shape-tile__name">{t(`listing:body_type.${shape.key}`)}</span>
@@ -149,7 +163,7 @@ export function Home() {
 
         <section className="sellcta">
           <div>
-            <h2 className="sellcta__title">{t('web:sell_title')}</h2>
+            <h2 className="sellcta__title">{t(`web:sell_title_${vehicleType}`)}</h2>
             <p className="sellcta__body">{t('web:sell_body')}</p>
           </div>
           <Link to="/sell">

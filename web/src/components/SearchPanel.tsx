@@ -5,8 +5,9 @@ import { useNavigate } from 'react-router-dom';
 
 import { listingsApi } from '../api/listings';
 import { referenceApi } from '../api/reference';
-import type { SearchFilters } from '../api/types';
+import type { SearchFilters, VehicleType } from '../api/types';
 import { toQuery } from '../search/query';
+import { CategoryTabs } from './CategoryTabs';
 import { Button, Chip, Field, Input, Select } from './ui';
 
 /**
@@ -32,7 +33,13 @@ const YEARS = Array.from({ length: 30 }, (_, at) => new Date().getFullYear() - a
 const MILEAGES = [25_000, 50_000, 75_000, 100_000, 150_000, 200_000, 250_000];
 const PRICES = [1_000, 2_000, 3_000, 5_000, 7_500, 10_000, 15_000, 20_000, 30_000, 50_000];
 
-export function SearchPanel() {
+export type SearchPanelProps = {
+  /** Held by the page, so the sections under the panel follow the same tabs. */
+  vehicleType: VehicleType;
+  onVehicleTypeChange: (type: VehicleType) => void;
+};
+
+export function SearchPanel({ vehicleType, onVehicleTypeChange }: SearchPanelProps) {
   const { t } = useTranslation(['search', 'web', 'common']);
   const navigate = useNavigate();
 
@@ -47,7 +54,16 @@ export function SearchPanel() {
     return () => clearTimeout(timer);
   }, [filters]);
 
-  const makes = useQuery({ queryKey: ['makes'], queryFn: referenceApi.makes, staleTime: 3_600_000 });
+  const makes = useQuery({
+    queryKey: ['makes', vehicleType],
+    queryFn: () => referenceApi.makes(vehicleType),
+    staleTime: 3_600_000,
+  });
+  const vocabularies = useQuery({
+    queryKey: ['vocabularies'],
+    queryFn: referenceApi.vocabularies,
+    staleTime: 3_600_000,
+  });
   const countries = useQuery({ queryKey: ['countries'], queryFn: referenceApi.countries, staleTime: 3_600_000 });
   const cities = useQuery({
     queryKey: ['cities'],
@@ -55,8 +71,8 @@ export function SearchPanel() {
     staleTime: 3_600_000,
   });
   const models = useQuery({
-    queryKey: ['models', filters.makeId],
-    queryFn: () => referenceApi.models(filters.makeId as number),
+    queryKey: ['models', filters.makeId, vehicleType],
+    queryFn: () => referenceApi.models(filters.makeId as number, vehicleType),
     enabled: filters.makeId !== undefined,
     staleTime: 3_600_000,
   });
@@ -64,8 +80,8 @@ export function SearchPanel() {
   // One cheap request that asks only how many, so the button never disagrees
   // with the results it opens.
   const preview = useQuery({
-    queryKey: ['listing-count', settled],
-    queryFn: () => listingsApi.search(settled, 1),
+    queryKey: ['listing-count', settled, vehicleType],
+    queryFn: () => listingsApi.search({ ...settled, vehicleType }, 1),
     placeholderData: (previous) => previous,
   });
 
@@ -82,11 +98,36 @@ export function SearchPanel() {
       return next as SearchFilters;
     });
 
-  const run = () => navigate(`/search?${toQuery(filters)}`);
+  const run = () => navigate(`/search?${toQuery({ ...filters, vehicleType })}`);
+
+  /**
+   * Switching catalogue drops the make, the model and the shape, and keeps the
+   * rest. Those three name something that exists in only one of the two —
+   * Volkswagen sells no motorcycles and "estate" means nothing on two wheels —
+   * while price, year, kilometres and where ask the same question of both.
+   */
+  const switchTo = (type: VehicleType) => {
+    setFilters((current) => {
+      const next = { ...current };
+      delete next.makeId;
+      delete next.modelId;
+      delete next.bodyType;
+
+      return next;
+    });
+    onVehicleTypeChange(type);
+  };
   const total = preview.data?.meta.total;
   const narrowed = Object.keys(filters).length > 0;
 
   return (
+    <>
+      <CategoryTabs
+        value={vehicleType}
+        types={vocabularies.data?.vehicle_types}
+        onChange={switchTo}
+      />
+
     <form
       className="panel"
       onSubmit={(event) => {
@@ -249,5 +290,6 @@ export function SearchPanel() {
         </Button>
       </div>
     </form>
+    </>
   );
 }

@@ -103,7 +103,7 @@ export default function SellModelScreen() {
       <Input
         label={t('sell:variant')}
         hint={t('sell:variant_hint')}
-        placeholder={t('sell:variant_placeholder')}
+        placeholder={t(`sell:variant_placeholder_${draft?.vehicle_type ?? 'car'}`)}
         value={variant}
         onChangeText={setVariant}
         containerStyle={{ marginTop: theme.spacing.xl }}

@@ -367,7 +367,6 @@
     "no_models_found": "No model matches that",
     "variant": "Trim",
     "variant_hint": "Optional. Buyers search for it.",
-    "variant_placeholder": "e.g. 2.0 TDI Highline",
     "year_hint": "The model year, as it says in the papers.",
     "mileage_hint": "As it reads on the odometer.",
     "mileage_too_high": "That is more than we can accept.",
@@ -463,7 +462,9 @@
     "shape_motorcycle": "What kind of bike is it?",
     "shape_hint_motorcycle": "We guessed from the model. Change it if it is a scooter, a cruiser or anything else.",
     "kind_car": "Car",
-    "kind_motorcycle": "Motorcycle"
+    "kind_motorcycle": "Motorcycle",
+    "variant_placeholder_car": "e.g. 2.0 TDI Highline",
+    "variant_placeholder_motorcycle": "e.g. ABS, 35 kW"
   },
   "messages": {
     "title": "Messages",
@@ -535,10 +536,8 @@
     "credit_history": "Credit history",
     "credits_app_only": "Credits are bought in the Autevo app. They are spent here and there alike.",
     "filters_title": "Narrow it down",
-    "footer_line": "Used cars in North Macedonia.",
+    "footer_line": "Used cars and motorcycles in North Macedonia.",
     "get_the_app": "Get the app",
-    "hero_sub": "Used cars from sellers across North Macedonia.",
-    "hero_title": "Find your next car",
     "narrow_body": "This site is built for a wide screen. On a phone, use the app.",
     "narrow_title": "Open Autevo on a computer",
     "nav_saved": "Saved",
@@ -549,9 +548,14 @@
     "pick_thread": "Choose a conversation on the left.",
     "privacy": "Privacy",
     "sell_body": "List it from this computer or from the app — four photographs and a price is all it takes. Your advert runs for two weeks.",
-    "sell_title": "Selling a car?",
     "sign_in_body": "Sign in with your phone number to keep cars and save searches.",
     "support": "Support",
-    "terms": "Terms"
+    "terms": "Terms",
+    "hero_title_car": "Find your next car",
+    "hero_title_motorcycle": "Find your next motorcycle",
+    "hero_sub_car": "Used cars from sellers across North Macedonia.",
+    "hero_sub_motorcycle": "Used motorcycles and scooters from sellers across North Macedonia.",
+    "sell_title_car": "Selling a car?",
+    "sell_title_motorcycle": "Selling a motorcycle?"
   }
 }

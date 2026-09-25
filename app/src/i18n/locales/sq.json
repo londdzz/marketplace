@@ -367,7 +367,6 @@
     "no_models_found": "Asnjë model nuk përputhet",
     "variant": "Versioni",
     "variant_hint": "Opsionale. Blerësit e kërkojnë.",
-    "variant_placeholder": "p.sh. 2.0 TDI Highline",
     "year_hint": "Viti i modelit, ashtu si në dokumente.",
     "mileage_hint": "Ashtu si shfaqet në kilometrazh.",
     "mileage_too_high": "Kjo është më shumë se sa pranohet.",
@@ -463,7 +462,9 @@
     "shape_motorcycle": "Çfarë lloj motori është?",
     "shape_hint_motorcycle": "E gjetëm nga modeli. Ndryshojeni nëse është skuter, cruiser ose ndonjë tjetër.",
     "kind_car": "Veturë",
-    "kind_motorcycle": "Motoçikletë"
+    "kind_motorcycle": "Motoçikletë",
+    "variant_placeholder_car": "p.sh. 2.0 TDI Highline",
+    "variant_placeholder_motorcycle": "p.sh. ABS, 35 kW"
   },
   "messages": {
     "title": "Mesazhet",
@@ -535,10 +536,8 @@
     "credit_history": "Historiku i krediteve",
     "credits_app_only": "Kreditet blihen në aplikacionin Autevo. Shpenzohen si këtu ashtu edhe atje.",
     "filters_title": "Ngushtojeni kërkimin",
-    "footer_line": "Makina të përdorura në Maqedoninë e Veriut.",
+    "footer_line": "Vetura dhe motoçikleta të përdorura në Maqedoninë e Veriut.",
     "get_the_app": "Merrni aplikacionin",
-    "hero_sub": "Makina të përdorura nga shitës anembanë Maqedonisë së Veriut.",
-    "hero_title": "Gjeni makinën tuaj të radhës",
     "narrow_body": "Kjo faqe është ndërtuar për ekran të gjerë. Në telefon, përdorni aplikacionin.",
     "narrow_title": "Hapni Autevo në kompjuter",
     "nav_saved": "Të ruajtura",
@@ -549,9 +548,14 @@
     "pick_thread": "Zgjidhni një bisedë në të majtë.",
     "privacy": "Privatësia",
     "sell_body": "Publikoje nga ky kompjuter ose nga aplikacioni — mjaftojnë katër fotografi dhe një çmim. Njoftimi zgjat dy javë.",
-    "sell_title": "Po shisni një makinë?",
     "sign_in_body": "Hyni me numrin tuaj të telefonit për të ruajtur makina dhe kërkime.",
     "support": "Mbështetje",
-    "terms": "Kushtet"
+    "terms": "Kushtet",
+    "hero_title_car": "Gjeni veturën tuaj të radhës",
+    "hero_title_motorcycle": "Gjeni motoçikletën tuaj të radhës",
+    "hero_sub_car": "Vetura të përdorura nga shitës anembanë Maqedonisë së Veriut.",
+    "hero_sub_motorcycle": "Motoçikleta dhe skuterë të përdorur nga shitës anembanë Maqedonisë së Veriut.",
+    "sell_title_car": "Po shitni një veturë?",
+    "sell_title_motorcycle": "Po shitni një motoçikletë?"
   }
 }

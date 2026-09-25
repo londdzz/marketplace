@@ -233,6 +233,85 @@ button.header__account {
 
 /* ---- the search panel -------------------------------------------------- */
 
+/* The tab row sits on top of the panel and the chosen tab joins it: no gap, no
+   border between them, and the panel's own surface running up into the tab.
+   That join is what makes this read as two catalogues rather than two buttons,
+   and it is why the row is not simply a pair of chips. */
+.cat-tabs {
+  display: flex;
+  gap: var(--s-xxs);
+  max-width: 1000px;
+  margin: var(--s-xxl) auto 0;
+  padding-left: var(--s-lg);
+}
+
+.cat-tabs + .panel {
+  margin-top: 0;
+  border-top-left-radius: 0;
+}
+
+.cat-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-xs);
+  padding: var(--s-sm) var(--s-lg);
+  border: 1px solid transparent;
+  border-bottom: none;
+  border-radius: var(--r-md) var(--r-md) 0 0;
+  background: transparent;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: var(--t-body);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+ /* Not the chosen one: hovering it would take the accent off the tab that is
+   already selected, which is what a pointer resting there used to do. */
+.cat-tab:not(.cat-tab--on):hover {
+  color: var(--text);
+}
+
+.cat-tab--on {
+  background: var(--surface);
+  border-color: var(--border-strong);
+  color: var(--accent);
+  /* Over the panel's own top border, so the two become one shape. */
+  margin-bottom: -1px;
+  padding-bottom: calc(var(--s-sm) + 1px);
+}
+
+/* Beside the results, where there is no panel underneath to join: a plain row
+   with a rule under it, so it still reads as tabs over the filters below. */
+.cat-tabs--inline {
+  margin: 0 0 var(--s-md);
+  padding-left: 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.cat-tabs--inline .cat-tab {
+  padding: var(--s-xs) var(--s-md);
+}
+
+.cat-tabs--inline .cat-tab--on {
+  background: transparent;
+  border-color: transparent;
+  border-bottom: 2px solid var(--accent);
+  margin-bottom: -1px;
+  padding-bottom: calc(var(--s-xs) - 1px);
+}
+
+/* Narrow enough and the tabs run to the page gutter like everything else. */
+@media (max-width: 720px) {
+  .cat-tabs {
+    padding-left: 0;
+  }
+
+  .cat-tabs + .panel {
+    border-top-left-radius: var(--r-lg);
+  }
+}
+
 /* Make and model lead at full size because they are what almost every buyer
    touches first; price, year, kilometres and town share the line below. Six
    identical dropdowns in a grid is a form, not a search. */
