@@ -44,6 +44,13 @@ $COMPOSER install --no-dev --no-interaction --prefer-dist --optimize-autoloader
 # safe on every deploy and is what picks up newly seeded models.
 "$PHP" artisan db:seed --force
 
+# The seeder only ever adds and updates, which is what makes the line above
+# safe and what leaves a renamed range behind under its old name: rewriting
+# BMW's "Series 3" as "3 Series" put both in the picker. This removes what the
+# data files no longer name, and never removes a model a listing points at —
+# those it reports instead, because that row is what gives a real car its name.
+"$PHP" artisan models:prune
+
 # Compiled config, routes and views. Never cache config before .env is final:
 # the cache wins over the file, and editing .env afterwards changes nothing
 # until config:cache runs again.
