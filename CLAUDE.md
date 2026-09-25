@@ -248,6 +248,19 @@ vocabulary comes from the API.
 - Phase 12: complete (app.json, EAS, icons, push registration, /docs, store copy, screenshots,
   privacy and data-safety answers, pre-submission checklist). **All twelve phases are done.**
 - Blocking another user is built (Apple 1.2 / Play UGC), after phase 12.
+- **The API is live at `https://api.autevo.mk`**, on a Hetzner CPX22 in Nuremberg
+  (2 vCPU, 4 GB, Ubuntu 24.04) managed by Laravel Forge, PHP 8.4, MySQL 8.4.
+  Verified from outside: valid certificate, reference data seeded, `APP_DEBUG`
+  off, all four scheduled jobs listed, `queue:work` running. Photographs go to
+  a Cloudflare R2 bucket `autevo-photos` served from `https://img.autevo.mk`,
+  which answers with its own certificate.
+  **Three things are still stand-ins and none of them can ship**: `OTP_DRIVER`
+  is `log`, so sign-in codes are written to the log rather than sent — anyone
+  who can read that file can sign in as anybody; there is no RevenueCat webhook
+  secret, so no purchase grants a credit; and push has no credentials.
+  **The photo pipeline has never run on this server.** The R2 settings look
+  right but no photograph has been uploaded through them, so publishing one
+  listing from the website is the first thing to do.
 - **Going live is `docs/deployment.md`**: Hetzner CX22 + Laravel Forge + Cloudflare R2,
   about €16/month, with the server files in `deploy/`. Two things there fail silently and
   are the first place to look when the marketplace "just stops" — the queue worker and the
