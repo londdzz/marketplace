@@ -98,7 +98,10 @@
     "collection_cruisers": "Крузери",
     "collection_track": "Спортски мотори",
     "promo_title_car": "Продадете го вашиот автомобил",
-    "promo_title_motorcycle": "Продадете го вашиот мотор"
+    "promo_title_motorcycle": "Продадете го вашиот мотор",
+    "newest_empty_title": "Сè уште нема огласи",
+    "newest_empty_car": "Првите возила се на пат. Бидете вие првиот што ќе постави оглас.",
+    "newest_empty_motorcycle": "Првите мотоцикли се на пат. Бидете вие првиот што ќе постави оглас."
   },
   "search": {
     "results": "{{count}} автомобили",

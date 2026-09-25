@@ -501,7 +501,15 @@ release, and update it whenever a placeholder is added or replaced.
   that says how many cars are behind it is one a buyer can judge before tapping, and an
   estimated number would be a wrong one. A collection with nothing in it is not shown
   at all, because an empty category is a worse tap than no category, and the busiest
-  comes first. The collections live in `config/listings.php` like every other closed
+  comes first — unless `BROWSE_SHOW_EMPTY` is on, which draws every category whatever
+  it counts. **An empty card is dimmed to 0.38 and takes no touch**, in both the app and
+  the website, so the tap that goes nowhere is not offered and the count stays the real
+  one. That setting exists because a catalogue with no cars in it shows neither rail at
+  all, and a home screen with both rails missing reads as broken rather than as empty. It
+  is off by default; PLACEHOLDERS.md carries it.
+  **The newest list has an empty state too**, for the same reason: a heading with a void
+  under it was what a brand new market actually looked like, on the phone and in the
+  browser both. The collections live in `config/listings.php` like every other closed
   vocabulary, and each carries its own filters to the app, so tapping one runs the same
   search the search tab runs rather than the app keeping a second idea of what "a family
   car" means. The line under a collection's name is written from those same filters, so

@@ -102,7 +102,12 @@ export function CollectionCard({
   const chips = chipsFor(collection.filters).filter((chip) => chip !== title);
 
   return (
-    <button type="button" className={`coll ${art ? 'coll--art' : ''}`} onClick={onOpen}>
+    <button
+      type="button"
+      className={`coll ${art ? 'coll--art' : ''}`}
+      disabled={collection.count === 0}
+      onClick={onOpen}
+    >
       <span className="coll__scene">
         {art ? (
           <img className="coll__bg" src={art.background} alt="" loading="lazy" />

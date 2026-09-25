@@ -433,9 +433,24 @@ button.header__account {
   transition: border-color 0.12s ease, transform 0.12s ease;
 }
 
-.coll:hover {
+.coll:hover:not(:disabled) {
   border-color: var(--border-strong);
   transform: translateY(-2px);
+}
+
+/* Nothing in it yet.
+   Drawn rather than dropped, because a rail that loses half its cards as a
+   catalogue empties reads as broken rather than as empty. Dimmed and inert:
+   the count is still the real one, so the card says the category exists and
+   will have cars in it later without promising any today.
+   0.38 is the same value the app uses, so a browser and a phone dim to one
+   level rather than two. `cursor: default` matters as much as the opacity —
+   a pointer over something that cannot be clicked is the actual lie. */
+.coll:disabled,
+.shape-tile:disabled {
+  opacity: 0.38;
+  cursor: default;
+  transform: none;
 }
 
 /* Without a car standing on it the scene simply takes the space the car would
@@ -557,7 +572,7 @@ button.header__account {
   transition: border-color 0.12s ease, transform 0.12s ease;
 }
 
-.shape-tile:hover {
+.shape-tile:hover:not(:disabled) {
   border-color: var(--border-strong);
   transform: translateY(-2px);
 }
@@ -582,7 +597,7 @@ button.header__account {
   color: var(--text-muted);
 }
 
-.shape-tile:hover .shape {
+.shape-tile:hover:not(:disabled) .shape {
   color: var(--text);
 }
 

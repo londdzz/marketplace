@@ -27,6 +27,7 @@ import {
   BodyTypeTile,
   CategorySwitch,
   CollectionCard,
+  EmptyState,
   FloatingSearchBar,
   ListingCard,
   RateCard,
@@ -251,6 +252,7 @@ export default function HomeTab() {
                     icon={collectionIcon(collection.key) as never}
                     width={COLLECTION_CARD}
                     onPress={() => open(collection.filters)}
+                    empty={collection.count === 0}
                     testID={`collection-${collection.key}`}
                   />
                 ))}
@@ -286,6 +288,24 @@ export default function HomeTab() {
 
           {newest.isLoading ? (
             <ActivityIndicator color={theme.colors.accent} style={{ marginTop: theme.spacing.xl }} />
+          ) : newest.isError ? (
+            <EmptyState
+              glyph="cloud-offline-outline"
+              title={t('common:error_loading')}
+              actionLabel={t('common:retry')}
+              onAction={() => void newest.refetch()}
+            />
+          ) : listings.length === 0 ? (
+            // The state every new market starts in. A heading with nothing
+            // under it reads as broken, and on a phone that gap is most of
+            // the screen, so it says so and says what to do next.
+            <EmptyState
+              glyph="car-outline"
+              title={t('home:newest_empty_title')}
+              description={t(`home:newest_empty_${vehicleType}`)}
+              actionLabel={t('sell:new_listing')}
+              onAction={() => router.push('/sell')}
+            />
           ) : (
             <View style={[styles.grid, { gap, marginTop: -theme.spacing.sm }]}>
               {listings.map((listing) => (
@@ -321,6 +341,7 @@ export default function HomeTab() {
                     image={bodyTypeArt(shape.key, vehicleType)}
                     width={SHAPE_TILE}
                     onPress={() => open({ bodyType: [shape.key] })}
+                    empty={shape.count === 0}
                     testID={`shape-${shape.key}`}
                   />
                 ))}

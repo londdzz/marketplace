@@ -171,6 +171,27 @@ return [
     |
     */
 
+    /*
+    |--------------------------------------------------------------------------
+    | Browsing
+    |--------------------------------------------------------------------------
+    |
+    | "show_empty" draws a collection or a body shape that no live listing
+    | matches. Off by default and it should stay off in a real market, because
+    | a category promising nothing is a tap that goes nowhere and its count is
+    | a promise the catalogue cannot keep.
+    |
+    | Turn it on while a server is being handed to testers. With no cars in the
+    | database every category counts zero, so both rails disappear and the home
+    | screen reads as broken rather than as empty. Off again before anybody
+    | real arrives — PLACEHOLDERS.md carries it.
+    |
+    */
+
+    'browse' => [
+        'show_empty' => (bool) env('BROWSE_SHOW_EMPTY', false),
+    ],
+
     'collections' => [
         'car' => [
             'family' => [

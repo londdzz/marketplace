@@ -10,7 +10,7 @@ import { BodyShape } from '../components/BodyShape';
 import { CollectionCard } from '../components/CollectionCard';
 import { ListingCard } from '../components/ListingCard';
 import { SearchPanel } from '../components/SearchPanel';
-import { Button, ErrorState, Spinner } from '../components/ui';
+import { Button, EmptyState, ErrorState, Spinner } from '../components/ui';
 import { useFavorites } from '../hooks/useFavorites';
 import { toQuery } from '../search/query';
 
@@ -109,6 +109,16 @@ export function Home() {
               actionLabel={t('common:retry')}
               onRetry={() => void newest.refetch()}
             />
+          ) : (newest.data?.data ?? []).length === 0 ? (
+            // A heading with a void under it reads as broken. It is the state
+            // every new market starts in, so it has to say so and say what to
+            // do next, like every other empty list on the site.
+            <EmptyState
+              title={t('home:newest_empty_title')}
+              description={t(`home:newest_empty_${vehicleType}`)}
+              actionLabel={t('sell:new_listing')}
+              onAction={() => navigate('/sell')}
+            />
           ) : (
             <div className="grid">
               {(newest.data?.data ?? []).slice(0, ON_HOME).map((listing) => (
@@ -144,6 +154,10 @@ export function Home() {
                   key={shape.key}
                   type="button"
                   className="shape-tile"
+                  // Drawn but unavailable while nothing is of this shape: a
+                  // real `disabled` rather than a class, so the keyboard skips
+                  // it and a screen reader says so, and the count stays honest.
+                  disabled={shape.count === 0}
                   onClick={() => open({ bodyType: [shape.key] })}
                 >
                   <span className="shape-tile__art">

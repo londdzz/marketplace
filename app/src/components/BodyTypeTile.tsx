@@ -17,6 +17,8 @@ export type BodyTypeTileProps = {
   image?: ImageSource | number | null;
   width: number;
   onPress: () => void;
+  /** No live listing of this shape. Drawn, dimmed, and not pressable. */
+  empty?: boolean;
   testID?: string;
 };
 
@@ -153,6 +155,7 @@ export function BodyTypeTile({
   image,
   width,
   onPress,
+  empty = false,
   testID,
 }: BodyTypeTileProps) {
   const theme = useTheme();
@@ -162,6 +165,8 @@ export function BodyTypeTile({
   return (
     <Pressable
       accessibilityRole="button"
+      disabled={empty}
+      accessibilityState={{ disabled: empty }}
       onPress={onPress}
       testID={testID}
       style={({ pressed }) => [
@@ -176,6 +181,9 @@ export function BodyTypeTile({
           borderColor: theme.colors.border,
           backgroundColor: pressed ? theme.colors.surfaceMuted : theme.colors.surface,
         },
+        // The same 0.38 the collection cards use, so a rail of both dims to
+        // one level rather than two.
+        empty && styles.empty,
       ]}
     >
       <View style={styles.art}>
@@ -219,6 +227,9 @@ export function BodyTypeTile({
 const ART_HEIGHT = 44;
 
 const styles = StyleSheet.create({
+  empty: {
+    opacity: 0.38,
+  },
   tile: {
     alignItems: 'center',
   },

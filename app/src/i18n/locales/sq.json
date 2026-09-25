@@ -98,7 +98,10 @@
     "collection_cruisers": "Cruiser",
     "collection_track": "Motorë sportivë",
     "promo_title_car": "Shitni veturën tuaj",
-    "promo_title_motorcycle": "Shitni motoçikletën tuaj"
+    "promo_title_motorcycle": "Shitni motoçikletën tuaj",
+    "newest_empty_title": "Asgjë e listuar ende",
+    "newest_empty_car": "Makinat e para janë rrugës. Bëhuni ju i pari që publikon një.",
+    "newest_empty_motorcycle": "Motoçikletat e para janë rrugës. Bëhuni ju i pari që publikon një."
   },
   "search": {
     "results": "{{count}} makina",

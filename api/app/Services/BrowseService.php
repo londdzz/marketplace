@@ -63,11 +63,24 @@ final class BrowseService
         $shown = [];
         $collections = [];
 
+        // Normally a category with nothing behind it is not drawn: an empty
+        // category is a worse tap than no category, and a count is a promise.
+        //
+        // A catalogue with no cars in it yet is the exception. Every category
+        // then counts zero, both rails vanish, and the home screen reads as
+        // broken rather than as empty — which is the wrong thing to hand a
+        // tester on the first evening. So this can be turned on while a server
+        // is being tried out, and it is off by default so launch keeps the
+        // rule. The count shown is still the real one, and tapping through
+        // still runs the real search; it simply arrives at an empty result,
+        // which is a screen that already says what to do next.
+        $showEmpty = (bool) config('listings.browse.show_empty');
+
         foreach ($defined as $key => $filters) {
             $filters['vehicle_type'] = $type->value;
             $count = $this->search->count($filters, $viewer);
 
-            if ($count > 0) {
+            if ($count > 0 || $showEmpty) {
                 $collections[] = [
                     'key' => $key,
                     'filters' => $filters,
@@ -79,6 +92,8 @@ final class BrowseService
 
         // Busiest first: the shapes with the most to show are the ones worth
         // the width, and the order stops being arbitrary as the market grows.
+        // PHP's sort is stable, so categories tied on nothing — which is all
+        // of them on an empty catalogue — keep the order config names them in.
         usort($collections, static fn (array $a, array $b): int => $b['count'] <=> $a['count']);
 
         $bodyTypes = [];
@@ -87,7 +102,7 @@ final class BrowseService
             $filters = ['vehicle_type' => $type->value, 'body_type' => $key];
             $count = $this->search->count($filters, $viewer);
 
-            if ($count > 0) {
+            if ($count > 0 || $showEmpty) {
                 $bodyTypes[] = [
                     'key' => (string) $key,
                     'count' => $count,

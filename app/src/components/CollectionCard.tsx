@@ -30,6 +30,13 @@ export type CollectionCardProps = {
   icon: keyof typeof Ionicons.glyphMap;
   width: number;
   onPress: () => void;
+  /**
+   * Nothing in it yet. The card is still drawn — a rail that loses half its
+   * cards as a catalogue empties reads as broken rather than as empty — but
+   * it is dimmed and it does not take a touch, because a category promising
+   * nothing is a tap that goes nowhere.
+   */
+  empty?: boolean;
   testID?: string;
 };
 
@@ -59,6 +66,7 @@ export function CollectionCard({
   icon,
   width,
   onPress,
+  empty = false,
   testID,
 }: CollectionCardProps) {
   const theme = useTheme();
@@ -70,6 +78,11 @@ export function CollectionCard({
   return (
     <Pressable
       accessibilityRole="button"
+      // Both, deliberately. `disabled` is what stops the touch and what tells
+      // a screen reader the card is not available; `accessibilityState` is
+      // what VoiceOver and TalkBack actually read out.
+      disabled={empty}
+      accessibilityState={{ disabled: empty }}
       onPress={onPress}
       testID={testID}
       style={({ pressed }) => [
@@ -81,6 +94,10 @@ export function CollectionCard({
           borderColor: theme.colors.border,
           backgroundColor: pressed ? theme.colors.surfaceMuted : theme.colors.surface,
         },
+        // Far enough down to read as unavailable at a glance, not so far that
+        // the name stops being legible — this is still how somebody learns
+        // the category exists and will have cars in it later.
+        empty && styles.empty,
       ]}
     >
       <View style={{ height: photoHeight }}>
@@ -183,6 +200,9 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  empty: {
+    opacity: 0.38,
   },
   count: {
     alignSelf: 'flex-start',

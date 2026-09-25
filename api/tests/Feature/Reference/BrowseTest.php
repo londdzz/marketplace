@@ -18,6 +18,11 @@ use Database\Seeders\VehicleModelSeeder;
 use Illuminate\Support\Facades\Cache;
 
 beforeEach(function (): void {
+    // Stated rather than inherited: nearly every test here is about which
+    // categories are drawn, so the setting that decides it does not get to
+    // come from whatever is in .env on the machine running them.
+    config()->set('listings.browse.show_empty', false);
+
     $this->seed(CountrySeeder::class);
     $this->seed(CitySeeder::class);
     $this->seed(MakeSeeder::class);
@@ -219,4 +224,48 @@ it('gives each card its own car when there is one to spare', function (): void {
     // Both categories hold both cars, so they take one each rather than
     // drawing the same photograph twice in a row.
     expect($collection['photo_url'])->not->toBe($shape['photo_url']);
+});
+
+it('hides a category nothing matches, by default', function (): void {
+    config()->set('listings.browse.show_empty', false);
+
+    $data = $this->getJson('/api/v1/browse')->assertOk()->json('data');
+
+    // Nothing has been published, so every category counts zero and none of
+    // them is drawn. A count is a promise, and an empty one cannot keep it.
+    expect($data['collections'])->toBe([])
+        ->and($data['body_types'])->toBe([]);
+});
+
+it('draws every category, counting zero, when show_empty is on', function (): void {
+    config()->set('listings.browse.show_empty', true);
+
+    $data = $this->getJson('/api/v1/browse')->assertOk()->json('data');
+
+    expect($data['collections'])->not->toBe([])
+        ->and($data['body_types'])->not->toBe([]);
+
+    // The count is still measured, never softened into something friendlier:
+    // the apps dim the card and refuse the tap off the back of this zero.
+    expect(collect($data['collections'])->pluck('count')->unique()->all())->toBe([0]);
+    expect(collect($data['body_types'])->pluck('count')->unique()->all())->toBe([0]);
+});
+
+it('still counts what is really there when show_empty is on', function (): void {
+    config()->set('listings.browse.show_empty', true);
+
+    browsable(['fuel' => FuelType::Electric, 'body_type' => 'suv']);
+
+    $data = $this->getJson('/api/v1/browse')->assertOk()->json('data');
+
+    $electrified = collect($data['collections'])->firstWhere('key', 'electrified');
+    $suv = collect($data['body_types'])->firstWhere('key', 'suv');
+    $saloon = collect($data['body_types'])->firstWhere('key', 'sedan');
+
+    expect($electrified['count'])->toBe(1)
+        ->and($suv['count'])->toBe(1)
+        ->and($saloon['count'])->toBe(0);
+
+    // Busiest first still holds, so the one real category leads the rail.
+    expect($data['body_types'][0]['key'])->toBe('suv');
 });

@@ -98,7 +98,10 @@
     "collection_cruisers": "Cruisers",
     "collection_track": "Sports bikes",
     "promo_title_car": "Sell your car",
-    "promo_title_motorcycle": "Sell your motorcycle"
+    "promo_title_motorcycle": "Sell your motorcycle",
+    "newest_empty_title": "Nothing listed yet",
+    "newest_empty_car": "The first cars are on their way. Be the one who lists one.",
+    "newest_empty_motorcycle": "The first motorcycles are on their way. Be the one who lists one."
   },
   "search": {
     "results": "{{count}} cars",

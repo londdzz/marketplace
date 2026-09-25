@@ -211,6 +211,20 @@ in section 2 has to be real before a purchase can ever add anything.
   the file before submission, or gate it behind `__DEV__`. It is the only screen in the app
   where a control does nothing when you press it.
 
+## `BROWSE_SHOW_EMPTY` — categories with no cars behind them
+
+**Introduced**: friends' test build, after phase 12.
+**What it does**: draws every collection and body shape on the home screen even
+when no live listing matches, dimmed and not tappable, reading "No offers".
+Without it a catalogue with no cars in it shows neither rail at all and the
+home screen reads as broken rather than as empty — which is the wrong thing to
+hand a tester on the first evening.
+**What it costs once there are cars**: a real market will always have a few
+shapes nobody is selling — a convertible in February — and those stay on the
+screen greyed out. That is arguably honest and arguably clutter; it is a
+judgement to make with a real catalogue in front of you, not now.
+**Replace with**: a decision. `false` is the default and the original rule.
+
 ## `OTP_UNIVERSAL_CODE` — a code that verifies any number
 
 **Introduced**: friends' test build, after phase 12.
