@@ -149,6 +149,29 @@ The ones that will stop you dead if they are wrong:
 live for your own testing with `OTP_DRIVER=log` and read the code out of the log; you can
 never **ship** that way.
 
+### Signing in while the build is with friends
+
+Nobody's phone gets a message while `OTP_DRIVER` is `log`, so the code has to be read off
+the server and passed on. There is a command for it, so you are not grepping a log file:
+
+```bash
+ssh forge@<server ip>
+cd /home/forge/api.autevo.mk/api
+php artisan otp:recent                  # the last ten, newest at the bottom
+php artisan otp:recent +38970123456     # just that number
+```
+
+It reads the log, not the database — `otp_codes` holds a hash and never the code — and the
+log masks the number, so the command masks yours the same way before matching.
+
+**One code for everybody instead**: set `OTP_UNIVERSAL_CODE` to something unguessable and
+it verifies any number, so nothing has to be relayed at all. It needs `APP_ENV` set to
+something other than `production`; `staging` is the honest word for a server no real
+seller is on yet, and it is the only thing in the codebase that reads `APP_ENV`, so
+nothing else about the deployment changes (`APP_DEBUG=false` is separate and stays).
+Put `APP_ENV` back to `production` for launch and the code stops working by itself.
+Both of these must be gone before real sellers arrive — `PLACEHOLDERS.md` lists them.
+
 Then deploy: Forge → Site → **Deploy Now**. Watch the output.
 
 ### The manufacturer marks — nothing to do
@@ -360,5 +383,5 @@ Not part of getting it running, but do not lose track of them:
 | Upload fails at about 1 MB | `client_max_body_size` — `deploy/nginx-api.conf` |
 | Changing `.env` does nothing | config is cached. `php artisan config:cache` again. |
 | Listings never expire, no alerts arrive | the scheduler is not running (Part 6) |
-| Sign-in codes never arrive | `OTP_DRIVER` is still `log`, or WhatsApp credentials are wrong |
+| Sign-in codes never arrive | `OTP_DRIVER` is still `log` — that is expected, and `php artisan otp:recent` reads them — or the sending credentials are wrong |
 | Purchases take money, grant nothing | `REVENUECAT_WEBHOOK_SECRET` does not match the dashboard |

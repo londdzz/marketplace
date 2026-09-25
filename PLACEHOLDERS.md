@@ -30,7 +30,26 @@ approved authentication template in sq, mk, sr, bg and en. The template must tak
 one body parameter, the code, and should carry a copy-code button for one-tap autofill.
 
 Until then `OTP_DRIVER=log` writes codes to `api/storage/logs/laravel.log` and sends
-nothing. **Never ship with the log driver.**
+nothing. **Never ship with the log driver** — a code in a log file means anyone who can
+read that file signs in as anybody.
+
+It is, however, the right driver while the build is going to friends and nobody is
+paying an aggregator yet, so there is a way to read a code back without hunting through
+the file:
+
+```bash
+php artisan otp:recent                    # the last ten, newest at the bottom
+php artisan otp:recent +38970123456       # just that number
+```
+
+It reads the log, not the database: `otp_codes` stores a hash and never the code, so the
+log is the only place a code has ever existed in the clear. The log masks the number, so
+the command masks the one you give it the same way before matching — two numbers sharing
+their first and last three digits both match, which is what the timestamps are for.
+
+**A friend's phone gets no message at all**, so somebody has to read the code and pass it
+on. Where that is too much, `OTP_UNIVERSAL_CODE` (below) is the other way, and it needs
+`APP_ENV` to be something other than `production`.
 
 Still open: WhatsApp is weak in Bulgaria and Serbia, where Viber leads. A second
 `App\Contracts\OtpSender` driver is needed before launching those two markets.
@@ -184,3 +203,10 @@ behind an account. It is refused when `APP_ENV=production` and every use is logg
 as a warning, but the only safe state for a real deployment is empty.
 **Replace with**: nothing. Delete the value from `.env`. Real codes are delivered by
 `OtpSender` and always were.
+
+**To use it while the build is with friends**: it needs `APP_ENV` set to something other
+than `production` — `staging` is the honest label for a server nobody real is on yet.
+That is the only thing in this codebase that reads `APP_ENV`, so nothing else changes;
+`APP_DEBUG=false` is what keeps stack traces off the wire, and it is a separate setting.
+Then the day the label goes back to `production` for launch, the code stops working on
+its own, which is the entire point of the guard. Do not relax it instead.

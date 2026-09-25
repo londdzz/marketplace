@@ -346,6 +346,15 @@ release, and update it whenever a placeholder is added or replaced.
 
 ## Decisions taken along the way
 
+- **A code can be read back while the log driver is on.** `php artisan otp:recent`
+  prints the codes `OTP_DRIVER=log` has written, newest last, and takes a number to
+  filter by. It reads the log rather than the database, because `otp_codes` stores a
+  hash and never the code — the log is the only place one has ever been in the clear —
+  and it refuses to run when the driver actually sends, since then the log holds
+  nothing. It exists for the friends-and-family stage, where nobody is paying an
+  aggregator yet and somebody has to pass each code along by hand. `OTP_UNIVERSAL_CODE`
+  is the other way and needs `APP_ENV` to be anything but `production`, which is the one
+  thing in the codebase that reads `APP_ENV` at all.
 - **OTP delivery is WhatsApp, behind a driver.** `App\Contracts\OtpSender` has a
   WhatsApp Cloud API driver for production and a log driver for development, chosen by
   `OTP_DRIVER`. WhatsApp authentication templates are cheaper than SMS in the region but
