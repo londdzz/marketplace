@@ -18,6 +18,12 @@ LARAVEL="$REPO/api"
 # Plain `php` is whatever the system default happens to be, which is the same
 # thing today and the wrong thing the day a second PHP version is installed.
 PHP="${FORGE_PHP:-php}"
+
+# Deliberately unquoted below. FORGE_COMPOSER is not a path — Forge sets it to
+# a command line, "php8.4 /usr/local/bin/composer", so it has to word-split.
+# Quoted, bash hunts for one file with a space in its name and the deploy dies
+# at the first composer call.
+# shellcheck disable=SC2086
 COMPOSER="${FORGE_COMPOSER:-composer}"
 
 cd "$LARAVEL"
@@ -28,7 +34,7 @@ cd "$REPO"
 git pull origin main
 cd "$LARAVEL"
 
-"$COMPOSER" install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+$COMPOSER install --no-dev --no-interaction --prefer-dist --optimize-autoloader
 
 # --force is what lets a migration run without a confirmation prompt. Without
 # it the deploy hangs waiting for an answer nobody is there to give.
