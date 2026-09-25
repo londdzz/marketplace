@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Reference;
 
+use App\Enums\VehicleType;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\BrowseResource;
 use App\Http\Resources\CityResource;
@@ -61,20 +62,34 @@ class ReferenceController extends Controller
         return CityResource::collection($cities);
     }
 
-    public function makes(): AnonymousResourceCollection
+    /**
+     * The makes that sell the kind of vehicle being asked about, the ones that
+     * lead the picker first.
+     *
+     * Which makes lead is a different answer per kind — Suzuki is an also-ran
+     * among cars here and one of the first names in bikes — so both the filter
+     * and the ordering follow the type.
+     */
+    public function makes(Request $request): AnonymousResourceCollection
     {
-        $makes = $this->remember('makes', fn () => Make::query()
-            ->orderByDesc('popular')
+        $type = $this->vehicleType($request);
+
+        $makes = $this->remember('makes:'.$type->value, fn () => Make::query()
+            ->selling($type)
+            ->orderByDesc($type === VehicleType::Motorcycle ? 'popular_motorcycles' : 'popular')
             ->orderBy('name')
             ->get());
 
         return MakeResource::collection($makes);
     }
 
-    public function models(Make $make): AnonymousResourceCollection
+    public function models(Request $request, Make $make): AnonymousResourceCollection
     {
-        $models = $this->remember('models:'.$make->getKey(), fn () => VehicleModel::query()
+        $type = $this->vehicleType($request);
+
+        $models = $this->remember('models:'.$make->getKey().':'.$type->value, fn () => VehicleModel::query()
             ->where('make_id', $make->getKey())
+            ->where('vehicle_type', $type)
             ->orderBy('name')
             ->get());
 
@@ -99,7 +114,12 @@ class ReferenceController extends Controller
     public function vocabularies(): VocabularyResource
     {
         return VocabularyResource::make([
+            'vehicle_types' => VehicleType::values(),
             'body_types' => (array) config('listings.body_types'),
+            // A motorcycle's shape goes in the same column and is validated
+            // against its own list, so both lists are served and the sell flow
+            // shows whichever belongs to what is being sold.
+            'motorcycle_types' => (array) config('listings.motorcycle_types'),
             'drivetrains' => (array) config('listings.drivetrains'),
             'colors' => (array) config('listings.colors'),
             'features' => (array) config('listings.features'),
@@ -116,7 +136,21 @@ class ReferenceController extends Controller
      */
     public function browse(Request $request, BrowseService $browse): BrowseResource
     {
-        return BrowseResource::make($browse->sections($request->user()));
+        return BrowseResource::make($browse->sections($request->user(), $this->vehicleType($request)));
+    }
+
+    /**
+     * Which kind of vehicle a reference request is about, cars unless told
+     * otherwise. An unknown value is rejected rather than quietly read as a
+     * car, so a typo in a client shows up as a typo.
+     */
+    private function vehicleType(Request $request): VehicleType
+    {
+        $validated = $request->validate([
+            'type' => ['sometimes', 'nullable', Rule::enum(VehicleType::class)],
+        ]);
+
+        return VehicleType::tryFrom((string) ($validated['type'] ?? '')) ?? VehicleType::Car;
     }
 
     /**

@@ -24,6 +24,7 @@ class ListingResource extends JsonResource
         return [
             'id' => $this->id,
             'status' => $this->status->value,
+            'vehicle_type' => $this->vehicle_type->value,
             'make_id' => $this->make_id,
             'model_id' => $this->model_id,
             'make' => MakeResource::make($this->whenLoaded('make')),

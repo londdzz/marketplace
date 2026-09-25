@@ -24,7 +24,9 @@ class VocabularyResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'vehicle_types' => array_values($this->resource['vehicle_types']),
             'body_types' => array_values($this->resource['body_types']),
+            'motorcycle_types' => array_values($this->resource['motorcycle_types']),
             'drivetrains' => array_values($this->resource['drivetrains']),
             'colors' => array_values($this->resource['colors']),
             'features' => array_values($this->resource['features']),

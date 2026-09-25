@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Enums\VehicleType;
 use App\Models\User;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
@@ -32,35 +33,38 @@ final class BrowseService
      *
      * @return array{collections: array<int, array{key: string, filters: array<string, mixed>, count: int, photo: string|null}>, body_types: array<int, array{key: string, count: int, photo: string|null}>}
      */
-    public function sections(?User $viewer = null): array
+    public function sections(?User $viewer = null, ?VehicleType $type = null): array
     {
+        $type ??= VehicleType::Car;
+
         // A buyer who has blocked someone sees fewer cars than everyone else,
         // so their numbers cannot come out of the shared cache. Almost nobody
         // has blocked anyone, and they pay for it rather than the rest.
         if ($this->blocks->hiddenFrom($viewer) !== []) {
-            return $this->measure($viewer);
+            return $this->measure($viewer, $type);
         }
 
         return Cache::remember(
-            'browse.sections',
+            'browse.sections.'.$type->value,
             (int) config('listings.reference_cache_seconds'),
-            fn (): array => $this->measure(null),
+            fn (): array => $this->measure(null, $type),
         );
     }
 
     /**
      * @return array{collections: array<int, array{key: string, filters: array<string, mixed>, count: int, photo: string|null}>, body_types: array<int, array{key: string, count: int, photo: string|null}>}
      */
-    private function measure(?User $viewer): array
+    private function measure(?User $viewer, VehicleType $type): array
     {
         /** @var array<string, array<string, mixed>> $defined */
-        $defined = config('listings.collections');
+        $defined = (array) config('listings.collections.'.$type->value);
 
         // Every card that can show a different car does.
         $shown = [];
         $collections = [];
 
         foreach ($defined as $key => $filters) {
+            $filters['vehicle_type'] = $type->value;
             $count = $this->search->count($filters, $viewer);
 
             if ($count > 0) {
@@ -79,14 +83,15 @@ final class BrowseService
 
         $bodyTypes = [];
 
-        foreach ((array) config('listings.body_types') as $key) {
-            $count = $this->search->count(['body_type' => $key], $viewer);
+        foreach ($type->bodyTypes() as $key) {
+            $filters = ['vehicle_type' => $type->value, 'body_type' => $key];
+            $count = $this->search->count($filters, $viewer);
 
             if ($count > 0) {
                 $bodyTypes[] = [
                     'key' => (string) $key,
                     'count' => $count,
-                    'photo' => $this->faceOf(['body_type' => $key], $viewer, $shown),
+                    'photo' => $this->faceOf($filters, $viewer, $shown),
                 ];
             }
         }

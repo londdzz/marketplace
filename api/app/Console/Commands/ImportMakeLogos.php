@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
+use App\Enums\VehicleType;
 use App\Models\Make;
 use App\Support\TextNormalizer;
 use Illuminate\Console\Command;
@@ -72,7 +73,11 @@ class ImportMakeLogos extends Command
         // /makes is cached for an hour, so without this the command reports
         // success and every make keeps drawing its monogram until the cache
         // expires — the linking looking like it did nothing at all.
-        Cache::forget('reference:makes');
+        // One cached list per kind of vehicle, and a logo belongs to the make
+        // rather than to either list, so every one of them goes.
+        foreach (VehicleType::cases() as $type) {
+            Cache::forget('reference:makes:'.$type->value);
+        }
 
         $this->info("Linked {$linked} logos.");
 

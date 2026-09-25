@@ -7,7 +7,6 @@ namespace App\Models;
 use App\Enums\VehicleType;
 use App\Support\TextNormalizer;
 use Database\Factories\MakeFactory;
-use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -52,10 +51,31 @@ class Make extends Model
      *
      * @param  Builder<$this>  $query
      */
-    #[Scope]
-    protected function selling(Builder $query, VehicleType $type): void
+    public function scopeSelling(Builder $query, VehicleType $type): void
     {
         $query->where($type === VehicleType::Motorcycle ? 'motorcycles' : 'cars', true);
+    }
+
+    /** Whether this make sells the given kind of vehicle at all. */
+    public function sells(VehicleType $type): bool
+    {
+        return $type === VehicleType::Motorcycle
+            ? (bool) $this->motorcycles
+            : (bool) $this->cars;
+    }
+
+    /**
+     * Whether this make leads the picker for the given kind.
+     *
+     * Two columns rather than one, because the answer differs: `popular` is the
+     * car answer and keeps the meaning it had when every make in the table sold
+     * cars and nothing else.
+     */
+    public function popularFor(VehicleType $type): bool
+    {
+        return $type === VehicleType::Motorcycle
+            ? (bool) $this->popular_motorcycles
+            : (bool) $this->popular;
     }
 
     /**

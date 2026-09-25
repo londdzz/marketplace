@@ -28,7 +28,7 @@ class StoreSavedSearchRequest extends FormRequest
             'name' => ['sometimes', 'nullable', 'string', 'max:80'],
             'filters' => ['required', 'array'],
             'notify' => ['sometimes', 'boolean'],
-        ], ListingFilterRules::rules('filters'));
+        ], ListingFilterRules::rules('filters', ListingFilterRules::type($this->input('filters.vehicle_type'))));
     }
 
     /**
@@ -36,6 +36,12 @@ class StoreSavedSearchRequest extends FormRequest
      */
     public function filters(): array
     {
-        return (array) $this->validated('filters');
+        $filters = (array) $this->validated('filters');
+
+        // A search saved before motorcycles existed is a search for cars, and
+        // so is one saved by a client that does not know to say.
+        $filters['vehicle_type'] = ListingFilterRules::type($filters['vehicle_type'] ?? null)->value;
+
+        return $filters;
     }
 }

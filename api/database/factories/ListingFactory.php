@@ -7,6 +7,7 @@ namespace Database\Factories;
 use App\Enums\FuelType;
 use App\Enums\ListingStatus;
 use App\Enums\Transmission;
+use App\Enums\VehicleType;
 use App\Models\City;
 use App\Models\Listing;
 use App\Models\Make;
@@ -51,6 +52,27 @@ class ListingFactory extends Factory
             'latitude' => fake()->latitude(40, 46),
             'longitude' => fake()->longitude(19, 28),
         ];
+    }
+
+    /**
+     * A motorcycle rather than a car, with a model of the right kind.
+     *
+     * Doors and seats stay null, as they are on every real bike: they mean
+     * nothing on two wheels, which is why the columns were nullable already.
+     */
+    public function motorcycle(): static
+    {
+        return $this->state(fn (): array => [
+            'vehicle_type' => VehicleType::Motorcycle,
+            'body_type' => fake()->randomElement((array) config('listings.motorcycle_types')),
+            'model_id' => fn (array $attributes): VehicleModel => VehicleModel::factory()
+                ->create([
+                    'make_id' => $attributes['make_id'],
+                    'vehicle_type' => VehicleType::Motorcycle,
+                ]),
+            'doors' => null,
+            'seats' => null,
+        ]);
     }
 
     /**

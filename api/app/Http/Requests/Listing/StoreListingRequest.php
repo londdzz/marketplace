@@ -6,6 +6,7 @@ namespace App\Http\Requests\Listing;
 
 use App\Enums\FuelType;
 use App\Enums\Transmission;
+use App\Enums\VehicleType;
 use App\Models\City;
 use App\Models\VehicleModel;
 use Illuminate\Foundation\Http\FormRequest;
@@ -39,6 +40,10 @@ class StoreListingRequest extends FormRequest
     public function rules(): array
     {
         return [
+            // What is being sold is the sell flow's first question, so a draft
+            // knows it before it knows anything else. Absent means a car, which
+            // is what every listing made before motorcycles existed is.
+            'vehicle_type' => ['sometimes', Rule::enum(VehicleType::class)],
             'make_id' => ['sometimes', 'nullable', 'integer', Rule::exists('makes', 'id')],
             'model_id' => ['sometimes', 'nullable', 'integer', Rule::exists('models', 'id')],
             'variant' => ['sometimes', 'nullable', 'string', 'max:120'],
@@ -46,7 +51,10 @@ class StoreListingRequest extends FormRequest
             'mileage_km' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:'.config('listings.mileage_max')],
             'fuel' => ['sometimes', 'nullable', Rule::enum(FuelType::class)],
             'transmission' => ['sometimes', 'nullable', Rule::enum(Transmission::class)],
-            'body_type' => ['sometimes', 'nullable', Rule::in(config('listings.body_types'))],
+            // Whichever shapes the kind of vehicle comes in: a car is a saloon
+            // or an estate, a motorcycle a naked or a scooter, and neither
+            // vocabulary means anything applied to the other.
+            'body_type' => ['sometimes', 'nullable', Rule::in($this->vehicleType()->bodyTypes())],
             'engine_cc' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:'.config('listings.engine_cc_max')],
             'power_hp' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:'.config('listings.power_hp_max')],
             'drivetrain' => ['sometimes', 'nullable', Rule::in(config('listings.drivetrains'))],
@@ -79,6 +87,19 @@ class StoreListingRequest extends FormRequest
     }
 
     /**
+     * What this listing is: the value being submitted, else the draft's own,
+     * else a car.
+     */
+    public function vehicleType(): VehicleType
+    {
+        $submitted = VehicleType::tryFrom((string) $this->input('vehicle_type'));
+
+        return $submitted
+            ?? $this->route('listing')?->vehicle_type
+            ?? VehicleType::Car;
+    }
+
+    /**
      * A Golf is a Volkswagen. Accepting a model from another make would make
      * both the search filters and the listing title nonsense.
      */
@@ -98,6 +119,21 @@ class StoreListingRequest extends FormRequest
 
         if (! $belongs) {
             $validator->errors()->add('model_id', (string) __('validation.model_not_in_make'));
+
+            return;
+        }
+
+        // A make can sell both — BMW, Honda, Peugeot, Piaggio and Suzuki all do
+        // — so belonging to the make is not enough. A Golf filed as a
+        // motorcycle would be invisible in car results and nonsense in bike
+        // ones, and nothing further down would notice.
+        $rightKind = VehicleModel::query()
+            ->whereKey($modelId)
+            ->where('vehicle_type', $this->vehicleType())
+            ->exists();
+
+        if (! $rightKind) {
+            $validator->errors()->add('model_id', (string) __('validation.model_not_of_vehicle_type'));
         }
     }
 

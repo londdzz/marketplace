@@ -8,6 +8,7 @@ use App\Enums\ListingStatus;
 use App\Models\City;
 use App\Models\Listing;
 use App\Models\User;
+use App\Support\ListingFilterRules;
 use App\Support\TextNormalizer;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
@@ -168,6 +169,11 @@ final class ListingSearchService
      */
     private function applyVehicle(Builder $query, array $filters): void
     {
+        // Cars and motorcycles never mix in one set of results. Absent means
+        // cars, because everything in the catalogue was a car until bikes
+        // arrived and a caller that does not ask means what it always meant.
+        $query->where('vehicle_type', ListingFilterRules::type($filters['vehicle_type'] ?? null));
+
         $query
             ->when($filters['make_id'] ?? null, fn (Builder $q, $id) => $q->where('make_id', $id))
             ->when($filters['model_id'] ?? null, fn (Builder $q, $id) => $q->where('model_id', $id))

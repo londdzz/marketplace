@@ -18,11 +18,11 @@ it('clears the cached makes response so new logos show at once', function (): vo
 
     // Warm the cache the way a request would, and prove it is warm.
     $this->getJson('/api/v1/makes')->assertOk()->assertJsonPath('data.0.logo_url', null);
-    expect(Cache::has('reference:makes'))->toBeTrue();
+    expect(Cache::has('reference:makes:car'))->toBeTrue();
 
     $this->artisan('makes:logos')->assertSuccessful();
 
-    expect(Cache::has('reference:makes'))->toBeFalse();
+    expect(Cache::has('reference:makes:car'))->toBeFalse();
     $this->getJson('/api/v1/makes')->assertOk()->assertJsonPath('data.0.name', 'Audi');
     expect($this->getJson('/api/v1/makes')->json('data.0.logo_url'))->not->toBeNull();
 });

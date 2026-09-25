@@ -89,7 +89,9 @@ it('counts a collection against live listings rather than estimating', function 
     $electrified = collect($response->json('data.collections'))->firstWhere('key', 'electrified');
 
     expect($electrified['count'])->toBe(3)
-        ->and($electrified['filters'])->toBe(['fuel' => ['electric', 'hybrid']]);
+        // The kind of vehicle rides along with the rest, so tapping a
+        // collection runs exactly the search that was counted.
+        ->and($electrified['filters'])->toBe(['fuel' => ['electric', 'hybrid'], 'vehicle_type' => 'car']);
 });
 
 it('leaves out a collection with nothing in it', function (): void {

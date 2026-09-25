@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Listing;
 
+use App\Enums\VehicleType;
 use App\Support\ListingFilterRules;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Validator;
@@ -39,7 +40,7 @@ class SearchListingsRequest extends FormRequest
      */
     public function rules(): array
     {
-        return array_merge(ListingFilterRules::rules(), [
+        return array_merge(ListingFilterRules::rules('', $this->vehicleType()), [
             'page' => ['sometimes', 'integer', 'min:1'],
             'per_page' => ['sometimes', 'integer', 'min:1', 'max:'.config('listings.search.max_per_page')],
         ]);
@@ -72,11 +73,21 @@ class SearchListingsRequest extends FormRequest
     }
 
     /**
+     * The kind of vehicle being searched for, cars unless told otherwise.
+     */
+    public function vehicleType(): VehicleType
+    {
+        return ListingFilterRules::type($this->input('vehicle_type'));
+    }
+
+    /**
      * @return array<string, mixed>
      */
     public function filters(): array
     {
-        return $this->validated();
+        // Always spelled out, so the service never has to guess and a caller
+        // that omitted it gets the cars it was asking for.
+        return array_merge($this->validated(), ['vehicle_type' => $this->vehicleType()->value]);
     }
 
     public function perPage(): int
