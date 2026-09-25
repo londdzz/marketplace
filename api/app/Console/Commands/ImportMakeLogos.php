@@ -15,11 +15,12 @@ use Illuminate\Support\Facades\Storage;
 /**
  * Puts the manufacturer marks on the storage disk and attaches them to makes.
  *
- * The marks live in resources/make-logos and are committed, because Simple
- * Icons publishes them CC0 and there is nothing to honour in redistributing
- * them. So a fresh checkout needs this one command and no Node: anything in
- * that directory is copied onto the disk first, and then everything in makes/
- * is matched to a make by its normalised name, so "Škoda" finds skoda.png.
+ * The marks live in resources/make-logos and are committed, with the licence
+ * and author of each one in CREDITS.json beside them. So a fresh checkout
+ * needs this one command and no Node: that directory is mirrored onto the
+ * disk first — new files copied, changed ones replaced, withdrawn ones taken
+ * down — and then everything in makes/ is matched to a make by its normalised
+ * name, so "Škoda" finds skoda.png.
  *
  * A file dropped straight into makes/ on the disk still works, which is how a
  * mark can be added without touching the repository.
@@ -35,22 +36,17 @@ class ImportMakeLogos extends Command
         $disk = Storage::disk((string) config('filesystems.default'));
         $directory = (string) $this->option('directory');
 
-        $copied = $this->seedFromResources($disk, $directory);
+        [$copied, $removed] = $this->seedFromResources($disk, $directory);
 
         if ($copied > 0) {
             $this->line("Copied {$copied} marks onto the ".config('filesystems.default').' disk.');
         }
 
-        // Images only. CREDITS.json sits beside them, naming the licence and
-        // the photographer of every mark, and it is not one.
-        $files = array_values(array_filter(
-            $disk->files($directory),
-            fn (string $file): bool => in_array(
-                strtolower(pathinfo($file, PATHINFO_EXTENSION)),
-                ['png', 'jpg', 'jpeg', 'webp'],
-                true,
-            ),
-        ));
+        if ($removed > 0) {
+            $this->line("Removed {$removed} mark(s) the repository no longer ships.");
+        }
+
+        $files = $this->images($disk, $directory);
 
         if ($files === []) {
             $this->warn("No files found in [{$directory}] on the ".config('filesystems.default').' disk.');
@@ -88,6 +84,18 @@ class ImportMakeLogos extends Command
             Cache::forget('reference:makes:'.$type->value);
         }
 
+        // A make whose file has just been taken down still has its path in the
+        // column, and MakeResource would go on handing out a URL for a file
+        // that 404s.
+        $orphaned = Make::query()
+            ->whereNotNull('logo_path')
+            ->whereNotIn('logo_path', $files)
+            ->update(['logo_path' => null]);
+
+        if ($orphaned > 0) {
+            $this->line("Cleared {$orphaned} make(s) whose mark is no longer on the disk.");
+        }
+
         $this->info("Linked {$linked} logos.");
 
         if ($linked > 0) {
@@ -98,29 +106,36 @@ class ImportMakeLogos extends Command
     }
 
     /**
-     * Copy any committed mark that is not on the disk yet.
+     * Put the committed marks on the disk, and take down the ones we have
+     * stopped shipping.
      *
-     * Only what is missing, so a file replaced by hand on the disk is left
-     * alone rather than being overwritten on every run.
+     * A mark that is already there is compared rather than skipped. The marks
+     * are redrawn from time to time — the backgrounds came off them all at
+     * once — and a copy that only ever filled in the gaps would have left
+     * every server that had already run it serving the old ones for good,
+     * with a deploy reporting success either way.
+     *
+     * Anything in the directory that the repository no longer carries goes:
+     * four makes turned out to have a photograph of a badge rather than a
+     * mark, and leaving the file behind means the make keeps drawing it.
      *
      * @param  Filesystem  $disk
+     * @return array{0: int, 1: int}
      */
-    private function seedFromResources($disk, string $directory): int
+    private function seedFromResources($disk, string $directory): array
     {
         $source = resource_path('make-logos');
 
         if (! is_dir($source)) {
-            return 0;
+            return [0, 0];
         }
 
         $copied = 0;
+        $shipped = [];
 
         foreach (glob($source.'/*.{png,svg,webp}', GLOB_BRACE) ?: [] as $path) {
             $target = $directory.'/'.basename($path);
-
-            if ($disk->exists($target)) {
-                continue;
-            }
+            $shipped[] = $target;
 
             $contents = file_get_contents($path);
 
@@ -130,10 +145,43 @@ class ImportMakeLogos extends Command
                 continue;
             }
 
+            // Compare before writing: on S3 a put is a billed request and a
+            // new version of an object a CDN is already caching.
+            if ($disk->exists($target) && $disk->get($target) === $contents) {
+                continue;
+            }
+
             $disk->put($target, $contents);
             $copied++;
         }
 
-        return $copied;
+        $stale = array_diff($this->images($disk, $directory), $shipped);
+
+        foreach ($stale as $file) {
+            $disk->delete($file);
+        }
+
+        return [$copied, count($stale)];
+    }
+
+    /**
+     * The image files in a directory on the disk.
+     *
+     * CREDITS.json sits beside them, naming the licence and the author of
+     * every mark, and it is not one.
+     *
+     * @param  Filesystem  $disk
+     * @return list<string>
+     */
+    private function images($disk, string $directory): array
+    {
+        return array_values(array_filter(
+            $disk->files($directory),
+            fn (string $file): bool => in_array(
+                strtolower(pathinfo($file, PATHINFO_EXTENSION)),
+                ['png', 'jpg', 'jpeg', 'webp'],
+                true,
+            ),
+        ));
     }
 }

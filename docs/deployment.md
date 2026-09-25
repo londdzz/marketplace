@@ -155,7 +155,7 @@ Then deploy: Forge → Site → **Deploy Now**. Watch the output.
 
 The Audi rings, the BMW roundel and the Ducati shield on the search screen used to need a
 one-time job on the server: generate them, install the AWS CLI, `aws s3 sync` them into the
-bucket, then link them. **That is gone.** The 143 marks are committed in
+bucket, then link them. **That is gone.** The 138 marks are committed in
 `api/resources/make-logos`, and `deploy/deploy.sh` runs
 
 ```bash
@@ -166,11 +166,11 @@ on every deploy, which copies anything in that directory onto the configured dis
 bucket in production — and attaches each file to the make whose normalised name matches it,
 so `skoda.png` finds "Škoda". It is safe to repeat and needs no Node on the server.
 
-Expect `Copied 143 marks onto the s3 disk.` the first time and `Linked 143 logos.` every
-time. Twenty-four makes have no mark that is both the right brand and freely licensed —
-Bentley, Genesis, Norton, Polaris, Ural and most of the small Chinese scooter marques — and
-they keep a monogram, by design. `api/resources/make-logos/README.md` says where every one
-came from and under what licence.
+Expect `Copied 138 marks onto the s3 disk.` the first time and `Linked 138 logos.` every
+time. Twenty-nine makes have no mark that is both the right brand and freely licensed —
+Alfa Romeo, Bentley, Genesis, Norton, Polaris, Ural and most of the small Chinese scooter
+marques — and they keep a monogram, by design. `api/resources/make-logos/README.md` says
+where every one came from and under what licence.
 
 **To change a mark**, do it on your own machine and commit the result, not on the server:
 
@@ -299,9 +299,11 @@ So the routine is:
 3. Read the three lines that tell you the data actually moved, rather than
    assuming they ran:
    - `n model(s) removed.` from `models:prune` — 0 is normal once it has caught up.
-   - `Copied 143 marks onto the s3 disk.` the first time, nothing after that: the
-     command only copies a mark that is not on the bucket yet.
-   - `Linked 143 logos.` every time, and it clears the cached `/makes` response,
+   - `Copied 138 marks onto the s3 disk.` the first time, and after that only
+     the marks that have actually changed — the command compares before it
+     writes, so a redrawn mark replaces the one on the bucket and an unchanged
+     one costs nothing.
+   - `Linked 138 logos.` every time, and it clears the cached `/makes` response,
      so the marks appear straight away rather than in an hour.
 
 **Then prove it from outside**, because Forge saying "deployed" only means the
@@ -320,7 +322,7 @@ curl -sI "$(curl -s https://api.autevo.mk/api/v1/makes \
 curl -s https://api.autevo.mk/api/v1/makes/3/models | grep -o '"name":"Series [0-9]"'
 ```
 
-`logo_url` still null after a deploy that said `Linked 143 logos.` means the
+`logo_url` still null after a deploy that said `Linked 138 logos.` means the
 config cache is serving an old `FILESYSTEM_DISK`. Over SSH, from
 `/home/forge/api.autevo.mk/api`: `php artisan config:clear && php artisan config:cache`.
 

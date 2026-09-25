@@ -59,7 +59,7 @@ $COMPOSER install --no-dev --no-interaction --prefer-dist --optimize-autoloader
 "$PHP" artisan view:cache
 "$PHP" artisan event:cache
 
-# Manufacturer marks. The 143 files live in api/resources/make-logos and this
+# Manufacturer marks. The 138 files live in api/resources/make-logos and this
 # copies them onto whichever disk is configured — the R2 bucket in production —
 # before attaching each one to its make. It used to be a one-time step done by
 # hand, because the marks were generated rather than committed; they are

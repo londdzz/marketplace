@@ -669,14 +669,34 @@ release, and update it whenever a placeholder is added or replaced.
   manufacturer, and a zero is refused rather than guessed at. **Look at what it chose
   before believing it** — the overrides in that file were all found by rendering a
   contact sheet of the whole set and going through it by eye.
-  143 of the 167 makes have a mark; the rest keep a monogram permanently, because
+  138 of the 167 makes have a mark; the rest keep a monogram permanently, because
   nothing free on Commons is the right brand for Bentley, Genesis, Norton, Polaris,
-  Ural or most of the small Chinese scooter marques. **They are drawn in colour on a
-  light plate, not tinted**: a single-ink glyph tints cleanly and a real logo does not,
-  and an emblem reads at forty-four pixels where a wordmark does not, so a free emblem
-  wins where one exists. The files are committed in `api/resources/make-logos`, and
-  `makes:logos` — which the deploy script runs — copies them onto whichever disk is
-  configured and links them, so a server needs no Node and no bucket upload.
+  Ural or most of the small Chinese scooter marques — and because a photograph of a
+  badge on a car is not a mark, which is what Wikidata offers for Alfa Romeo, GAZ,
+  UAZ and Lotus. The files are committed in `api/resources/make-logos`, and
+  `makes:logos` — which the deploy script runs — **mirrors** them onto whichever disk
+  is configured and links them, so a server needs no Node and no bucket upload. It
+  mirrors rather than fills gaps on purpose: it compares before writing and takes down
+  what the repository has withdrawn, because a copy that only added would have left
+  every server that ran it once serving the old marks for good.
+- **Nothing is tinted and nothing sits on a plate.** A single-ink glyph tints cleanly
+  and a real logo does not — a flattened BMW roundel is a filled circle — and a plate
+  is a white box on a dark page. So each mark is measured at fetch time and given the
+  one treatment that suits it. **A background that came with the file is stripped**:
+  a JPEG has no alpha channel, so a logo stored as one carries its studio white baked
+  in, and where all four corners agree on a *neutral* colour it is flooded out from
+  the edges. Neutral only — Aprilia's red field and KTM's orange box are the mark, and
+  the first pass flooded Aprilia's away and left white letters standing on nothing.
+  **A mark too dark to read on petrol is lifted, hue and saturation kept**: Ferrari's
+  wordmark and Ram's measured a luminance of 0 against a ground of 38 and were
+  invisible, so lightness is raised and colour is not touched — Toyota's and Honda's
+  stay red, Škoda's stays green, and a mark in one black ink, having no hue to keep,
+  comes out white, which is what every brand manual asks for on a dark ground anyway.
+  Two thresholds, because a grey mark has nothing to lose and a coloured one has
+  everything to lose; the coloured one sits at 73, which is where Harley-Davidson's
+  orange shield (74) stops and Brixton's thin gold (71) starts. **Everything else is
+  left exactly as its owner drew it**, and a mark carrying light of its own is never
+  lifted — invert Ford's oval and the name knocked out of it fills in.
 - **Push registration belongs to sign-in, not to first launch.** The permission prompt arrives
   once an account exists, so it has something to explain it, and the native device token — not
   an Expo push token, because the API talks to FCM and APNs directly — is sent to

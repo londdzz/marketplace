@@ -140,10 +140,31 @@ const OVERRIDES = {
   'Renault': 'File:Renault 2021.svg',
   'Piaggio': 'File:Piaggio-logo.svg',
 
+  // Wikidata's pick for each of these is a raster with a solid rectangle
+  // behind it — Lancia's grey, Wartburg's blue, Polestar's navy, Triumph's
+  // white — or, for Yugo, a flattened scan. Stripping a background that
+  // reaches the edge of the file is automatic; these are vectors that carry
+  // the box as artwork, which nothing can tell from the mark itself. So they
+  // are named by hand instead.
+  'Lancia': 'File:Lancia Logo 2023.svg',
+  'Polestar': 'File:Polestar Logo.svg',
+  'Triumph': 'File:Logo Triumph.svg',
+  'Yugo': 'File:Yugo-logo.svg',
+  'RAM': 'File:Ram Trucks 2025 wordmark.svg',
+
   // Nothing on Commons is both the right brand and free to serve. Bentley's
   // only free hit is Bentley Systems, a software company; Genesis's and
   // Fisker's are photographs of a car at a motor show; TVS's are Scooty model
   // badges; Zero's is its mark photographed on a fairing.
+  // Wikidata's logo for each of these is a photograph of a badge on a car —
+  // Alfa Romeo's is literally filed as "badge on a car (cropped)" — and a
+  // photograph is not a mark: it brings its own lighting, its own bodywork
+  // behind it and a background no flood fill can separate from the chrome.
+  'Alfa Romeo': null,
+  'GAZ': null,
+  'UAZ': null,
+  'Lotus': null,
+
   'Bentley': null,
   'Genesis': null,
   'Fisker': null,
@@ -335,56 +356,135 @@ function fit(markup) {
 }
 
 /**
- * Whether the mark would be lost on the app's dark ground, and can be rescued
- * by redrawing it white.
+ * Turn what came back into the mark the app draws: no background, no padding,
+ * and light enough to read on the app's ground.
  *
- * Two conditions, and the second is the one that matters. Dark is easy: a mean
- * luminance under 120 disappears against petrol, whatever colour it is — Honda's
- * wordmark is dark red and Škoda's is dark green, and both vanish as surely as
- * Audi's black rings.
+ * Three steps, all in the browser because that is where the file is decoded,
+ * so an SVG, a PNG and a photograph of a badge are all handled the same way.
  *
- * The second asks whether the mark has light parts of its own. Ford's oval is
- * dark blue with its name knocked out of it in white; invert that and the
- * script fills in and the whole thing becomes a white blob. So a mark that
- * already carries light pixels is left alone — it has its own contrast — and
- * only a mark that is dark all the way through is redrawn.
+ * **Strip the background.** A JPEG has no alpha channel at all, so a logo
+ * stored as one carries its studio white — or Wartburg's blue, or Polestar's
+ * navy — baked in as pixels, and the tile then draws a box with a mark inside
+ * it rather than a mark. Where all four corners agree on a colour, that
+ * colour is flooded out from every edge. Flooding from the edge rather than
+ * matching colours everywhere is what keeps the white knocked out of the
+ * middle of Ford's oval: it is enclosed by the mark, so the flood never
+ * reaches it.
  *
- * The third asks whether it is line art at all. Harley-Davidson's bar and
- * shield and KTM's name in its orange box are solid slabs: most of their own
- * bounding box is filled, so turning them white turns them into white slabs.
- * A wordmark or an outlined emblem covers a fraction of its box, and that is
- * the difference between something worth inverting and something that must be
- * left alone whatever its luminance.
+ * **Trim.** Files are authored with whatever margin their author liked, and an
+ * untrimmed mark is drawn smaller than the one beside it for no reason.
  *
- * Read off the pixels in the page rather than the file, so it works the same
- * for an SVG and for a photograph of a badge.
+ * **Lift, keeping the colour.** Black on petrol is nothing at all — Ferrari's
+ * wordmark and Ram's both measure a mean luminance of 0 against a ground of
+ * 38, which is why they were invisible in the picker. So a mark too dark to
+ * read has every pixel's lightness raised while its hue and saturation are
+ * kept: Daelim's near-black blue becomes a blue you can see, and a mark in one
+ * black ink, having no hue to keep, comes out white — which is what every
+ * brand manual says to do with it on a dark ground anyway. How far it is
+ * lifted follows how much colour it has, so a coloured mark stays saturated
+ * instead of washing out to a pastel.
+ *
+ * A mark with light parts of its own is never touched, whatever its mean:
+ * Ford's oval is dark blue with the name knocked out of it in white, and
+ * lifting that fills the name in and leaves a blob.
  */
-async function needsWhitening(page) {
-  return page.evaluate(() => {
+async function prepare(page, size) {
+  return page.evaluate((SIZE) => {
     const image = document.querySelector('img');
 
     // A mark that never decoded has nothing to measure, and asking a canvas
     // for a zero-wide region throws and takes the whole run with it.
     if (!image?.naturalWidth) {
-      return false;
+      return null;
     }
 
-    const canvas = document.createElement('canvas');
-    canvas.width = image.naturalWidth;
-    canvas.height = image.naturalHeight;
+    const width = image.naturalWidth;
+    const height = image.naturalHeight;
+    const work = document.createElement('canvas');
+    work.width = width;
+    work.height = height;
 
-    const context = canvas.getContext('2d', { willReadFrequently: true });
+    const context = work.getContext('2d', { willReadFrequently: true });
     context.drawImage(image, 0, 0);
 
+    const picture = context.getImageData(0, 0, width, height);
+    const data = picture.data;
+    const index = (x, y) => (y * width + x) * 4;
+
+    // --- the background, if the file brought one ------------------------
+    const corner = [[0, 0], [width - 1, 0], [0, height - 1], [width - 1, height - 1]]
+      .map(([x, y]) => index(x, y))
+      .map((at) => [data[at], data[at + 1], data[at + 2], data[at + 3]]);
+
+    // 90 across the three channels together, which is loose enough for the
+    // noise JPEG leaves in a flat field and tight enough that a mark sitting
+    // on its own colour is never eaten.
+    const same = (at, colour) =>
+      Math.abs(data[at] - colour[0]) + Math.abs(data[at + 1] - colour[1]) + Math.abs(data[at + 2] - colour[2]) < 90;
+
+    let stripped = 0;
+
+    // Neutral only. A studio background is white, off-white, grey or black;
+    // a coloured field is the mark itself — Aprilia's red, KTM's orange,
+    // Derbi's red — and flooding that out leaves white letters standing on
+    // nothing. The first pass did exactly that to Aprilia.
+    const flat = Math.max(corner[0][0], corner[0][1], corner[0][2]);
+    const neutral = flat === 0 ? true : (flat - Math.min(corner[0][0], corner[0][1], corner[0][2])) / flat < 0.25;
+
+    if (neutral && corner.every((pixel) => pixel[3] > 200) && corner.every((pixel) =>
+      Math.abs(pixel[0] - corner[0][0]) + Math.abs(pixel[1] - corner[0][1]) + Math.abs(pixel[2] - corner[0][2]) < 90
+    )) {
+      const seen = new Uint8Array(width * height);
+      const stack = [];
+
+      for (let x = 0; x < width; x++) {
+        stack.push(x, x + (height - 1) * width);
+      }
+
+      for (let y = 0; y < height; y++) {
+        stack.push(y * width, y * width + width - 1);
+      }
+
+      while (stack.length > 0) {
+        const pixel = stack.pop();
+
+        if (seen[pixel]) {
+          continue;
+        }
+
+        seen[pixel] = 1;
+
+        const at = pixel * 4;
+
+        if (data[at + 3] >= 40) {
+          if (!same(at, corner[0])) {
+            continue;
+          }
+
+          data[at + 3] = 0;
+          stripped++;
+        }
+
+        const x = pixel % width;
+        const y = (pixel - x) / width;
+
+        if (x > 0) stack.push(pixel - 1);
+        if (x < width - 1) stack.push(pixel + 1);
+        if (y > 0) stack.push(pixel - width);
+        if (y < height - 1) stack.push(pixel + width);
+      }
+    }
+
+    // --- what is left, and how dark it is -------------------------------
+    let minX = width;
+    let maxX = -1;
+    let minY = height;
+    let maxY = -1;
     let total = 0;
     let light = 0;
     let luminance = 0;
-    let minX = canvas.width;
-    let maxX = -1;
-    let minY = canvas.height;
-    let maxY = -1;
-
-    const { data } = context.getImageData(0, 0, canvas.width, canvas.height);
+    let saturation = 0;
+    let lightness = 0;
 
     for (let at = 0; at < data.length; at += 4) {
       if (data[at + 3] < 40) {
@@ -392,8 +492,8 @@ async function needsWhitening(page) {
       }
 
       const pixel = at / 4;
-      const x = pixel % canvas.width;
-      const y = (pixel - x) / canvas.width;
+      const x = pixel % width;
+      const y = (pixel - x) / width;
 
       if (x < minX) minX = x;
       if (x > maxX) maxX = x;
@@ -406,22 +506,127 @@ async function needsWhitening(page) {
         light++;
       }
 
+      const high = Math.max(data[at], data[at + 1], data[at + 2]);
+      const low = Math.min(data[at], data[at + 1], data[at + 2]);
+
+      saturation += high === 0 ? 0 : (high - low) / high;
+      lightness += (high + low) / 510;
       luminance += value;
       total++;
     }
 
-    if (total === 0) {
-      return false;
+    if (total === 0 || maxX < minX) {
+      return null;
     }
 
-    const area = Math.max(1, (maxX - minX + 1) * (maxY - minY + 1));
+    const mean = luminance / total;
+    const colour = saturation / total;
 
-    // 0.62 is measured, not picked: wordmarks and outlined emblems fill 40 to
-    // 58 per cent of their own box — Audi 42, Toyota 40, Honda 58 — and the
-    // filled shapes start at Harley-Davidson's shield on 65 and run to KTM's
-    // and Aprilia's solid boxes on 100.
-    return luminance / total < 120 && light / total < 0.15 && total / area < 0.62;
-  });
+    // Luminance decides whether a mark is lost; lightness decides how far to
+    // lift it, and the two are not the same number. Pure red has a luminance
+    // of 54 and a lightness of 0.5: lifting by the difference between a target
+    // and its luminance moved Toyota's and Honda's red most of the way to
+    // white, and the picker showed two pink wordmarks.
+    const level = lightness / total;
+
+    // Two thresholds, because a mark with no colour has nothing to lose and a
+    // mark with colour has everything to lose.
+    //
+    // A grey or black mark — Chrysler's hairline wordmark, Geely's, Haval's —
+    // is lifted whenever it is anything short of light, since its only
+    // "colour" is how dark its ink is and white is what every brand manual
+    // asks for on a dark ground. A coloured one is only lifted once it has
+    // genuinely stopped reading against petrol's own luminance of 38, so
+    // Harley's orange shield at 80, Ford's blue oval and KTM's box are left
+    // exactly as their owners drew them.
+    //
+    // Either way a mark carrying light of its own is never touched: Ford's
+    // oval has its name knocked out of it in white, and lifting that fills
+    // the name in and leaves a blob. That guard is also what keeps BMW's
+    // roundel and Mercedes' star, both of which read as near-neutral.
+    //
+    // 73 is where the coloured line was finally drawn, and it was drawn by
+    // looking: Harley-Davidson's orange bar and shield measures 74 and is the
+    // brightest thing on its tile as drawn, while Brixton's thin gold measures
+    // 71 and is barely there. One unit either way moves exactly those two.
+    const lifted = light / total < 0.15 && mean < (colour < 0.25 ? 170 : 73);
+
+    if (lifted) {
+      // A mark with no colour goes almost to white; a saturated one stops
+      // short of it, because a fully lifted red is pink.
+      const target = 0.95 - 0.33 * Math.min(1, colour);
+
+      for (let at = 0; at < data.length; at += 4) {
+        if (data[at + 3] < 40) {
+          continue;
+        }
+
+        const red = data[at] / 255;
+        const green = data[at + 1] / 255;
+        const blue = data[at + 2] / 255;
+        const high = Math.max(red, green, blue);
+        const low = Math.min(red, green, blue);
+        const own = (high + low) / 2;
+        const spread = high - low;
+
+        let hue = 0;
+        let intensity = 0;
+
+        if (spread !== 0) {
+          intensity = spread / (1 - Math.abs(2 * own - 1));
+
+          if (high === red) hue = ((green - blue) / spread) % 6;
+          else if (high === green) hue = (blue - red) / spread + 2;
+          else hue = (red - green) / spread + 4;
+
+          hue *= 60;
+
+          if (hue < 0) hue += 360;
+        }
+
+        const raised = Math.min(1, Math.max(0, own + (target - level)));
+        const chroma = (1 - Math.abs(2 * raised - 1)) * intensity;
+        const second = chroma * (1 - Math.abs(((hue / 60) % 2) - 1));
+        const floor = raised - chroma / 2;
+        const sextant = Math.floor(hue / 60) % 6;
+        const wheel = [
+          [chroma, second, 0],
+          [second, chroma, 0],
+          [0, chroma, second],
+          [0, second, chroma],
+          [second, 0, chroma],
+          [chroma, 0, second],
+        ][sextant];
+
+        data[at] = Math.round((wheel[0] + floor) * 255);
+        data[at + 1] = Math.round((wheel[1] + floor) * 255);
+        data[at + 2] = Math.round((wheel[2] + floor) * 255);
+      }
+    }
+
+    context.putImageData(picture, 0, 0);
+
+    // --- draw it into the square the app is given -----------------------
+    const cropWidth = maxX - minX + 1;
+    const cropHeight = maxY - minY + 1;
+    const scale = Math.min(SIZE / cropWidth, SIZE / cropHeight);
+    const drawWidth = Math.max(1, Math.round(cropWidth * scale));
+    const drawHeight = Math.max(1, Math.round(cropHeight * scale));
+
+    const out = document.createElement('canvas');
+    out.width = SIZE;
+    out.height = SIZE;
+
+    const paint = out.getContext('2d');
+    paint.imageSmoothingQuality = 'high';
+    paint.drawImage(
+      work,
+      minX, minY, cropWidth, cropHeight,
+      Math.round((SIZE - drawWidth) / 2), Math.round((SIZE - drawHeight) / 2), drawWidth, drawHeight,
+    );
+
+    return { data: out.toDataURL('image/png'), lifted, stripped, mean: Math.round(mean) };
+  }, size);
 }
 
 /** Drop a mark this run will not stand behind, file and credit together. */
@@ -458,6 +663,7 @@ function forget(make, credits) {
   const missing = [];
   const refused = [];
   let inked = 0;
+  let boxed = 0;
 
   for (const [make, kind] of makes()) {
     if (wanted && !wanted.has(make)) {
@@ -532,26 +738,35 @@ function forget(make, credits) {
       )
       .catch(() => undefined);
 
-    // A mark that would be lost on the app's dark ground is redrawn white; a
-    // mark with light of its own, or colours bright enough to carry, is left
-    // exactly as its owner drew it. Neither gets a plate behind it.
-    //
-    // Measured rather than assumed, because the two need opposite treatment
-    // and one rule for both gets half of them wrong. Force every mark white
-    // and Ford becomes a white blob, Ducati a white shield, Renault a white
-    // square. Leave every mark alone and Audi, Peugeot, Škoda, Toyota and
-    // Honda disappear into the background entirely.
-    if (await needsWhitening(page)) {
-      await page.evaluate(() => {
-        document.querySelector('img').style.filter = 'brightness(0) invert(1)';
-      });
+    // Background stripped, margins trimmed, and lifted out of the dark only
+    // where it has to be. The canvas is written straight out rather than
+    // screenshotted: the screenshot could only ever capture what the page
+    // showed, and every one of these steps happens to the pixels.
+    const mark = await prepare(page, SIZE);
+
+    if (!mark) {
+      console.error(`${make.padEnd(20)} decoded to nothing — ${logo.title}`);
+      missing.push(make);
+      forget(make, credits);
+      continue;
+    }
+
+    fs.writeFileSync(target, Buffer.from(mark.data.split(',')[1], 'base64'));
+
+    if (mark.lifted) {
       inked++;
     }
 
-    await page.screenshot({ path: target, omitBackground: true });
+    if (mark.stripped > 0) {
+      boxed++;
+    }
 
     credits[make] = logo;
-    console.log(`${make.padEnd(20)} ${logo.licence.padEnd(18)} ${logo.title.replace(/^File:/, '')}`);
+
+    const note = [`lum ${String(mark.mean).padStart(3)}`, mark.lifted ? 'lifted' : '', mark.stripped > 0 ? 'unboxed' : '']
+      .filter(Boolean)
+      .join(' ');
+    console.log(`${make.padEnd(20)} ${logo.licence.padEnd(18)} ${logo.title.replace(/^File:/, '').padEnd(44)} ${note}`);
   }
 
   await browser.close();
@@ -569,7 +784,8 @@ function forget(make, credits) {
   fs.writeFileSync(creditsPath, JSON.stringify(merged, null, 2) + '\n');
 
   console.log(`\n${Object.values(credits).filter(Boolean).length} marks written to ${OUT}`);
-  console.log(`${inked} of them were too dark for the app's ground and have been redrawn in white.`);
+  console.log(`${boxed} arrived with a background baked in, which has been stripped.`);
+  console.log(`${inked} were too dark to read on the app's ground and have been lifted, keeping their colour.`);
 
   if (refused.length > 0) {
     console.log(`\n${refused.length} refused — the file is not freely licensed:`);
