@@ -270,6 +270,21 @@ vocabulary comes from the API.
   `Class "League\Flysystem\AwsS3V3\PortableVisibilityConverter" not found`.
   Development never saw it because development stores photos on the `public`
   disk. It is a declared dependency now; a deploy installs it.
+- **Sponsors are three slots on the home screen, and `docs/sponsors.md` is how to sell
+  them.** A booking is a picture, a slot and a link; the artwork is the advertiser's, so
+  there is nothing to design per sponsor and nothing to translate. **Nothing writes one
+  over HTTP and no screen offers a form** — `sponsors:add` on the server is the only way,
+  and a test asserts the absence, because an advertisement anybody could submit is an
+  advertisement nobody is checking. The wide card under the search bar is *shared* with
+  the sell explainer, which returns when a booking ends, so the slot is never empty and
+  the page never jumps. The carousel sits **under** the first cars, because somebody
+  opening a marketplace should see a car first. **The next card must peek** — a
+  full-width card with nothing beside it reads as a banner and nobody swipes it, which
+  the first version got wrong by padding inside a container that was already inset.
+  It advances every five seconds and stops for good once touched. Every slot is labelled,
+  and **nobody is tracked**: our own rows from our own API, no third-party SDK and no
+  impression beacon, which is the only reason the App Privacy answers still hold and the
+  app can still say it does not track. An ad network would undo all of it.
 - **Handing the build to friends is `docs/friends-test.md`**: what to do the evening
   before, in order, with a check from outside after each step, and the words to send
   the testers — including the three things that are not bugs (no notifications, no

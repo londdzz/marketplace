@@ -1857,3 +1857,139 @@ button.header__account {
 .results__main .listing-card__photo {
   height: 240px;
 }
+
+/* ------------------------------------------------------------------ *
+ * Sponsors
+ *
+ * Three slots on the home screen, the same three the app draws, so a
+ * browser and a phone do not disagree about what is on sale.
+ * ------------------------------------------------------------------ */
+
+/* Said once above a rail rather than stamped on each card: a label on the
+   section is what a person reads, where a badge in the corner competes with
+   artwork somebody else designed. */
+.sponsor-label {
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-subtle);
+  margin-bottom: 10px;
+}
+
+/* The wide card. Same proportions as the one it replaces, so the page below
+   it does not move when a booking starts or ends. */
+.sponsor-banner {
+  position: relative;
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--surface-muted);
+  aspect-ratio: 358 / 104;
+}
+
+.sponsor-banner__art,
+.sponsor-banner__art img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.sponsor-banner__tag {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  background: rgba(0, 0, 0, 0.45);
+  color: #edf2f1;
+  font-size: 11px;
+  padding: 3px 9px;
+  border-radius: 999px;
+}
+
+/* Scroll-snap does the swiping, so a trackpad, a touchscreen and the scroll
+   bar all behave the same and nothing is animated by hand. */
+.sponsor-rail {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+}
+
+.sponsor-rail::-webkit-scrollbar {
+  display: none;
+}
+
+/* Less than a full width on purpose. The next card has to be visible at the
+   edge or nothing says the rail moves — on a desktop that sliver is the only
+   affordance there is, since there is no thumb to try it with. */
+.sponsor-card {
+  flex: 0 0 min(560px, 86%);
+  scroll-snap-align: start;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--surface-muted);
+  display: block;
+}
+
+.sponsor-card img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.sponsor-dots {
+  display: flex;
+  gap: 5px;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.sponsor-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--border-strong);
+  transition: width 0.18s ease;
+}
+
+.sponsor-dot--on {
+  width: 16px;
+  background: var(--accent);
+}
+
+/* The quiet tier: presence rather than a headline. */
+.partners {
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  padding: 16px;
+}
+
+.partners__row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 10px;
+}
+
+.partners__one {
+  height: 56px;
+  border-radius: var(--r-md);
+  background: var(--surface-muted);
+  border: 1px solid var(--border);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+/* contain, never cover: a logo cropped to fill its box is a logo nobody
+   recognises. */
+.partners__one img {
+  max-width: 78%;
+  max-height: 70%;
+  object-fit: contain;
+}

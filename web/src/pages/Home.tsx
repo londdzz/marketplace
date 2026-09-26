@@ -10,6 +10,7 @@ import { BodyShape } from '../components/BodyShape';
 import { CollectionCard } from '../components/CollectionCard';
 import { ListingCard } from '../components/ListingCard';
 import { SearchPanel } from '../components/SearchPanel';
+import { PartnerStrip, SponsorBanner, SponsorCarousel } from '../components/Sponsors';
 import { Button, EmptyState, ErrorState, Spinner } from '../components/ui';
 import { useFavorites } from '../hooks/useFavorites';
 import { toQuery } from '../search/query';
@@ -57,6 +58,20 @@ export function Home() {
     queryFn: () => referenceApi.browse(vehicleType),
   });
 
+  /**
+   * Reference data, cached like reference data: a booking changes when one is
+   * sold, not while somebody is scrolling. A failure draws nothing rather
+   * than an error — a page that said "could not load advertisements" would be
+   * telling a buyer about a problem that is not theirs.
+   */
+  const sponsors = useQuery({
+    queryKey: ['sponsors', vehicleType],
+    queryFn: () => referenceApi.sponsors(vehicleType),
+    staleTime: 30 * 60 * 1000,
+  });
+
+  const top = sponsors.data?.home_top[0];
+
   const open = (filters: SearchFilters) =>
     navigate(`/search?${toQuery({ vehicleType, ...filters })}`);
 
@@ -77,6 +92,16 @@ export function Home() {
       </section>
 
       <div className="page home">
+        {/* The wide card, when a sponsor has it. Nothing is drawn in its
+            place on the website: unlike the app, the site's own way into
+            selling is the New listing button in the header, which is always
+            there. */}
+        {top ? (
+          <section className="home__section">
+            <SponsorBanner sponsor={top} />
+          </section>
+        ) : null}
+
         {(browse.data?.collections.length ?? 0) > 0 ? (
           <section className="home__section">
             <h2 className="home__heading">{t('home:browse_collections')}</h2>
@@ -135,6 +160,9 @@ export function Home() {
           )}
         </section>
 
+        {/* Under the cars rather than over them, the same as the app. */}
+        <SponsorCarousel sponsors={sponsors.data?.home_feed ?? []} />
+
         {(browse.data?.body_types.length ?? 0) > 0 ? (
           <section className="home__section">
             <h2 className="home__heading">{t('home:browse_body_types')}</h2>
@@ -174,6 +202,10 @@ export function Home() {
             </div>
           </section>
         ) : null}
+
+        {/* The quiet tier, at the foot: marks rather than a headline, and
+            nothing at all when none is booked. */}
+        <PartnerStrip partners={sponsors.data?.home_partners ?? []} />
 
         <section className="sellcta">
           <div>
