@@ -213,3 +213,18 @@ export type SearchFilters = {
   cityId?: number;
   sort?: SortOption;
 };
+
+/** One booked advertisement, as the API sends it. */
+export type SponsorRow = {
+  id: number;
+  name: string;
+  image_url: string;
+  alt: string;
+  link_url: string | null;
+};
+
+/** The three places the home screen can carry one. */
+export type SponsorSlot = 'home_top' | 'home_feed' | 'home_partners';
+
+/** Every slot, always all three keys, each possibly empty. */
+export type Sponsors = Record<SponsorSlot, SponsorRow[]>;

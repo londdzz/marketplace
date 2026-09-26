@@ -30,9 +30,12 @@ import {
   EmptyState,
   FloatingSearchBar,
   ListingCard,
+  PartnerStrip,
   RateCard,
   PromoBanner,
   Screen,
+  SponsorBanner,
+  SponsorCarousel,
   TabHeader,
   Text,
 } from '../../components';
@@ -44,6 +47,7 @@ import {
   useCollectionChips,
 } from '../../hooks/useBrowse';
 import { useExchangeRates } from '../../hooks/useExchangeRates';
+import { openSponsor, useSponsors } from '../../hooks/useSponsors';
 import { useFavorites } from '../../hooks/useFavorites';
 import { useListingCardMapper } from '../../hooks/useListingCard';
 import { useListingPage } from '../../hooks/useListingPage';
@@ -134,6 +138,7 @@ export default function HomeTab() {
 
   // The ways in that are not a search box, each with a count the API measured.
   const browse = useBrowse(vehicleType);
+  const sponsors = useSponsors(vehicleType);
   const chipsFor = useCollectionChips();
 
   // The heart on a card does what a heart does, here as well as in the
@@ -214,12 +219,25 @@ export default function HomeTab() {
             testID="home-category-switch"
           />
 
-          <PromoBanner
-            title={t(`home:promo_title_${vehicleType}`)}
-            body={t('home:promo_body')}
-            cta={t('home:promo_cta')}
-            onPress={() => router.push('/(tabs)/sell')}
-          />
+          {/* The wide card is shared. A sponsor has it while their booking
+              runs; with nothing booked the card explaining how selling works
+              comes back, which is the only place a new seller learns that
+              listing costs a credit. Never an empty box, never a jump. */}
+          {sponsors.home_top[0] ? (
+            <SponsorBanner
+              sponsor={sponsors.home_top[0]}
+              label={t('home:sponsored')}
+              onPress={openSponsor}
+              testID="sponsor-top"
+            />
+          ) : (
+            <PromoBanner
+              title={t(`home:promo_title_${vehicleType}`)}
+              body={t('home:promo_body')}
+              cta={t('home:promo_cta')}
+              onPress={() => router.push('/(tabs)/sell')}
+            />
+          )}
 
           {/* Somewhere to start for a buyer with nothing to type yet. Both
               sections are drawn from what the API says is actually in the
@@ -320,6 +338,18 @@ export default function HomeTab() {
               ))}
             </View>
           )}
+          {/* Under the cars rather than over them. Somebody opening a
+              marketplace should see a car first; a sponsor between the search
+              bar and the stock is an advertisement with cars underneath. */}
+          <SponsorCarousel
+            sponsors={sponsors.home_feed}
+            width={width}
+            gutter={theme.screenPadding}
+            label={t('home:sponsored')}
+            onPress={openSponsor}
+            testID="sponsor-carousel"
+          />
+
           {shapes.length > 0 ? (
             <View style={{ gap: theme.spacing.md }}>
               <Text variant="title">{t('home:browse_body_types')}</Text>
@@ -349,6 +379,16 @@ export default function HomeTab() {
             </View>
           ) : null}
 
+
+          {/* The quiet tier, at the foot: marks rather than a headline, for
+              a sponsor who wants to be seen beside the product rather than
+              clicked. Draws nothing at all when none is booked. */}
+          <PartnerStrip
+            partners={sponsors.home_partners}
+            label={t('home:partners')}
+            onPress={openSponsor}
+            testID="sponsor-partners"
+          />
 
           {/* The one question, at the bottom where it interrupts nothing, and
               only until it has been answered. */}

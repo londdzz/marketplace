@@ -40,3 +40,6 @@ export { TabHeader, type TabHeaderProps } from './TabHeader';
 export { Text, type TextProps } from './Text';
 export { ToggleRow, type ToggleRowProps } from './ToggleRow';
 export { Wordmark, type WordmarkProps } from './Wordmark';
+export { PartnerStrip, type PartnerStripProps } from './PartnerStrip';
+export { SponsorBanner, type SponsorBannerProps } from './SponsorBanner';
+export { SponsorCarousel, type SponsorCarouselProps } from './SponsorCarousel';

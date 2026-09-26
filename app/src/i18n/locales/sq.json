@@ -101,7 +101,9 @@
     "promo_title_motorcycle": "Shitni motoçikletën tuaj",
     "newest_empty_title": "Asgjë e listuar ende",
     "newest_empty_car": "Makinat e para janë rrugës. Bëhuni ju i pari që publikon një.",
-    "newest_empty_motorcycle": "Motoçikletat e para janë rrugës. Bëhuni ju i pari që publikon një."
+    "newest_empty_motorcycle": "Motoçikletat e para janë rrugës. Bëhuni ju i pari që publikon një.",
+    "sponsored": "I sponsorizuar",
+    "partners": "Partnerët tanë"
   },
   "search": {
     "results": "{{count}} makina",

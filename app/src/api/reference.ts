@@ -6,6 +6,7 @@ import type {
   Country,
   Make,
   SearchFilters,
+  Sponsors,
   VehicleModel,
   VehicleType,
 } from './types';
@@ -118,4 +119,13 @@ export const referenceApi = {
       })),
   exchangeRates: () =>
     api.get<ApiResource<ExchangeRate[]>>('/exchange-rates', { anonymous: true }).then((r) => r.data),
+  /**
+   * The booked advertisements, all three slots in one answer.
+   *
+   * Anonymous like the rest of the reference data: a buyer with no account
+   * sees the same sponsors as one with, and asking for a token here would
+   * make a signed-out home screen fetch differently for no reason.
+   */
+  sponsors: (type: VehicleType = 'car') =>
+    api.get<ApiResource<Sponsors>>(`/sponsors?type=${type}`, { anonymous: true }).then((r) => r.data),
 };
