@@ -11,6 +11,7 @@ use App\Http\Resources\CityResource;
 use App\Http\Resources\CountryResource;
 use App\Http\Resources\ExchangeRateResource;
 use App\Http\Resources\MakeResource;
+use App\Http\Resources\SponsorResource;
 use App\Http\Resources\VehicleModelResource;
 use App\Http\Resources\VocabularyResource;
 use App\Models\City;
@@ -19,6 +20,8 @@ use App\Models\ExchangeRate;
 use App\Models\Make;
 use App\Models\VehicleModel;
 use App\Services\BrowseService;
+use App\Services\SponsorService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Cache;
@@ -137,6 +140,28 @@ class ReferenceController extends Controller
     public function browse(Request $request, BrowseService $browse): BrowseResource
     {
         return BrowseResource::make($browse->sections($request->user(), $this->vehicleType($request)));
+    }
+
+    /**
+     * The advertisements booked for the home screen, by slot.
+     *
+     * Read only, and there is no companion that writes: a sponsor is added on
+     * the server with `sponsors:add`. An advertisement anybody could submit is
+     * an advertisement nobody is checking.
+     *
+     * Public, like the rest of the reference data — a buyer with no account
+     * sees the same sponsors as one with.
+     */
+    public function sponsors(Request $request, SponsorService $sponsors): JsonResponse
+    {
+        $slots = $sponsors->forHome($this->vehicleType($request));
+
+        return response()->json([
+            'data' => array_map(
+                static fn ($booked): array => SponsorResource::collection($booked)->resolve(),
+                $slots,
+            ),
+        ]);
     }
 
     /**

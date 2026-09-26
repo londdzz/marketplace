@@ -59,6 +59,8 @@ Route::get('makes/{make}/models', [ReferenceController::class, 'models'])->name(
 Route::get('exchange-rates', [ReferenceController::class, 'exchangeRates'])->name('exchange-rates.index');
 Route::get('vocabularies', [ReferenceController::class, 'vocabularies'])->name('vocabularies.index');
 Route::get('browse', [ReferenceController::class, 'browse'])->name('browse.index');
+// Read only on purpose. Nothing anywhere writes a sponsor over HTTP.
+Route::get('sponsors', [ReferenceController::class, 'sponsors'])->name('sponsors.index');
 
 /*
  * A published listing is public. Everything that changes one needs the seller.
