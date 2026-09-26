@@ -269,3 +269,33 @@ it('still counts what is really there when show_empty is on', function (): void 
     // Busiest first still holds, so the one real category leads the rail.
     expect($data['body_types'][0]['key'])->toBe('suv');
 });
+
+it('draws only the shapes worth a tile on the home screen', function (): void {
+    config()->set('listings.browse.show_empty', true);
+
+    $keys = collect($this->getJson('/api/v1/browse')->assertOk()->json('data.body_types'))
+        ->pluck('key')
+        ->all();
+
+    expect($keys)->toBe(['sedan', 'hatchback', 'estate', 'suv', 'coupe']);
+});
+
+it('still lets a convertible be sold, searched and filed', function (): void {
+    // The rail is shorter than the vocabulary on purpose. Taking a shape off
+    // the home screen must not take it out of the product: a seller can still
+    // pick it, and search must still accept it rather than answering 422.
+    expect(config('listings.body_types'))->toContain('convertible', 'van', 'pickup', 'minivan', 'other');
+
+    $this->getJson('/api/v1/listings?body_type[]=convertible')->assertOk();
+});
+
+it('draws every shape for a kind the config does not name', function (): void {
+    config()->set('listings.browse.show_empty', true);
+    config()->set('listings.browse.body_types', []);
+
+    $keys = collect($this->getJson('/api/v1/browse')->assertOk()->json('data.body_types'))
+        ->pluck('key')
+        ->all();
+
+    expect($keys)->toBe(config('listings.body_types'));
+});

@@ -529,6 +529,13 @@ release, and update it whenever a placeholder is added or replaced.
   one. That setting exists because a catalogue with no cars in it shows neither rail at
   all, and a home screen with both rails missing reads as broken rather than as empty. It
   is off by default; PLACEHOLDERS.md carries it.
+  **Which shapes get a tile is a shorter list than which shapes exist**
+  (`listings.browse.body_types`). A convertible, a van, a pickup, a minivan and
+  "other" are off the rail: a van and a pickup are a rounding error in this
+  market and nobody sets out to buy an "other". The vocabulary is untouched, so
+  all five are still sellable, still searchable and still on any listing that
+  carries one — taking a shape off the home screen must never take it out of
+  the product. A kind the config does not name gets every shape it has.
   **The newest list has an empty state too**, for the same reason: a heading with a void
   under it was what a brand new market actually looked like, on the phone and in the
   browser both. The collections live in `config/listings.php` like every other closed

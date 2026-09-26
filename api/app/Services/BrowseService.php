@@ -98,7 +98,16 @@ final class BrowseService
 
         $bodyTypes = [];
 
-        foreach ($type->bodyTypes() as $key) {
+        // The shapes worth a tile, which is a shorter list than the shapes
+        // that exist: see config('listings.browse.body_types'). Anything not
+        // named there is still sellable, still searchable and still on any
+        // listing that carries it — it simply has no card on the rail.
+        $wanted = (array) config('listings.browse.body_types.'.$type->value, []);
+        $drawn = $wanted === []
+            ? $type->bodyTypes()
+            : array_values(array_intersect($type->bodyTypes(), $wanted));
+
+        foreach ($drawn as $key) {
             $filters = ['vehicle_type' => $type->value, 'body_type' => $key];
             $count = $this->search->count($filters, $viewer);
 

@@ -190,6 +190,23 @@ return [
 
     'browse' => [
         'show_empty' => (bool) env('BROWSE_SHOW_EMPTY', false),
+
+        /*
+        | Which shapes get a tile on the home screen.
+        |
+        | Not the same question as which shapes exist. The vocabulary above is
+        | untouched: a seller can still say their car is a convertible, search
+        | still filters for one, and a listing already filed as a van keeps
+        | its shape. This is only about which are worth a card on a rail a
+        | thumb flicks through — a van and a pickup are a rounding error in
+        | this market, and "other" is not a thing anybody sets out to buy.
+        |
+        | Leave a kind out, or give it an empty list, and every shape it has
+        | gets a tile.
+        */
+        'body_types' => [
+            'car' => ['sedan', 'hatchback', 'estate', 'suv', 'coupe'],
+        ],
     ],
 
     'collections' => [
