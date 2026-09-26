@@ -220,6 +220,9 @@ export type SponsorRow = {
   name: string;
   image_url: string;
   alt: string;
+  /** The stored artwork's size, so a row of marks can share one height. */
+  width: number | null;
+  height: number | null;
   link_url: string | null;
 };
 

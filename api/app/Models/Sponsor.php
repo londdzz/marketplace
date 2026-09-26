@@ -18,6 +18,8 @@ use Illuminate\Support\Carbon;
  * @property SponsorSlot $slot
  * @property string $image_path
  * @property string $alt
+ * @property int|null $width
+ * @property int|null $height
  * @property string|null $link_url
  * @property VehicleType|null $vehicle_type
  * @property int $position
@@ -32,6 +34,8 @@ class Sponsor extends Model
         'slot',
         'image_path',
         'alt',
+        'width',
+        'height',
         'link_url',
         'vehicle_type',
         'position',
@@ -45,6 +49,8 @@ class Sponsor extends Model
         return [
             'slot' => SponsorSlot::class,
             'vehicle_type' => VehicleType::class,
+            'width' => 'integer',
+            'height' => 'integer',
             'position' => 'integer',
             'starts_at' => 'datetime',
             'ends_at' => 'datetime',

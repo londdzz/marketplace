@@ -32,7 +32,19 @@ stops for good once touched. One booking there draws as a plain banner with no
 dots and no timer, because a carousel of one overstates how much is in it.
 
 **`home_partners` is the quiet tier**: presence beside the product rather than
-a click. Logos are drawn `contain`, never cropped.
+a click. Three things happen to a mark here that do not happen to a banner:
+
+- **A transparent file stays transparent.** Everything went to JPEG at first,
+  and JPEG has no alpha channel, so a logo's transparent canvas came out white
+  and a white logo on it vanished. The pixels decide now, not the slot: a mark
+  with transparency is stored as PNG, a photograph as JPEG.
+- **It is trimmed to its own edges.** Designers export onto whatever canvas the
+  brand guide uses, and a file that is two thirds empty draws a third the size
+  of the one beside it.
+- **Every mark is drawn to the same height**, taking the width its proportions
+  ask for. Given an equal share of the row each, a short mark scales up and
+  ends up twice the size of the long one next to it — which is most of what
+  makes a partner row look amateur.
 
 ## Booking one
 
@@ -96,8 +108,12 @@ screen this morning.
 - **`home_feed`**: 1600 × 900. Their message has to survive being 340 points
   wide on a phone, so one line of large type, not a poster.
 - **`home_top`**: 1600 × 465.
-- **`home_partners`**: their logo on a transparent or dark background, since
-  the tile behind it is dark.
+- **`home_partners`**: their logo as a **transparent PNG**, in a light colour —
+  it sits directly on a dark page with no tile behind it, so a dark mark
+  disappears and a white or coloured one works. Margin does not matter; it is
+  trimmed off. A mark wider than about 6:1 will be drawn shorter than the
+  others so it fits, so a stacked or square lockup reads better than a long
+  wordmark.
 
 Tell them the card is **cropped to fill** in the first two slots, so nothing
 important belongs in the last few per cent at any edge.

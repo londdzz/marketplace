@@ -89,7 +89,7 @@ class AddSponsor extends Command
         }
 
         try {
-            $path = $this->store($source, $slot);
+            [$path, $width, $height] = $this->store($source, $slot);
         } catch (Throwable $e) {
             $this->error('That image could not be read: '.$e->getMessage());
 
@@ -101,6 +101,8 @@ class AddSponsor extends Command
             'slot' => $slot,
             'image_path' => $path,
             'alt' => trim($alt),
+            'width' => $width,
+            'height' => $height,
             'link_url' => $this->option('link') ?: null,
             'vehicle_type' => $type,
             'position' => (int) $this->option('position'),
@@ -125,18 +127,163 @@ class AddSponsor extends Command
      * more than any of these three slots draws even on the densest phone. A
      * sponsor who supplies a 6000-pixel export should not cost every buyer
      * the download.
+     *
+     * **A transparent source stays a PNG.** Everything went to JPEG at first,
+     * and JPEG has no alpha channel: a partner's logo — which is exactly the
+     * kind of file that arrives as a transparent PNG — came out as a white
+     * rectangle, and a white logo on it vanished entirely. A banner is a
+     * photograph and belongs in JPEG; a mark is line art on nothing and
+     * belongs in PNG, so the source decides rather than the slot.
      */
-    private function store(string $source, SponsorSlot $slot): string
+    /** @return array{0: string, 1: int, 2: int} */
+    private function store(string $source, SponsorSlot $slot): array
     {
+        $transparent = $this->hasAlpha($source);
+
         $image = (new ImageManager(new Driver))->read($source);
         $image->orient();
+
+        // A logo is trimmed to its own edges, the way the body-shape cut-outs
+        // are. Designers export marks onto whatever canvas the brand guide
+        // uses, and a file that is two thirds empty draws a third the size of
+        // the one beside it — a row of partners then looks like a mistake
+        // rather than a row. A banner is left alone: its margins are part of
+        // the composition, and trimming a photograph crops the photograph.
+        //
+        // Intervention's own trim() is no use here: it compares colour and
+        // ignores the alpha channel, so a mark on a transparent canvas came
+        // back exactly the size it went in. This measures the alpha instead.
+        if ($slot === SponsorSlot::Partners && $transparent) {
+            $bounds = $this->inkBounds($source);
+
+            if ($bounds !== null) {
+                [$x, $y, $width, $height] = $bounds;
+                $image->crop($width, $height, $x, $y);
+            }
+        }
+
         $image->scaleDown(width: 1600, height: 1600);
 
-        $path = sprintf('sponsors/%s/%s.jpg', $slot->value, Str::uuid());
+        $path = sprintf(
+            'sponsors/%s/%s.%s',
+            $slot->value,
+            Str::uuid(),
+            $transparent ? 'png' : 'jpg',
+        );
 
-        Storage::disk((string) config('filesystems.default'))
-            ->put($path, (string) $image->toJpeg(86));
+        Storage::disk((string) config('filesystems.default'))->put(
+            $path,
+            $transparent ? (string) $image->toPng() : (string) $image->toJpeg(86),
+        );
 
-        return $path;
+        // Measured after everything that could change it, so what is stored
+        // is what the apps will actually be laying out.
+        return [$path, $image->width(), $image->height()];
+    }
+
+    /**
+     * The box the mark actually occupies, ignoring transparent margin.
+     *
+     * Returns [x, y, width, height], or null when the file is empty or has no
+     * margin worth taking off. Read at full resolution rather than sampled:
+     * this decides a crop, and a sampled edge would cut into the mark.
+     *
+     * @return array{0: int, 1: int, 2: int, 3: int}|null
+     */
+    private function inkBounds(string $path): ?array
+    {
+        $image = @imagecreatefrompng($path);
+
+        if ($image === false) {
+            return null;
+        }
+
+        $width = imagesx($image);
+        $height = imagesy($image);
+        $minX = $width;
+        $maxX = -1;
+        $minY = $height;
+        $maxY = -1;
+
+        for ($y = 0; $y < $height; $y++) {
+            for ($x = 0; $x < $width; $x++) {
+                // Anything at all opaque counts as ink, so an antialiased
+                // edge is kept rather than shaved.
+                if (((imagecolorat($image, $x, $y) >> 24) & 0x7F) > 100) {
+                    continue;
+                }
+
+                if ($x < $minX) {
+                    $minX = $x;
+                }
+                if ($x > $maxX) {
+                    $maxX = $x;
+                }
+                if ($y < $minY) {
+                    $minY = $y;
+                }
+                if ($y > $maxY) {
+                    $maxY = $y;
+                }
+            }
+        }
+
+        imagedestroy($image);
+
+        if ($maxX < $minX || $maxY < $minY) {
+            return null;
+        }
+
+        return [$minX, $minY, $maxX - $minX + 1, $maxY - $minY + 1];
+    }
+
+    /**
+     * Whether the file actually uses transparency.
+     *
+     * Not "is it a PNG": most PNGs a sponsor sends are opaque exports, and
+     * storing those as PNG would triple what every buyer downloads for no
+     * gain. So the pixels are asked rather than the extension.
+     *
+     * Sampled on a grid rather than read in full. A 1600-pixel image is two
+     * and a half million pixels, a logo's transparency is nearly all of its
+     * area, and a few thousand samples find it without the wait.
+     */
+    private function hasAlpha(string $path): bool
+    {
+        $info = @getimagesize($path);
+
+        // JPEG cannot carry alpha at all, so there is nothing to look for.
+        if ($info === false || ! in_array($info[2], [IMAGETYPE_PNG, IMAGETYPE_WEBP, IMAGETYPE_GIF], true)) {
+            return false;
+        }
+
+        $image = match ($info[2]) {
+            IMAGETYPE_PNG => @imagecreatefrompng($path),
+            IMAGETYPE_WEBP => @imagecreatefromwebp($path),
+            default => @imagecreatefromgif($path),
+        };
+
+        if ($image === false) {
+            return false;
+        }
+
+        $width = imagesx($image);
+        $height = imagesy($image);
+        $step = max(1, (int) floor(min($width, $height) / 64));
+
+        for ($y = 0; $y < $height; $y += $step) {
+            for ($x = 0; $x < $width; $x += $step) {
+                // GD's alpha runs 0 (opaque) to 127 (invisible).
+                if (((imagecolorat($image, $x, $y) >> 24) & 0x7F) > 8) {
+                    imagedestroy($image);
+
+                    return true;
+                }
+            }
+        }
+
+        imagedestroy($image);
+
+        return false;
     }
 }

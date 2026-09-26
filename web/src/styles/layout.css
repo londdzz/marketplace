@@ -1962,34 +1962,49 @@ button.header__account {
   background: var(--accent);
 }
 
-/* The quiet tier: presence rather than a headline. */
+/* The quiet tier: presence rather than a headline.
+   A hairline above rather than a card around — this is a foot to the page,
+   not another thing on it. */
 .partners {
-  border: 1px solid var(--border);
-  border-radius: var(--r-lg);
-  background: var(--surface);
-  padding: 16px;
+  border-top: 1px solid var(--border);
+  padding-top: 32px;
+  text-align: center;
 }
 
+.partners__label {
+  margin-bottom: 20px;
+}
+
+/* One height for all of them, each taking the width its own proportions ask
+   for. Marks given an equal share each come out at wildly different sizes —
+   a short one scales up to fill its share and dwarfs the long one beside it,
+   which is most of what makes a partner row look amateur. */
 .partners__row {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  flex-wrap: wrap;
 }
 
+/* No box. A logo inside a bordered tile on a dark page reads as a picture
+   that failed to load: the eye finds the frame first and the mark second. */
 .partners__one {
-  height: 56px;
-  border-radius: var(--r-md);
-  background: var(--surface-muted);
-  border: 1px solid var(--border);
-  display: grid;
-  place-items: center;
-  overflow: hidden;
+  height: 30px;
+  flex: 0 1 auto;
+  opacity: 0.72;
+  transition: opacity 0.15s ease;
 }
 
-/* contain, never cover: a logo cropped to fill its box is a logo nobody
-   recognises. */
+.partners__one:hover {
+  opacity: 1;
+}
+
+/* contain, never cover: a logo cropped to fill its space is a logo nobody
+   recognises. Shrinks rather than overflowing when the row is full. */
 .partners__one img {
-  max-width: 78%;
-  max-height: 70%;
+  display: block;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
 }

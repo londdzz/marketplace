@@ -26,6 +26,11 @@ class SponsorResource extends JsonResource
             'name' => $this->name,
             'image_url' => Storage::disk((string) config('filesystems.default'))->url($this->image_path),
             'alt' => $this->alt,
+            // So a row of marks can be drawn to one height and let each take
+            // the width it needs. Without them every mark gets an equal share
+            // and a short one scales up to twice the size of its neighbour.
+            'width' => $this->width,
+            'height' => $this->height,
             // Null means the card is not tappable, and the apps draw it that
             // way rather than offering a press that does nothing.
             'link_url' => $this->link_url,

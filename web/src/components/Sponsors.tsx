@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { type CSSProperties, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { SponsorRow } from '../api/types';
@@ -14,15 +14,33 @@ import type { SponsorRow } from '../api/types';
  * A booking with no link is not a link at all. It renders as a plain image
  * rather than an anchor with nowhere to go.
  */
-function Artwork({ sponsor, className }: { sponsor: SponsorRow; className: string }) {
+function Artwork({
+  sponsor,
+  className,
+  style,
+}: {
+  sponsor: SponsorRow;
+  className: string;
+  style?: CSSProperties;
+}) {
   const image = <img src={sponsor.image_url} alt={sponsor.alt} loading="lazy" />;
 
   if (!sponsor.link_url) {
-    return <div className={className}>{image}</div>;
+    return (
+      <div className={className} style={style}>
+        {image}
+      </div>
+    );
   }
 
   return (
-    <a className={className} href={sponsor.link_url} target="_blank" rel="noopener noreferrer sponsored">
+    <a
+      className={className}
+      style={style}
+      href={sponsor.link_url}
+      target="_blank"
+      rel="noopener noreferrer sponsored"
+    >
       {image}
     </a>
   );
@@ -122,8 +140,12 @@ export function SponsorCarousel({ sponsors }: { sponsors: SponsorRow[] }) {
 /**
  * The row of marks at the foot.
  *
- * `contain` rather than `cover`, because a logo cropped to fill a box is a
- * logo nobody recognises.
+ * **No box around each one**, and **one height for all of them.** A logo
+ * inside a bordered tile reads as a picture that failed to load, and marks
+ * given an equal width each come out at wildly different sizes — a short one
+ * scales up to fill its share and dwarfs the long one beside it. So the
+ * height is fixed and each takes the width its own proportions ask for,
+ * shrinking rather than overflowing when the row cannot spare it.
  */
 export function PartnerStrip({ partners }: { partners: SponsorRow[] }) {
   const { t } = useTranslation(['home']);
@@ -133,14 +155,22 @@ export function PartnerStrip({ partners }: { partners: SponsorRow[] }) {
   }
 
   return (
-    <section className="home__section">
-      <div className="partners">
-        <p className="sponsor-label">{t('home:partners')}</p>
-        <div className="partners__row">
-          {partners.map((partner) => (
-            <Artwork key={partner.id} sponsor={partner} className="partners__one" />
-          ))}
-        </div>
+    <section className="home__section partners">
+      <p className="sponsor-label partners__label">{t('home:partners')}</p>
+      <div className="partners__row">
+        {partners.map((partner) => (
+          <Artwork
+            key={partner.id}
+            sponsor={partner}
+            className="partners__one"
+            // The width its proportions want, given up when the row is full.
+            style={
+              partner.width && partner.height
+                ? { flexBasis: `${(partner.width / partner.height) * 30}px` }
+                : undefined
+            }
+          />
+        ))}
       </div>
     </section>
   );
