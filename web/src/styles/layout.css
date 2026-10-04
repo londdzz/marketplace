@@ -2008,3 +2008,175 @@ button.header__account {
   height: 100%;
   object-fit: contain;
 }
+
+/* ---- the phone gate ----------------------------------------------------- */
+
+/* What a telephone gets instead of the website: the mark, the two store
+   badges, and a way past for anyone who needs one. The reasoning is in
+   src/app-gate.ts. Nothing here reuses the page frame — there is no header,
+   no footer and no nav, because none of them lead anywhere from this screen. */
+.gate {
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--s-xxxl) var(--s-xl) calc(var(--s-xxxl) + env(safe-area-inset-bottom));
+  background:
+    radial-gradient(120% 70% at 50% -10%, rgba(77, 148, 240, 0.16), transparent 62%),
+    var(--bg);
+}
+
+.gate__inner {
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+}
+
+.gate__brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-lg);
+  color: var(--text);
+  margin-bottom: var(--s-huge);
+}
+
+.gate__word {
+  font-family: var(--font-brand);
+  font-weight: 700;
+  font-size: 38px;
+  letter-spacing: 0.04em;
+  line-height: 1;
+}
+
+.gate__title {
+  font-size: 27px;
+  font-weight: 700;
+  line-height: 1.22;
+  letter-spacing: -0.01em;
+  margin: 0 0 var(--s-md);
+}
+
+.gate__body {
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--text-muted);
+  margin: 0 0 var(--s-huge);
+}
+
+.gate__badges {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-md);
+}
+
+/* One language for both, so neither store looks like the preferred one. */
+.gate__badge {
+  display: flex;
+  align-items: center;
+  gap: var(--s-md);
+  padding: var(--s-md) var(--s-xl);
+  min-height: 68px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-md);
+  background: var(--surface-muted);
+  color: var(--text);
+  text-decoration: none;
+  text-align: left;
+}
+
+.gate__badge:hover {
+  background: var(--surface-raised);
+}
+
+/* A store with nothing published on it yet. Dimmed and inert rather than a
+   live button that goes nowhere — the same treatment an empty browse category
+   gets, and for the same reason. */
+.gate__badge--soon {
+  opacity: 0.38;
+  pointer-events: none;
+}
+
+.gate__glyph {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+}
+
+.gate__badgetext {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+  min-width: 0;
+}
+
+.gate__badgetext small {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.gate__badgetext strong {
+  font-size: 19px;
+  font-weight: 600;
+}
+
+.gate__continue {
+  display: block;
+  width: 100%;
+  margin-top: var(--s-xxl);
+  padding: var(--s-sm);
+  background: none;
+  border: 0;
+  font: inherit;
+  font-size: 15px;
+  color: var(--accent);
+  cursor: pointer;
+}
+
+.gate__desktop {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-subtle);
+  margin: var(--s-lg) 0 0;
+}
+
+.gate__lang {
+  display: inline-block;
+  margin-top: var(--s-xxl);
+}
+
+.gate__lang select {
+  background: var(--surface-muted);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: var(--s-xs) var(--s-sm);
+  font: inherit;
+  font-size: 13px;
+}
+
+.gate__legal {
+  font-size: 13px;
+  color: var(--text-subtle);
+  margin: var(--s-lg) 0 0;
+}
+
+.gate__legal a {
+  color: var(--text-muted);
+}
+
+/* Until a store has something to download, continuing is the only thing this
+   screen can actually do, so it is the filled button. It goes back to being a
+   quiet link the moment either badge goes live. */
+.gate__continue--only {
+  background: var(--accent);
+  color: var(--text-on-accent);
+  font-weight: 600;
+  border-radius: var(--r-md);
+  padding: var(--s-md);
+  min-height: 48px;
+}

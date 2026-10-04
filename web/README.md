@@ -138,3 +138,41 @@ visit, so two things the app can be careless about are not free here:
   else is a chunk fetched on the click that needs it. Somebody following a link
   to a car should not have to download the sell form and the privacy policy
   first.
+
+## A phone gets the app, not the site
+
+The website is built for a wide screen and declares `width=1280` so that a
+phone which does reach it gets the desktop layout zoomed out rather than a
+half-collapsed one nobody designed. That was always a compromise. Now a
+telephone is met with the mark, the App Store and Google Play badges, and
+nothing else: everything the site does, the app does better, and it has the
+keychain, push and in-app purchases besides.
+
+`src/app-gate.ts` decides, and it is short on purpose. What matters is what it
+lets through, because each exemption is there to stop something expensive:
+
+- **Crawlers and link unfurlers come first, before the phone check.** Google
+  indexes mobile-first and its smartphone crawler's user agent says Android and
+  Mobile; gating it would hand Google a download page as the content of every
+  car we have, and search traffic is most of how a marketplace is found. The
+  same check is why a listing pasted into WhatsApp or Viber still draws a
+  preview card.
+- **`/privacy`, `/terms`, `/support` and `/delete-account` open on any
+  device.** Both stores open the privacy policy URL during review, on a phone.
+- **The decision is made on the user agent, never on the window's width.** A
+  tablet has the screen for the website and neither store ships a tablet build
+  to send it to; a narrowed desktop window is somebody testing, not a phone.
+- **`?web=1`, and the link under the badges**, for anyone who wants the site
+  anyway. The answer is kept in `sessionStorage` — for that visit, not for ever.
+
+A badge with no URL configured is dimmed and takes no tap, in the same language
+an empty browse category uses, rather than being a live button that goes
+nowhere; `VITE_IOS_APP_URL` and `VITE_ANDROID_APP_URL` make each one live.
+While neither is set, "Continue in the browser" is the filled button, because a
+screen whose only working control is a grey text link is a dead end.
+`VITE_MOBILE_GATE=off` serves the site to a phone, for testing it on one.
+
+**The badge glyphs are drawn, and are stand-ins.** Apple and Google each
+publish their own badge artwork with rules about its size, its clear space and
+the words beside it, and each requires their file rather than a redrawing of
+it. PLACEHOLDERS.md carries it.

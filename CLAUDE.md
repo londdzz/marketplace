@@ -202,6 +202,27 @@ credits, the profile, reporting, blocking and promoting — all against the same
 endpoints, so a car published from a keyboard is the same row as one published
 from a phone and a block made in a browser hides that seller on both.
 
+**A telephone gets the app, not the website.** The site is built for a wide
+screen and declares `width=1280` so a phone that reaches it gets the desktop
+layout zoomed out rather than a half-collapsed one nobody designed; that was
+always a compromise. A phone now meets the mark, the App Store and Google Play
+badges and nothing else. `web/src/app-gate.ts` decides, and **what it lets
+through is the whole point**: crawlers and link unfurlers are matched *before*
+the phone check, because Google indexes mobile-first and its crawler's user
+agent says Android and Mobile — gating it would hand Google a download page as
+the content of every car we have, and it is also what keeps the preview card
+when a listing is pasted into WhatsApp or Viber; `/privacy`, `/terms`,
+`/support` and `/delete-account` open on any device, because both stores open
+the privacy policy URL during review and open it on a phone; the decision is
+made on the user agent and **never on the window's width**, so a narrowed
+desktop window and a tablet both get the website. `?web=1` and the link under
+the badges are the way past, remembered for the visit and not beyond it. A
+badge with no URL configured is dimmed and takes no tap, like an empty browse
+category, and **"Continue in the browser" is the filled button while neither
+store is live** — a screen whose only working control is a grey text link is a
+dead end. The gate takes the viewport meta over while it is up and hands it
+back, since at `width=1280` it drew itself at a third of its size.
+
 **The one thing the website cannot do is sell credits.** Both stores require a
 digital good used inside an app to be bought through their own purchase, so the
 packs are listed with their prices and the page says where to buy rather than

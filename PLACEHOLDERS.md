@@ -241,3 +241,40 @@ That is the only thing in this codebase that reads `APP_ENV`, so nothing else ch
 `APP_DEBUG=false` is what keeps stack traces off the wire, and it is a separate setting.
 Then the day the label goes back to `production` for launch, the code stops working on
 its own, which is the entire point of the guard. Do not relax it instead.
+
+## The store badges on the website's phone screen
+
+**Introduced**: after phase 12, with the phone gate in `/web`.
+
+**What they are**: a telephone opening autevo.mk gets the mark and two store
+badges instead of the website. Two things about them are stand-ins.
+
+**`VITE_IOS_APP_URL` and `VITE_ANDROID_APP_URL` are unset**, because neither
+store has published the app. A badge with no URL behind it is dimmed and takes
+no tap, saying "not published yet", and "Continue in the browser" is the filled
+button instead — so nothing on the screen is a lie and nothing is inert. Set
+each one in the host's environment the day that store goes live, and rebuild:
+they are `VITE_` variables, so Vite bakes them into the bundle and a settings
+change does nothing until a new deploy runs.
+
+**The Apple mark and the Play triangle are drawn by hand**, in
+`web/src/components/MobileGate.tsx`. Both stores publish their own badge
+artwork — "Download on the App Store" and "Get it on Google Play" — with rules
+about its minimum size, the clear space around it, and that their file is used
+rather than a redrawing of it. Apple's is in the Apple Identity Guidelines;
+Google's is in the Play brand guidelines, which also require the badge in the
+local language where one is published. Fetch both, drop them in `web/public`,
+and swap the two glyph components for `<img>`.
+
+**What it costs until then**: nothing functional, but the badges are not
+compliant with either store's brand rules, and a marketing page using a
+redrawn badge is the kind of thing Apple asks to be changed.
+
+## `VITE_MOBILE_GATE=off`
+
+**Introduced**: with the phone gate, after phase 12.
+**What it does**: serves the website to a telephone instead of the download
+screen. It exists so the site itself can be tested on a phone.
+**What it costs**: nothing is broken, but every phone visitor gets a layout
+that was never designed for one. Leave it unset in production. `?web=1` on a
+single URL is the per-link version and is always available.

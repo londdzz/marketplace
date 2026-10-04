@@ -5,6 +5,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import { AuthProvider } from './auth/AuthProvider';
 import { Layout } from './components/Layout';
+import { MobileGate } from './components/MobileGate';
 import { Spinner } from './components/ui';
 import './i18n';
 import { Home } from './pages/Home';
@@ -60,6 +61,14 @@ createRoot(document.getElementById('root') as HTMLElement).render(
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <BrowserRouter>
+          {/*
+            A telephone is met with the mark and the two store badges instead
+            of the website — inside the router, because the legal and support
+            pages pass through it and because it has to re-decide on every
+            navigation. src/app-gate.ts holds the reasoning and everything
+            that is exempt, crawlers and link previews first among them.
+          */}
+          <MobileGate>
           <Suspense fallback={<Spinner />}>
             <Routes>
             <Route element={<Layout />}>
@@ -84,6 +93,7 @@ createRoot(document.getElementById('root') as HTMLElement).render(
             </Route>
             </Routes>
           </Suspense>
+          </MobileGate>
         </BrowserRouter>
       </AuthProvider>
     </QueryClientProvider>

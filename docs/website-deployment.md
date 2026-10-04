@@ -63,6 +63,52 @@ You do **not** need `VITE_API_URL`. It falls back to
 `https://api.autevo.mk/api/v1`, which is where you want it. Set it only if you
 ever point the site at a different API.
 
+Two more belong here **the day each store publishes the app**, and not before:
+
+| Name | Value |
+|---|---|
+| `VITE_IOS_APP_URL` | the App Store link, e.g. `https://apps.apple.com/mk/app/autevo/id...` |
+| `VITE_ANDROID_APP_URL` | `https://play.google.com/store/apps/details?id=mk.autevo.app` |
+
+A telephone opening the site gets the download screen rather than the website
+(see below). A badge with no URL behind it is drawn dimmed and takes no tap,
+so leaving these unset is safe — it says "not published yet" rather than
+offering a button that goes nowhere. Setting one makes that badge live, and
+demotes "Continue in the browser" from the filled button back to a quiet link.
+
+These are **build-time** values, like every `VITE_` variable: Vite bakes them
+into the bundle. Adding one to the host's settings changes nothing until the
+site is rebuilt — on Cloudflare that means a new deploy, so push a commit or
+hit **Retry deployment**.
+
+There is also `VITE_MOBILE_GATE=off`, which serves the website to a phone
+instead of the download screen. It is for testing the site itself on one, and
+has no place in production.
+
+### 3a. What a phone sees
+
+The site answers a telephone with the mark, the two store badges and nothing
+else: the layout is built for a wide screen and every screen it has, the app
+has better. Four things pass through it anyway, each for a reason that costs
+money if it is got wrong:
+
+- **Crawlers and link unfurlers.** Google indexes mobile-first and its crawler
+  carries an Android user agent, so the bot check runs *before* the phone
+  check — otherwise Google would index a download page as the content of every
+  car we have. The same check is what lets WhatsApp and Viber draw a preview
+  card when somebody pastes a listing into a chat.
+- **`/privacy`, `/terms`, `/support` and `/delete-account`.** Apple and Google
+  open the privacy policy URL during review, on a phone. A download wall where
+  the policy should be is a rejection.
+- **Tablets and small desktop windows.** The decision is made on the user agent
+  alone, never on the window's width, so resizing a browser never trips it and
+  an iPad gets the website.
+- **Anybody who asks**, through the link under the badges, or by putting
+  `?web=1` on a URL you want to open on a phone yourself. The answer is kept
+  for the rest of that visit and forgotten when the tab closes.
+
+`web/src/app-gate.ts` is the whole of it, exemptions included.
+
 ### 4. The SPA fallback — where it comes from here
 
 **Do not add a `_redirects` file.** Cloudflare now deploys this kind of project
